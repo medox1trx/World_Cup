@@ -1,0 +1,22 @@
+export const countryCodes = {
+  "Mexique": "mx",
+  "Afrique du Sud": "za",
+  "République de Corée": "kr",
+  "Canada": "ca",
+  "Italie": "it",
+  "USA": "us",
+  "Paraguay": "py",
+  "Nouvelle-Zélande": "nz",
+  "France": "fr",
+  "Brésil": "br",
+  "Argentine": "ar",
+  "Nigéria": "ng",
+  "Espagne": "es",
+  "Allemagne": "de",
+  "Portugal": "pt",
+  "Maroc": "ma",
+  "Angleterre": "gb",
+  "Pays-Bas": "nl",
+  "Japon": "jp",
+  "Costa Rica": "cr"
+};
