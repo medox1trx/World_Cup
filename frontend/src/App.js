@@ -1,29 +1,37 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header/Header";
+
+import Home from "./pages/Home";
+import Matches from "./pages/Matches";
+import Standings from "./pages/Standings";
+import Teams from "./pages/Teams";
+import Qualifications from "./pages/Qualifications";
+import Cities from "./pages/Cities";
+import Tickets from "./pages/Tickets";
+import Hospitality from "./pages/Hospitality";
+import Fans from "./pages/Fans";
+import Tournaments from "./pages/Tournaments";
 
 function App() {
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    // Lien vers votre backend Laravel
-    axios.get('http://localhost:8000/api/test')
-      .then(response => {
-        console.log("Réponse reçue :", response.data);
-        setMessage(response.data.message);
-      })
-      .catch(err => {
-        console.error("Erreur de connexion :", err);
-        setError("Impossible de joindre le backend");
-      });
-  }, []);
-
   return (
-    <div>
-      <h1>Mon Projet Synthesis</h1>
-      {message ? <p style={{color: 'green'}}>{message}</p> : <p>Chargement...</p>}
-      {error && <p style={{color: 'red'}}>{error}</p>}
-    </div>
+    <Router>
+
+      <Header />
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/matches" element={<Matches />} />
+        <Route path="/standings" element={<Standings />} />
+        <Route path="/teams" element={<Teams />} />
+        <Route path="/qualifications" element={<Qualifications />} />
+        <Route path="/cities" element={<Cities />} />
+        <Route path="/tickets" element={<Tickets />} />
+        <Route path="/hospitality" element={<Hospitality />} />
+        <Route path="/fans" element={<Fans />} />
+        <Route path="/tournaments" element={<Tournaments />} />
+      </Routes>
+
+    </Router>
   );
 }
 
