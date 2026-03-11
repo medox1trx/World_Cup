@@ -1,29 +1,32 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
+import i18n from "i18next";
 import "./LanguageSelector.css";
 
 function LanguageSelector() {
-  const [lang, setLang] = useState(sessionStorage.getItem("lang") || "en");
+
   const [open, setOpen] = useState(false);
 
-  const changeLang = (newLang) => {
-    sessionStorage.setItem("lang", newLang);
-    setLang(newLang);
+  const changeLang = (lng) => {
+    i18n.changeLanguage(lng);
     setOpen(false);
-    // optionally reload page if needed
-    // window.location.reload();
   };
 
   return (
     <div className="language-selector">
+
       <button className="lang-btn" onClick={() => setOpen(!open)}>
-        🌐 {lang.toUpperCase()}
+        🌐
       </button>
+
       {open && (
         <ul className="lang-dropdown">
           <li onClick={() => changeLang("en")}>🇬🇧 English</li>
           <li onClick={() => changeLang("fr")}>🇫🇷 Français</li>
+          <li onClick={() => changeLang("ar")}>🇲🇦 العربية</li>
         </ul>
       )}
+
     </div>
   );
 }

@@ -1,5 +1,9 @@
+import { useTranslation } from "react-i18next";
 function Home(){
-  return <h1>Home World Cup</h1>;
+  const { t } = useTranslation();
+  return(
+     <h1>{t("homeWorldCup")}</h1>
+  );
 }
 
 export default Home;
