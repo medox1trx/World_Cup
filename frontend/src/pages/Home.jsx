@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 function Home(){
   const { t } = useTranslation();
   return(
-     <h1>{t("homeWorldCup")}</h1>
+     <h2>{t("homeWorldCup")}</h2>
   );
 }
 

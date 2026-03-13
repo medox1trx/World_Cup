@@ -26,7 +26,8 @@ followUs: "Follow Us",
 newsletter: "Newsletter",
 yourEmail: "Your email",
 subscribe: "Subscribe",
-allRightsReserved: "All rights reserved."
+allRightsReserved: "All rights reserved.",
+WorldCup:"World Cup"
 }
 },
 
@@ -50,7 +51,8 @@ followUs: "Suivez-nous",
 newsletter: "Newsletter",
 yourEmail: "Votre email",
 subscribe: "S'abonner",
-allRightsReserved: "Tous droits réservés."
+allRightsReserved: "Tous droits réservés.",
+WorldCup:"Coupe du Monde"
 }
 },
 
@@ -74,7 +76,8 @@ followUs: "تابعنا",
 newsletter: "النشرة الإخبارية",
 yourEmail: "بريدك الإلكتروني",
 subscribe: "اشترك",
-allRightsReserved: "جميع الحقوق محفوظة."
+allRightsReserved: "جميع الحقوق محفوظة.",
+WorldCup:"كأس العالم"
 }
 }
 

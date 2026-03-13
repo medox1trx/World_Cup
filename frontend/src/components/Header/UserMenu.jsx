@@ -1,16 +1,21 @@
 import { Link } from "react-router-dom";
-import "./UserMenu.css";
 import { useTranslation } from "react-i18next";
 
 function UserMenu() {
-  const user = JSON.parse(localStorage.getItem("user"));// katkhelina n7wlo l json obbjet bach n9dero nst3mloh f l condition 
+  const user = JSON.parse(localStorage.getItem("user")); // parse JSON
   const { t } = useTranslation();
+
   return (
-    <div className="user-menu">
+    <div className="flex items-center font-sans">
       {user ? (
-        <span className="welcome">Welcome {user.name}</span>
+        <span className="text-white font-medium mr-2">
+          Welcome {user.name}
+        </span>
       ) : (
-        <Link className="login-btn" to="/login">
+        <Link
+          to="/login"
+          className="px-3 py-2 rounded-full bg-[#1b1b1b] border-2 border-[#f7b500] text-white text-sm transition-all duration-300 hover:bg-[#f7b500] hover:text-black"
+        >
           {t("login")}
         </Link>
       )}
