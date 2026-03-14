@@ -46,73 +46,29 @@ export function Spinner() {
 }
 
 // ─── SECTION HEAD ─────────────────────────────────────────────
-export function SectionHead({ eyebrow, title, action, href, dark = false, icon: Icon }) {
+export function SectionHead({ eyebrow, title, action, href }) {
   return (
-    <>
-      <style>{`
-        .sh-root {
-          display: flex; align-items: center; justify-content: space-between;
-          margin-bottom: 20px; padding-bottom: 12px;
-          border-bottom: 1px solid ${dark ? "rgba(255,255,255,0.08)" : C.border};
-          gap: 12px;
-        }
-        .sh-left  { display: flex; align-items: center; gap: 10px; min-width: 0; }
-        .sh-icon  {
-          width: 26px; height: 26px; border-radius: 3px; flex-shrink: 0;
-          background: ${dark ? "rgba(255,255,255,0.08)" : C.black};
-          display: flex; align-items: center; justify-content: center;
-        }
-        .sh-eyebrow {
-          display: block; font-size: 8px; font-weight: 800;
-          letter-spacing: 0.3em; text-transform: uppercase;
-          color: ${dark ? "rgba(255,255,255,0.35)" : C.mid};
-          margin-bottom: 2px; font-family: ${FONT.body};
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .sh-title {
-          font-family: ${FONT.display};
-          font-size: clamp(1.15rem, 2vw, 1.6rem);
-          font-weight: 800; letter-spacing: 0.04em;
-          color: ${dark ? "#fff" : C.black};
-          line-height: 1; white-space: nowrap;
-        }
-        .sh-action {
-          display: flex; align-items: center; gap: 4px; flex-shrink: 0;
-          font-size: 10px; font-weight: 800; letter-spacing: 0.14em;
-          text-transform: uppercase; text-decoration: none;
-          color: ${dark ? "rgba(255,255,255,0.35)" : C.mid};
-          font-family: ${FONT.body};
-          transition: color 0.15s; white-space: nowrap;
-        }
-        .sh-action:hover { color: ${dark ? "#fff" : C.black}; }
-
-        @media (max-width: 480px) {
-          .sh-eyebrow { display: none; }
-          .sh-title   { font-size: 1.1rem; }
-          .sh-action span { display: none; }
-        }
-      `}</style>
-
-      <div className="sh-root">
-        <div className="sh-left">
-          {Icon && (
-            <div className="sh-icon">
-              <Icon size={12} color="white" />
-            </div>
-          )}
-          <div style={{ minWidth: 0 }}>
-            {eyebrow && <span className="sh-eyebrow">{eyebrow}</span>}
-            <h2 className="sh-title">{title}</h2>
-          </div>
-        </div>
-
-        {action && href && (
-          <a href={href} className="sh-action">
-            <span>{action}</span>
-            <FiChevronRight size={11} />
-          </a>
-        )}
+    <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:24 }}>
+      <div>
+        <p style={{
+          fontSize:10, fontWeight:700, letterSpacing:"0.18em", textTransform:"uppercase",
+          color: C.mid, fontFamily: FONT.body, margin:"0 0 6px",
+        }}>{eyebrow}</p>
+        <h2 style={{
+          fontSize:36, fontWeight:900, letterSpacing:"0.04em", textTransform:"uppercase",
+          color: C.black, fontFamily: FONT.display, margin:0, lineHeight:1,
+        }}>{title}</h2>
       </div>
-    </>
+      {action && (
+        <a href={href} style={{
+          fontSize:10, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase",
+          color: C.mid, textDecoration:"none", fontFamily: FONT.body,
+          transition:"color 0.15s",
+        }}
+          onMouseOver={e => e.currentTarget.style.color = C.black}
+          onMouseOut={e => e.currentTarget.style.color = C.mid}
+        >{action} →</a>
+      )}
+    </div>
   );
 }

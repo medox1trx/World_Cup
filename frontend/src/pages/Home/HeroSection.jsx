@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { FiShoppingCart, FiArrowRight, FiPlay, FiCalendar } from "react-icons/fi";
 import { FONT, TICKER_ITEMS } from "./constants";
 
-// ─── Paste any YouTube video ID here ───────────────────────────
-// e.g. for https://www.youtube.com/watch?v=dQw4w9WgXcQ → "dQw4w9WgXcQ"
 const YT_VIDEO_ID = "RDtdVQgB9ME";
 
 // ─── NEWS TICKER ───────────────────────────────────────────────
@@ -81,15 +79,11 @@ export function HeroSection() {
     return () => clearTimeout(t);
   }, []);
 
-  // Fade in video only when YouTube signals it is actually playing
   useEffect(() => {
-    // Fallback: show video after 3s no matter what
     const fallback = setTimeout(() => setYtReady(true), 3000);
-
     const handler = (e) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        // playerState 1 = playing
         if (data?.event === "onReady" || data?.info?.playerState === 1) {
           clearTimeout(fallback);
           setYtReady(true);
@@ -97,10 +91,7 @@ export function HeroSection() {
       } catch (_) {}
     };
     window.addEventListener("message", handler);
-    return () => {
-      clearTimeout(fallback);
-      window.removeEventListener("message", handler);
-    };
+    return () => { clearTimeout(fallback); window.removeEventListener("message", handler); };
   }, []);
 
   const s = (d) => ({
@@ -109,15 +100,21 @@ export function HeroSection() {
     transition: `opacity .6s ease ${d}s, transform .6s ease ${d}s`,
   });
 
+  const WORDS = [
+    { word: "LE",    cls: "h1-w", sizeClass: "h1-le",    delay: 0.12 },
+    { word: "MONDE", cls: "h1-o", sizeClass: "h1-monde", delay: 0.20 },
+    { word: "UNI.",  cls: "h1-w", sizeClass: "h1-uni",   delay: 0.28 },
+  ];
+
   return (
     <>
-      <style>{`
-        @keyframes bgz  { from{transform:scale(1);}    to{transform:scale(1.05);}  }
-        @keyframes shim { from{left:-80%;}             to{left:130%;}              }
+<style>{`
+        @keyframes bgz  { from{transform:scale(1);}   to{transform:scale(1.05);}  }
+        @keyframes shim { from{left:-80%;}            to{left:130%;}              }
         @keyframes lpul { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.45);}
-                          60%{box-shadow:0 0 0 8px rgba(34,197,94,0);}             }
+                          60%{box-shadow:0 0 0 8px rgba(34,197,94,0);}            }
         @keyframes idot { 0%,100%{opacity:1;transform:scale(1);}
-                          50%{opacity:.3;transform:scale(.6);}                     }
+                          50%{opacity:.3;transform:scale(.6);}                    }
 
         .hero-root {
           --bars: 146px;
@@ -172,10 +169,9 @@ export function HeroSection() {
           align-items: center;
         }
 
-        /* ─ Eyebrow — now always full width ─ */
         .hero-ey {
           display: flex; align-items: center; gap: 10px;
-          margin-bottom: clamp(14px,2vh,22px);
+          margin-bottom: clamp(10px,1.5vh,18px);
           width: 100%;
         }
         .hero-ey-line { width: 32px; height: 1px; background: rgba(255,255,255,.28); flex-shrink: 0; }
@@ -184,23 +180,26 @@ export function HeroSection() {
           font-family: 'Barlow', sans-serif;
           font-size: clamp(8px,1vw,10px); font-weight: 800;
           letter-spacing: .4em; text-transform: uppercase;
-          /* wrap gracefully on narrow viewports */
-          white-space: normal; word-break: break-word;
         }
 
-        /* ─ Headline — always full width, fluid ─ */
-        .hero-h1 {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: clamp(48px, 9.5vw, 120px);
-          font-weight: 900; line-height: .9;
-          text-transform: uppercase; letter-spacing: -.02em; margin: 0;
-          width: 100%; display: block;
-          overflow: visible;
-        }
-        /* Last word (UNI.) gets a little bottom room so the period isn't clipped */
-        .hero-h1:last-child { padding-bottom: 0.08em; }
-        .h1-w { color: white; }
-        .h1-o { color: transparent; -webkit-text-stroke: clamp(1px,0.13vw,1.5px) rgba(255,255,255,.6); }
+.hero-h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900; line-height: 0.9;
+  text-transform: uppercase; letter-spacing: -.02em; margin: 0;
+  display: block; width: 100%; overflow: visible;
+  font-size: clamp(164px, 10vw, 140px);
+}
+        .hero-h1:last-child { padding-bottom: 0.06em; }
+
+        .h1-le    { font-size: clamp(64px, 10vw, 140px); }
+        .h1-monde { font-size: clamp(64px, 10vw, 140px); }
+        .h1-uni   { font-size: clamp(64px, 10vw, 140px); }
+
+.h1-w { color: white; }
+.h1-o {
+  color: transparent;
+  -webkit-text-stroke: clamp(1px, 0.13vw, 2px) rgba(255,255,255,.55);
+}
 
         .hero-sub {
           color: rgba(255,255,255,.38);
@@ -208,11 +207,9 @@ export function HeroSection() {
           font-size: clamp(12px,1.4vw,15px);
           font-weight: 400; line-height: 1.8;
           margin: clamp(14px,2vh,22px) 0 clamp(24px,3.5vh,36px);
-          max-width: 30ch;
-          width: 100%;
+          max-width: 30ch; width: 100%;
         }
 
-        /* ─ CTA area ─ */
         .hero-cta {
           display: flex; flex-wrap: wrap;
           align-items: center; gap: clamp(8px,1.5vw,12px);
@@ -220,7 +217,6 @@ export function HeroSection() {
           width: 100%;
         }
 
-        /* Primary CTA */
         .btn-buy {
           position: relative; overflow: hidden;
           display: inline-flex; align-items: center; gap: 8px;
@@ -248,11 +244,9 @@ export function HeroSection() {
         .btn-buy .arr { transition: transform .2s; }
         .btn-buy:hover .arr { transform: translateX(3px); }
 
-        /* ─ Watch / highlights button — full pill with icon + label ─ */
         .btn-watch {
           display: inline-flex; align-items: center; gap: 9px;
           text-decoration: none;
-          /* pill style matching the dark look from the screenshot */
           background: rgba(255,255,255,.06);
           border: 1px solid rgba(255,255,255,.18);
           border-radius: 100px;
@@ -265,20 +259,15 @@ export function HeroSection() {
           border-color: rgba(255,255,255,.45);
         }
         .btn-watch-circle {
-          width: clamp(22px,2.2vw,26px);
-          height: clamp(22px,2.2vw,26px);
-          border-radius: 50%;
-          border: 1.5px solid rgba(255,255,255,.35);
+          width: clamp(22px,2.2vw,26px); height: clamp(22px,2.2vw,26px);
+          border-radius: 50%; border: 1.5px solid rgba(255,255,255,.35);
           display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
-          transition: border-color .22s;
+          flex-shrink: 0; transition: border-color .22s;
         }
         .btn-watch:hover .btn-watch-circle { border-color: rgba(255,255,255,.8); }
         .btn-watch-label {
-          color: rgba(255,255,255,.6);
-          font-family: 'Barlow', sans-serif;
-          font-size: clamp(11px,1.1vw,13px); font-weight: 700;
-          letter-spacing: .04em;
+          color: rgba(255,255,255,.6); font-family: 'Barlow', sans-serif;
+          font-size: clamp(11px,1.1vw,13px); font-weight: 700; letter-spacing: .04em;
           transition: color .2s;
         }
         .btn-watch:hover .btn-watch-label { color: rgba(255,255,255,.95); }
@@ -292,23 +281,18 @@ export function HeroSection() {
           text-decoration: none; transition: all .2s;
           width: fit-content;
         }
-        .hero-live:hover {
-          background: rgba(255,255,255,.09);
-          border-color: rgba(255,255,255,.22);
-        }
+        .hero-live:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22); }
         .live-dot {
           width: 7px; height: 7px; border-radius: 50%;
           background: #22c55e; flex-shrink: 0;
           animation: lpul 1.8s ease-in-out infinite;
         }
         .live-txt {
-          color: rgba(255,255,255,.42);
-          font-family: 'Barlow', sans-serif;
+          color: rgba(255,255,255,.42); font-family: 'Barlow', sans-serif;
           font-size: clamp(10px,1vw,11px); font-weight: 500; letter-spacing: .05em;
           white-space: nowrap;
         }
 
-        /* ─ Right: Match card ─ */
         .match-card {
           background: rgba(10,10,10,.78);
           border: 1px solid rgba(255,255,255,.1);
@@ -319,13 +303,9 @@ export function HeroSection() {
           width: clamp(180px,18vw,240px);
           flex-shrink: 0;
         }
-        .mc-head {
-          display: flex; align-items: center; gap: 6px;
-          margin-bottom: clamp(12px,1.5vh,18px);
-        }
+        .mc-head { display: flex; align-items: center; gap: 6px; margin-bottom: clamp(12px,1.5vh,18px); }
         .mc-head-txt {
-          color: rgba(255,255,255,.4);
-          font-family: 'Barlow', sans-serif;
+          color: rgba(255,255,255,.4); font-family: 'Barlow', sans-serif;
           font-size: clamp(8px,.9vw,9px); font-weight: 800;
           letter-spacing: .2em; text-transform: uppercase;
         }
@@ -336,31 +316,26 @@ export function HeroSection() {
         }
         .mc-team { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .mc-flag {
-          width: clamp(32px,3.5vw,44px);
-          height: clamp(22px,2.3vw,30px);
+          width: clamp(32px,3.5vw,44px); height: clamp(22px,2.3vw,30px);
           object-fit: cover; border-radius: 3px; display: block;
           box-shadow: 0 2px 8px rgba(0,0,0,.45);
         }
         .mc-code {
-          color: white;
-          font-family: 'Barlow Condensed', sans-serif;
+          color: white; font-family: 'Barlow Condensed', sans-serif;
           font-size: clamp(11px,1.1vw,14px); font-weight: 800; letter-spacing: .08em;
         }
         .mc-vs { text-align: center; }
         .mc-vs-t {
-          display: block; color: rgba(255,255,255,.18);
-          font-family: 'Barlow', sans-serif;
+          display: block; color: rgba(255,255,255,.18); font-family: 'Barlow', sans-serif;
           font-size: clamp(10px,1vw,12px); font-weight: 600;
         }
         .mc-time {
-          display: block; color: rgba(255,255,255,.28);
-          font-family: 'Barlow', sans-serif;
+          display: block; color: rgba(255,255,255,.28); font-family: 'Barlow', sans-serif;
           font-size: clamp(9px,.9vw,10px); margin-top: 3px;
         }
         .mc-btn {
           display: flex; align-items: center; justify-content: center; gap: 6px;
-          background: white; color: #0a0a0a;
-          font-family: 'Barlow', sans-serif;
+          background: white; color: #0a0a0a; font-family: 'Barlow', sans-serif;
           font-size: clamp(9px,.95vw,11px); font-weight: 800;
           letter-spacing: .12em; text-transform: uppercase;
           padding: clamp(8px,1vh,11px) 14px;
@@ -368,23 +343,11 @@ export function HeroSection() {
         }
         .mc-btn:hover { background: #e8e8e8; }
 
-        /* ══ RESPONSIVE BREAKPOINTS ══ */
-
-        /* ── Desktop large (1600px+) ── */
-        @media (min-width: 1600px) {
-          .hero-h1  { font-size: clamp(80px, 7.5vw, 140px); }
-        }
-
-        /* ── Tablet (≤ 1024px) — match card moves below, smaller gap ── */
-        @media (max-width: 1024px) {
-          .hero-wrap {
-            grid-template-columns: 1fr auto;
-            gap: 24px;
-          }
+@media (max-width: 1024px) {
+          .hero-wrap { grid-template-columns: 1fr auto; gap: 24px; }
           .match-card { width: clamp(160px, 16vw, 200px); }
         }
 
-        /* ── Tablet narrow (≤ 860px) — hide match card, single column ── */
         @media (max-width: 860px) {
           .hero-wrap {
             grid-template-columns: 1fr;
@@ -397,62 +360,40 @@ export function HeroSection() {
               rgba(10,10,10,.7)  50%,
               rgba(10,10,10,.3)  100%);
           }
-          .hero-h1  { font-size: clamp(56px, 10vw, 100px); }
+          .hero-h1  { font-size: clamp(66px, 14vw, 130px); }
           .hero-sub { max-width: 42ch; }
-          .hero-cta {
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px;
-          }
-          .btn-buy   { flex: 1 1 auto; min-width: 160px; justify-content: center; }
-          .btn-watch { flex: 1 1 auto; min-width: 160px; justify-content: center; }
+          .hero-cta { flex-direction: row; flex-wrap: wrap; gap: 12px; }
+          .btn-buy  { flex: 1 1 auto; min-width: 160px; justify-content: center; }
+          .btn-watch{ flex: 1 1 auto; min-width: 160px; justify-content: center; }
+          .btn-watch-label { display: inline !important; }
         }
 
-        /* ── Mobile (≤ 600px) — full-width stacked buttons ── */
         @media (max-width: 600px) {
-          .hero-root  { min-height: 100svh; }
-          .hero-wrap  { padding: 40px 20px 48px; }
-          .hero-h1    { font-size: clamp(52px, 16vw, 80px); }
-          .hero-sub   { font-size: 13px; max-width: 100%; line-height: 1.7; }
+          .hero-root { min-height: 100svh; }
+          .hero-wrap { padding: 40px 20px 52px; }
+          .hero-h1   { font-size: clamp(76px, 56vw, 93px); }
+          .hero-sub  { font-size: 13px; max-width: 100%; line-height: 1.7; }
           .hero-ey-txt { font-size: 8px; letter-spacing: .2em; }
-          .hero-cta {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 10px;
-            width: 100%;
-          }
-          .btn-buy {
-            width: 100%;
-            justify-content: center;
-            box-sizing: border-box;
-            padding: 14px 20px;
-            font-size: 13px;
-          }
-          .btn-watch {
-            width: 100%;
-            justify-content: center;
-            box-sizing: border-box;
-            padding: 13px 20px;
-          }
-          .btn-watch-label { display: inline; font-size: 13px; }
+          .hero-cta { flex-direction: column; align-items: stretch; gap: 10px; width: 100%; }
+          .btn-buy  { width: 100%; justify-content: center; box-sizing: border-box; padding: 14px 20px; font-size: 13px; }
+          .btn-watch{ width: 100%; justify-content: center; box-sizing: border-box; padding: 13px 20px; }
+          .btn-watch-label { display: inline !important; font-size: 13px; color: rgba(255,255,255,.85); }
+          .btn-watch-circle { display: flex; }
         }
 
-        /* ── Mobile XS (≤ 380px) ── */
         @media (max-width: 380px) {
-          .hero-h1 { font-size: clamp(42px, 15vw, 60px); }
-          .btn-buy-txt-long  { display: none; }
-          .btn-buy-txt-short { display: inline; }
+          .hero-h1  { font-size: clamp(28px, 13vw, 52px); }
+          .btn-buy  { font-size: 12px; padding: 12px 16px; }
+          .btn-watch{ padding: 12px 16px; }
+          .btn-buy-txt-long  { display: inline; }
+          .btn-buy-txt-short { display: none; }
         }
       `}</style>
 
       <section className="hero-root">
 
-        {/* YouTube video background — hidden until playing */}
-        <div style={{
-          position: "absolute", inset: 0,
-          pointerEvents: "none", overflow: "hidden",
-        }}>
+        {/* ── VIDEO BACKGROUND ── */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
           <iframe
             src={`https://www.youtube.com/embed/${YT_VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${YT_VIDEO_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
             allow="autoplay; encrypted-media"
@@ -460,9 +401,10 @@ export function HeroSection() {
               position: "absolute",
               top: "50%", left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "calc(100% + 200px)",
-              height: "calc(100% + 200px)",
-              minWidth: "100%", minHeight: "100%",
+              width: "100vw",
+              height: "56.25vw",
+              minWidth: "177.78vh",
+              minHeight: "100%",
               border: "none",
               opacity: ytReady ? 0.45 : 0,
               transition: "opacity 1.2s ease",
@@ -470,6 +412,7 @@ export function HeroSection() {
             title="hero-bg"
           />
         </div>
+
         <div className="hero-ov-b" />
         <div className="hero-ov-l" />
 
@@ -478,36 +421,25 @@ export function HeroSection() {
           {/* ── LEFT ── */}
           <div>
 
-            {/* Eyebrow — full width */}
             <div className="hero-ey" style={s(0.05)}>
               <div className="hero-ey-line" />
               <span className="hero-ey-txt">Coupe du Monde FIFA 2030™</span>
             </div>
 
-            {/* Headline — full width */}
+            {/* Words — each fills its own full width */}
             <div style={{ width: "100%", overflow: "visible" }}>
-              {[
-                { word: "LE",    cls: "h1-w", delay: 0.12 },
-                { word: "MONDE", cls: "h1-o", delay: 0.20 },
-                { word: "UNI.",  cls: "h1-w", delay: 0.28 },
-              ].map(({ word, cls, delay }) => (
-                <h1 key={word} className={`hero-h1 ${cls}`} style={s(delay)}>
-                  {word}
-                </h1>
-              ))}
-            </div>
+  <h1 className="hero-h1 h1-w" style={s(0.12)}>
+    LE <span className="h1-o">MONDE</span> UNI.
+  </h1>
+</div>
 
-            {/* Subtitle */}
             <p className="hero-sub" style={s(0.38)}>
               11 juin – 19 juillet 2030<br />
               Six nations hôtes · 48 équipes<br />
               Un seul champion du monde
             </p>
 
-            {/* CTAs — both full-width on mobile */}
             <div className="hero-cta" style={s(0.48)}>
-
-              {/* Primary */}
               <a href="/tickets" className="btn-buy">
                 <span className="shimmer" />
                 <FiShoppingCart size={15} />
@@ -515,15 +447,12 @@ export function HeroSection() {
                 <span className="btn-buy-txt-short" style={{ display: "none" }}>Billets</span>
                 <FiArrowRight size={13} className="arr" />
               </a>
-
-              {/* Secondary — full pill with visible label at all sizes */}
               <a href="/highlights" className="btn-watch">
                 <div className="btn-watch-circle">
                   <FiPlay size={12} color="white" style={{ marginLeft: 2 }} />
                 </div>
                 <span className="btn-watch-label">Voir les temps forts</span>
               </a>
-
             </div>
 
           </div>
@@ -542,7 +471,7 @@ export function HeroSection() {
                 </div>
                 <div className="mc-vs">
                   <span className="mc-vs-t">VS</span>
-                  <span className="mc-time">23 mars · 21h00</span>
+                  <span className="mc-time">11 juin · 18h00</span>
                 </div>
                 <div className="mc-team">
                   <img className="mc-flag" src="https://flagcdn.com/w80/br.png" alt="Brésil" />
@@ -551,7 +480,7 @@ export function HeroSection() {
               </div>
               <a href="/matches" className="mc-btn">
                 <FiCalendar size={11} />
-                <span className="mc-btn-txt">Voir le match</span>
+                <span>Voir le match</span>
               </a>
             </div>
           </div>

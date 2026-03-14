@@ -7,6 +7,7 @@ import { StandingsSection, CitiesSection }        from "./StandingsSection";
 import { PromoSection, TournamentSection, FanZoneSection } from "./PromoSection";
 import { useStats, useMatches }                   from "../../hooks/useWorldCup";
 
+
 /*
   VERTICAL STACK inside <Home>:
   ┌──────────────────────────────────────────────────────┐

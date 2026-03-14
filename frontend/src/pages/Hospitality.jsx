@@ -1,12 +1,34 @@
 import { useState, useEffect } from "react";
+import {
+  FiCheck, FiShield, FiGlobe, FiPhone,
+  FiStar, FiArrowRight, FiChevronDown,
+} from "react-icons/fi";
 
+// ─── Mixkit CDN video (no CORS) ───────────────────────────────
+const HERO_VIDEO = "https://assets.mixkit.co/videos/17398/17398-720.mp4";
+
+// ─── Unsplash CDN photos (open CORS, always load) ─────────────
+const IMG = {
+  hero:      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1400&q=85&fit=crop",
+  dining:    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80&fit=crop",
+  lounge:    "https://traces-berberes.com/wp-content/uploads/2024/09/Best-5-places-to-visit-when-you-come-to-Morocco-1200x540.png",
+  suite:     "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=700&q=80&fit=crop",
+  champagne: "https://next.io/wp-content/uploads/2023/12/iGaming-Idol.jpg",
+  gourmet:   "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=700&q=80&fit=crop",
+  jet:       "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=700&q=80&fit=crop",
+  champagne2: "https://tse1.mm.bing.net/th/id/OIP.O5SXQOJX1-1OdEU8zfSdFAHaEK?rs=1&pid=ImgDetMain&o=7&rm=3",
+};
+
+const FONT_D = "'Barlow Condensed', sans-serif";
+const FONT_B = "'Barlow', sans-serif";
+
+// ─── Data ──────────────────────────────────────────────────────
 const PACKAGES = [
   {
     tier: "Premium",
-    price: "À partir de 2 500 €",
+    price: "2 500 €",
     badge: null,
-    color: "bg-white",
-    dark: false,
+    featured: false,
     perks: [
       "Siège catégorie Premium en tribune",
       "Accès salon hospitalité FIFA",
@@ -16,30 +38,30 @@ const PACKAGES = [
       "Service voiturier",
     ],
     cta: "Réserver",
+    img: IMG.lounge,
   },
   {
     tier: "Business",
-    price: "À partir de 5 000 €",
-    badge: "Populaire",
-    color: "bg-fifa-black",
-    dark: true,
+    price: "5 000 €",
+    badge: "Le plus populaire",
+    featured: true,
     perks: [
       "Siège catégorie Business en tribune centrale",
       "Salon privatif avec vue terrain",
       "Menu dégustation & bar premium",
       "Conférencier invité FIFA",
-      "Kit media & accréditation",
-      "Transfer aller-retour luxe",
+      "Kit media & accréditation presse",
+      "Transfert aller-retour luxe",
       "Accès vestiaires après match",
     ],
     cta: "Réserver",
+    img: IMG.suite,
   },
   {
     tier: "Prestige",
     price: "Sur devis",
     badge: "Exclusif",
-    color: "bg-[#f5f5f5]",
-    dark: false,
+    featured: false,
     perks: [
       "Loge privée avec terrasse terrain",
       "Chef privé & sommelier personnel",
@@ -47,290 +69,380 @@ const PACKAGES = [
       "Accès pitch walk officiel",
       "Suite hôtel 5★ incluse",
       "Jet privé depuis votre ville",
-      "Expériences sur mesure",
+      "Itinéraire 100% personnalisé",
     ],
     cta: "Contacter notre équipe",
+    img: IMG.jet,
   },
 ];
 
 const EXPERIENCES = [
-  {
-    num: "01",
-    title: "Accueil Personnalisé",
-    desc: "Un agent FIFA dédié vous accompagne de votre arrivée à votre départ. Zéro attente, priorité totale.",
-  },
-  {
-    num: "02",
-    title: "Gastronomie du Monde",
-    desc: "Chefs étoilés inspirés par les 6 nations hôtes. Menus créés spécialement pour la FIFA World Cup 2030.",
-  },
-  {
-    num: "03",
-    title: "Legends Encounters",
-    desc: "Discussions exclusives avec les légendes du football. Séances dédicaces et photos dans un cadre premium.",
-  },
-  {
-    num: "04",
-    title: "The Best Seats",
-    desc: "Sièges optimaux en tribune centrale, vues dégagées, confort maximal. Les meilleures positions garanties.",
-  },
+  { num: "01", title: "Accueil Personnalisé",   desc: "Un agent FIFA dédié vous accompagne du début à la fin. Zéro attente, priorité absolue.",              img: IMG.champagne2 },
+  { num: "02", title: "Gastronomie d'Exception", desc: "Chefs étoilés inspirés par les 6 nations hôtes. Menus créés spécialement pour la Coupe du Monde.",   img: IMG.gourmet   },
+  { num: "03", title: "Rencontres Légendaires",  desc: "Discussions exclusives avec les légendes du football. Séances dédicaces en cadre premium.",            img: IMG.suite     },
+  { num: "04", title: "Les Meilleures Places",   desc: "Sièges optimaux en tribune centrale, vues dégagées, confort maximal. Positions garanties.",            img: IMG.lounge    },
 ];
 
 const TESTIMONIALS = [
-  {
-    name: "Thomas Heugel",
-    role: "PDG, Heugel Finance",
-    text: "Une expérience irréelle. Le package Business dépasse tout ce que j'avais imaginé. Le repas, la loge, l'accès terrain… parfait de A à Z.",
-    city: "Paris",
-  },
-  {
-    name: "Ana Ferreira",
-    role: "Directrice Marketing, NovaTech",
-    text: "Nous avons emmené 12 clients. Tout était fluide, élégant, mémorable. FIFA Hospitality, c'est le meilleur investissement client possible.",
-    city: "Lisbonne",
-  },
-  {
-    name: "James Okafor",
-    role: "Partner, Okafor & Associates",
-    text: "La rencontre avec la légende était incroyable. Nos associés en parlent encore. On réserve déjà pour la finale.",
-    city: "Lagos",
-  },
+  { name: "Thomas Heugel",  role: "PDG, Heugel Finance",           city: "Paris",    text: "Une expérience irréelle. Le package Business dépasse tout ce que j'avais imaginé. Le repas, la loge, l'accès terrain… parfait de A à Z."                       },
+  { name: "Ana Ferreira",   role: "Directrice Marketing, NovaTech", city: "Lisbonne", text: "Nous avons emmené 12 clients. Tout était fluide, élégant, mémorable. FIFA Hospitality, c'est le meilleur investissement client possible."                     },
+  { name: "James Okafor",   role: "Partner, Okafor & Associates",   city: "Lagos",    text: "La rencontre avec la légende était incroyable. Nos associés en parlent encore. On réserve déjà pour la finale."                                                 },
 ];
 
-const FAQ_HOSP = [
-  { q: "Les packages incluent-ils les billets de match ?", a: "Oui, tous nos packages d'hospitalité incluent des billets de match officiel de la catégorie correspondante, en plus de tous les services mentionnés." },
-  { q: "Combien de matchs puis-je sélectionner ?", a: "Selon le package, vous pouvez sélectionner de 1 à 7 matchs. Le package Prestige permet de personnaliser entièrement votre calendrier, y compris la finale." },
-  { q: "Les packages sont-ils disponibles pour des groupes ?", a: "Absolument. Nous proposons des offres corporate pour les groupes de 2 à 500 personnes. Contactez notre équipe dédiée B2B pour un devis personnalisé." },
-  { q: "Quelle est la politique d'annulation ?", a: "Annulation gratuite jusqu'à 60 jours avant l'événement. Entre 60 et 30 jours, remboursement à 50%. Après 30 jours, les packages sont non-remboursables." },
+const FAQ_ITEMS = [
+  { q: "Les packages incluent-ils les billets de match ?",        a: "Oui, tous nos packages incluent des billets de match officiels de la catégorie correspondante, en plus de l'ensemble des services mentionnés."                                                        },
+  { q: "Combien de matchs puis-je sélectionner ?",                a: "Selon le package, vous pouvez sélectionner de 1 à 7 matchs. Le package Prestige permet de personnaliser entièrement votre calendrier, y compris la finale."                                             },
+  { q: "Les packages sont-ils disponibles pour des groupes ?",    a: "Absolument. Nous proposons des offres corporate pour les groupes de 2 à 500 personnes. Contactez notre équipe dédiée B2B pour un devis personnalisé."                                                   },
+  { q: "Quelle est la politique d'annulation ?",                  a: "Annulation gratuite jusqu'à 60 jours avant l'événement. Entre 60 et 30 jours, remboursement à 50 %. Après 30 jours, les packages sont non-remboursables."                                               },
 ];
 
-function FAQ({ q, a }) {
+// ─── FAQ Item ─────────────────────────────────────────────────
+function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-white/10 last:border-0">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left gap-4">
-        <span className="font-body font-semibold text-[0.88rem] text-white leading-snug">{q}</span>
-        <span className={`shrink-0 w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-[0.7rem] text-white transition-transform duration-200 ${open ? "rotate-45" : ""}`}>
-          +
-        </span>
+    <div style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <button onClick={() => setOpen(o => !o)} style={{
+        width: "100%", display: "flex", alignItems: "center",
+        justifyContent: "space-between", gap: 16,
+        padding: "20px 0", background: "none", border: "none",
+        cursor: "pointer", textAlign: "left",
+      }}>
+        <span style={{ color: "white", fontFamily: FONT_B, fontSize: 15, fontWeight: 600, lineHeight: 1.4 }}>{q}</span>
+        <span style={{
+          width: 28, height: 28, borderRadius: "50%",
+          border: "1px solid rgba(255,255,255,0.2)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0, color: "white", fontSize: 18, lineHeight: 1,
+          transform: open ? "rotate(45deg)" : "none",
+          transition: "transform 0.22s ease",
+        }}>+</span>
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-40 pb-5" : "max-h-0"}`}>
-        <p className="text-white/40 text-[0.85rem] leading-relaxed">{a}</p>
+      <div style={{ overflow: "hidden", maxHeight: open ? 160 : 0, transition: "max-height 0.28s ease" }}>
+        <p style={{ color: "rgba(255,255,255,0.45)", fontFamily: FONT_B, fontSize: 14, lineHeight: 1.75, paddingBottom: 20 }}>{a}</p>
       </div>
     </div>
   );
 }
 
+// ─── Main ─────────────────────────────────────────────────────
 export default function Hospitality() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setMounted(true), 50); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 40); return () => clearTimeout(t); }, []);
 
   return (
-    <div className={`font-body bg-white transition-opacity duration-500 ${mounted ? "opacity-100" : "opacity-0"}`}>
+    <div style={{ fontFamily: FONT_B, background: "#0d0d0d", color: "white", opacity: mounted ? 1 : 0, transition: "opacity 0.4s" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      {/* ═══════════════════════════════════════════════
-          HERO — Luxury / VIP
-      ═══════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden" style={{ minHeight: "80vh", background: "#0a1220" }}>
+        @keyframes bgz  { from{transform:scale(1);}    to{transform:scale(1.06);}    }
+        @keyframes shim { from{left:-80%;}             to{left:130%;}                }
 
-        {/* Fine grid */}
-        <div className="absolute inset-0 pointer-events-none"
+        .hw { max-width: 1380px; margin: 0 auto; padding: 0 clamp(16px,3vw,48px); }
+
+        /* ── Photo card ── */
+        .photo-card { position:relative; overflow:hidden; border-radius:8px; }
+        .photo-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s ease; display:block; }
+        .photo-card:hover img { transform:scale(1.05); }
+
+        /* ── Package card ── */
+        .pkg { border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.22s ease, box-shadow 0.22s ease; }
+        .pkg:hover { transform:translateY(-5px); }
+
+        /* ── Shimmer btn ── */
+        .btn-shim { position:relative; overflow:hidden; }
+        .btn-shim .sh { position:absolute; top:0; left:-80%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent); pointer-events:none; }
+        .btn-shim:hover .sh { animation:shim 0.5s ease forwards; }
+
+        /* ── Grids ── */
+        .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+        .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:0; }
+        .g2c{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .gfq{ display:grid; grid-template-columns:360px 1fr; gap:clamp(40px,6vw,80px); align-items:start; }
+
+        @media(max-width:960px){
+          .g3{grid-template-columns:1fr 1fr;}
+          .g4{grid-template-columns:1fr 1fr;}
+          .gfq{grid-template-columns:1fr;}
+        }
+        @media(max-width:640px){
+          .g3{grid-template-columns:1fr;}
+          .g4{grid-template-columns:1fr;}
+          .g2c{grid-template-columns:1fr;}
+          .gfq{grid-template-columns:1fr;}
+          .photo-band{display:none!important;}
+        }
+      `}</style>
+
+      {/* ═══════════════════════════════════════
+          HERO — video bg, dark, full viewport
+      ═══════════════════════════════════════ */}
+      <section style={{
+        position: "relative", background: "#0d0d0d",
+        minHeight: "90vh", overflow: "hidden",
+        display: "flex", alignItems: "flex-end",
+      }}>
+        {/* Video */}
+        <video autoPlay muted playsInline loop
+          onError={e => e.currentTarget.style.display = "none"}
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(201,168,76,0.08) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }} />
+            position: "absolute", inset: 0, width: "100%", height: "100%",
+            objectFit: "cover", opacity: 0.3,
+            animation: "bgz 22s ease-in-out infinite alternate",
+          }}>
+          <source src={HERO_VIDEO} type="video/mp4" />
+        </video>
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse at 60% 50%, rgba(201,168,76,0.06) 0%, transparent 60%)" }} />
+        {/* Fallback: hero photo if video fails */}
+        <img src={IMG.hero} alt="" style={{
+          position: "absolute", inset: 0, width: "100%", height: "100%",
+          objectFit: "cover", opacity: 0.25, zIndex: 0,
+        }} />
 
-        {/* Gold top line */}
-        <div className="absolute top-0 inset-x-0 h-[2px] bg-gold" />
+        {/* Overlays */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0.8) 40%, rgba(13,13,13,0.3) 75%, rgba(13,13,13,0.55) 100%)", zIndex: 1 }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,13,13,0.92) 0%, rgba(13,13,13,0.5) 55%, transparent 100%)", zIndex: 1 }} />
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.025) 1px,transparent 1px)", backgroundSize: "32px 32px", zIndex: 1 }} />
 
-        {/* Decorative number */}
-        <div className="absolute right-0 bottom-0 pointer-events-none select-none overflow-hidden leading-none"
-          style={{ fontSize: "clamp(12rem,25vw,28rem)" }}>
-          <span className="font-display block"
-            style={{ WebkitTextStroke: "1px rgba(201,168,76,0.06)", color: "transparent", lineHeight: 1 }}>
-            VIP
-          </span>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-14"
-          style={{ minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", paddingBottom: "80px", paddingTop: "120px" }}>
-
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-[1px] w-8 bg-gold" />
-            <span className="font-body font-bold text-gold text-[0.6rem] tracking-[0.35em] uppercase">FIFA Hospitality™</span>
+        {/* Content */}
+        <div className="hw" style={{ position: "relative", zIndex: 2, width: "100%", padding: "clamp(72px,10vh,120px) clamp(16px,3vw,48px) clamp(72px,9vh,96px)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 26 }}>
+            <div style={{ height: 1, width: 36, background: "rgba(255,255,255,0.28)", flexShrink: 0 }} />
+            <span style={{ color: "rgba(255,255,255,0.38)", fontFamily: FONT_B, fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>FIFA Hospitality™</span>
           </div>
 
-          <h1 className="font-display leading-[0.85] uppercase mb-6"
-            style={{ fontSize: "clamp(52px,9vw,114px)" }}>
-            <span className="text-white block">L'EXCELLENCE</span>
-            <span className="block" style={{ WebkitTextStroke: "1.5px rgba(201,168,76,0.8)", color: "transparent" }}>AU SOMMET</span>
-            <span className="text-white block">DU SPORT</span>
-          </h1>
+          <div style={{ marginBottom: 24 }}>
+            {[["L'EXCELLENCE", false], ["AU SOMMET", true], ["DU SPORT.", false]].map(([w, stroke]) => (
+              <h1 key={w} style={{
+                fontFamily: FONT_D,
+                fontSize: "clamp(52px,8.5vw,120px)",
+                fontWeight: 900, lineHeight: 0.86,
+                textTransform: "uppercase", letterSpacing: "-0.02em", margin: 0,
+                color: stroke ? "transparent" : "white",
+                WebkitTextStroke: stroke ? "1.5px rgba(255,255,255,0.6)" : "none",
+              }}>{w}</h1>
+            ))}
+          </div>
 
-          <p className="text-white/35 font-body text-[0.9rem] leading-relaxed max-w-sm mb-8">
+          <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: FONT_B, fontSize: 15, fontWeight: 400, lineHeight: 1.8, marginBottom: 36, maxWidth: 400 }}>
             Des expériences d'hospitalité officielles FIFA pensées pour l'excellence — pour particuliers, entreprises et groupes d'exception.
           </p>
 
-          <div className="flex flex-wrap gap-3">
-            <a href="#packages"
-              className="bg-gold text-white font-body font-bold text-[0.78rem] tracking-wide px-7 py-3.5 rounded-full hover:bg-[#e8c96a] transition-colors">
-              Voir les packages
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 44 }}>
+            <a href="#packages" className="btn-shim" style={{
+              position: "relative", display: "inline-flex", alignItems: "center", gap: 9,
+              background: "white", color: "#0d0d0d",
+              fontFamily: FONT_B, fontSize: 13, fontWeight: 800, letterSpacing: "0.05em",
+              padding: "14px 28px", borderRadius: 100, textDecoration: "none",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.4)", transition: "transform 0.2s",
+            }}
+              onMouseOver={e => e.currentTarget.style.transform = "translateY(-2px)"}
+              onMouseOut={e => e.currentTarget.style.transform = "none"}>
+              <span className="sh" />
+              Voir les packages <FiArrowRight size={14} />
             </a>
-            <a href="#contact"
-              className="border border-white/20 text-white font-body font-medium text-[0.78rem] px-7 py-3.5 rounded-full hover:border-gold hover:text-gold transition-colors">
-              Demande corporate →
+            <a href="#contact" style={{
+              display: "inline-flex", alignItems: "center", gap: 9,
+              background: "transparent", color: "white",
+              fontFamily: FONT_B, fontSize: 13, fontWeight: 600,
+              padding: "13px 28px", borderRadius: 100, textDecoration: "none",
+              border: "1px solid rgba(255,255,255,0.25)", transition: "all 0.2s",
+            }}
+              onMouseOver={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.65)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+              onMouseOut={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"; e.currentTarget.style.background = "transparent"; }}>
+              Demande corporate
             </a>
           </div>
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════
-          EXPERIENCE STEPS
-      ═══════════════════════════════════════════════ */}
-      <section className="bg-white py-20 px-5 sm:px-8 lg:px-14">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-end justify-between mb-10 pb-5 border-b border-fifa-border">
-            <div>
-              <span className="block text-[0.58rem] tracking-[0.25em] text-fifa-mid font-bold uppercase mb-2">Votre Séjour</span>
-              <h2 className="font-display tracking-wide text-fifa-black" style={{ fontSize: "clamp(1.8rem,3.5vw,2.8rem)" }}>
-                Une Expérience Sans Égale
-              </h2>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 border border-fifa-border rounded-lg overflow-hidden">
-            {EXPERIENCES.map((e, i) => (
-              <div key={i} className="p-8 border-r border-fifa-border last:border-r-0 border-b sm:border-b-0">
-                <span className="font-display text-[3.5rem] leading-none block mb-5"
-                  style={{ color: "rgba(0,0,0,0.05)" }}>
-                  {e.num}
-                </span>
-                <h3 className="font-body font-bold text-fifa-black text-[0.92rem] mb-3">{e.title}</h3>
-                <p className="text-fifa-mid text-[0.82rem] leading-relaxed">{e.desc}</p>
-                <div className="mt-6 w-5 h-[1.5px] bg-gold" />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 24, paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            {[[FiShield,"Officiel FIFA"],[FiStar,"5★ Garanti"],[FiPhone,"Support 24/7"],[FiGlobe,"6 Nations hôtes"]].map(([Icon, label]) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 7, color: "rgba(255,255,255,0.3)" }}>
+                <Icon size={12} /><span style={{ fontFamily: FONT_B, fontSize: 11, fontWeight: 600 }}>{label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════
-          PACKAGES
-      ═══════════════════════════════════════════════ */}
-      <section id="packages" className="bg-[#f5f5f5] py-20 px-5 sm:px-8 lg:px-14">
-        <div className="max-w-7xl mx-auto">
-
-          <div className="flex items-end justify-between mb-10 pb-5 border-b border-[#ddd]">
-            <div>
-              <span className="block text-[0.58rem] tracking-[0.25em] text-fifa-mid font-bold uppercase mb-2">Offres</span>
-              <h2 className="font-display tracking-wide text-fifa-black" style={{ fontSize: "clamp(1.8rem,3.5vw,2.8rem)" }}>
-                Choisissez Votre Package
-              </h2>
+      {/* ═══════════════════════════════════════
+          PHOTO BAND — 3 real hospitality photos
+      ═══════════════════════════════════════ */}
+      <div className="photo-band" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", height: 260 }}>
+        {[[IMG.dining, "Fine Dining"], [IMG.suite, "Loges VIP"], [IMG.champagne, "Expérience Premium"]].map(([src, label], i) => (
+          <div key={i} className="photo-card" style={{ borderRadius: 0, height: 260, borderRight: i < 2 ? "2px solid #0d0d0d" : "none" }}>
+            <img src={src} alt={label} style={{ height: "100%" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,13,13,0.85) 0%, transparent 55%)" }} />
+            <div style={{ position: "absolute", bottom: 20, left: 24 }}>
+              <span style={{ fontFamily: FONT_D, fontSize: 15, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>{label}</span>
             </div>
           </div>
+        ))}
+      </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {PACKAGES.map((p, i) => (
-              <div key={i}
-                className={`${p.color} border rounded-lg overflow-hidden flex flex-col
-                  ${p.dark ? "border-white/10" : "border-[#ddd]"}`}>
+      {/* ═══════════════════════════════════════
+          EXPERIENCE — 4 tiles with photos
+      ═══════════════════════════════════════ */}
+      <section style={{ background: "#111", padding: "clamp(64px,8vh,96px) 0" }}>
+        <div className="hw">
+          {/* Section header */}
+          <div style={{ marginBottom: 48, paddingBottom: 20, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <span style={{ display: "block", fontSize: 9, fontWeight: 800, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8, fontFamily: FONT_B }}>Votre séjour</span>
+            <h2 style={{ fontFamily: FONT_D, fontSize: "clamp(1.8rem,3.5vw,2.8rem)", fontWeight: 800, letterSpacing: "0.04em", color: "white", lineHeight: 1 }}>Une Expérience Sans Égale</h2>
+          </div>
 
-                {/* Header */}
-                <div className={`p-7 border-b ${p.dark ? "border-white/10" : "border-[#ddd]"}`}>
-                  <div className="flex items-start justify-between mb-5">
-                    <span className={`font-display text-[1.8rem] tracking-wide ${p.dark ? "text-white" : "text-fifa-black"}`}>
-                      {p.tier}
-                    </span>
-                    {p.badge && (
-                      <span className={`text-[0.58rem] tracking-[0.18em] uppercase font-bold px-2.5 py-1 rounded-full
-                        ${p.dark ? "bg-gold text-white" : "bg-fifa-black text-white"}`}>
-                        {p.badge}
-                      </span>
-                    )}
+          <div className="g4" style={{ border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, overflow: "hidden" }}>
+            {EXPERIENCES.map((exp, i) => (
+              <div key={i} style={{
+                borderRight: i < 3 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                display: "flex", flexDirection: "column",
+              }}>
+                {/* Photo */}
+                <div style={{ height: 180, overflow: "hidden", position: "relative" }}>
+                  <img src={exp.img} alt={exp.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
+                    onMouseOver={e => e.currentTarget.style.transform = "scale(1.06)"}
+                    onMouseOut={e => e.currentTarget.style.transform = "scale(1)"} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,17,0.9) 0%, transparent 60%)" }} />
+                  <span style={{
+                    position: "absolute", bottom: 14, left: 20,
+                    fontFamily: FONT_D, fontSize: "clamp(2.5rem,4vw,3.5rem)",
+                    fontWeight: 900, color: "rgba(255,255,255,0.12)", lineHeight: 1,
+                  }}>{exp.num}</span>
+                </div>
+                {/* Text */}
+                <div style={{ padding: "clamp(16px,2vw,24px)", flex: 1 }}>
+                  <h3 style={{ fontFamily: FONT_D, fontSize: 16, fontWeight: 800, color: "white", marginBottom: 10, letterSpacing: "0.05em", textTransform: "uppercase" }}>{exp.title}</h3>
+                  <p style={{ color: "rgba(255,255,255,0.42)", fontSize: 13, lineHeight: 1.7, fontFamily: FONT_B }}>{exp.desc}</p>
+                  <div style={{ marginTop: 20, width: 24, height: 2, background: "white", opacity: 0.3 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          PACKAGES
+      ═══════════════════════════════════════ */}
+      <section id="packages" style={{ background: "#0d0d0d", padding: "clamp(64px,8vh,96px) 0" }}>
+        <div className="hw">
+          <div style={{ marginBottom: 48, paddingBottom: 20, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <span style={{ display: "block", fontSize: 9, fontWeight: 800, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8, fontFamily: FONT_B }}>Offres</span>
+            <h2 style={{ fontFamily: FONT_D, fontSize: "clamp(1.8rem,3.5vw,2.8rem)", fontWeight: 800, letterSpacing: "0.04em", color: "white", lineHeight: 1 }}>Choisissez Votre Package</h2>
+          </div>
+
+          <div className="g3">
+            {PACKAGES.map((pkg, i) => (
+              <div key={i} className="pkg" style={{
+                background: pkg.featured ? "#1a1a1a" : "#141414",
+                border: `1px solid ${pkg.featured ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`,
+                boxShadow: pkg.featured ? "0 20px 60px rgba(0,0,0,0.5)" : "none",
+              }}>
+                {/* Package photo */}
+                <div style={{ height: 200, overflow: "hidden", position: "relative" }}>
+                  <img src={pkg.img} alt={pkg.tier} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
+                    onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
+                    onMouseOut={e => e.currentTarget.style.transform = "scale(1)"} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(20,20,20,0.95) 0%, rgba(20,20,20,0.3) 60%, transparent 100%)" }} />
+                  {pkg.badge && (
+                    <div style={{
+                      position: "absolute", top: 14, left: 16,
+                      background: "white", color: "#0d0d0d",
+                      fontFamily: FONT_B, fontSize: 9, fontWeight: 900,
+                      letterSpacing: "0.16em", textTransform: "uppercase",
+                      padding: "4px 10px", borderRadius: 2,
+                    }}>{pkg.badge}</div>
+                  )}
+                  <div style={{ position: "absolute", bottom: 16, left: 20 }}>
+                    <h3 style={{ fontFamily: FONT_D, fontSize: "clamp(1.5rem,2.5vw,2rem)", fontWeight: 900, letterSpacing: "0.05em", textTransform: "uppercase", color: "white", lineHeight: 1 }}>{pkg.tier}</h3>
                   </div>
-                  <p className={`font-body font-bold text-[1.05rem] ${p.dark ? "text-gold" : "text-fifa-black"}`}>
-                    {p.price}
-                  </p>
-                  <p className={`text-[0.7rem] mt-1 ${p.dark ? "text-white/30" : "text-fifa-mid"}`}>
-                    par personne / par match
-                  </p>
+                </div>
+
+                {/* Price */}
+                <div style={{ padding: "20px 20px 0", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 4 }}>
+                    <span style={{ fontFamily: FONT_D, fontSize: "clamp(1.4rem,2vw,1.8rem)", fontWeight: 900, color: "white" }}>
+                      À partir de {pkg.price}
+                    </span>
+                  </div>
+                  <p style={{ color: "rgba(255,255,255,0.28)", fontSize: 11, fontFamily: FONT_B, paddingBottom: 20 }}>par personne / par match</p>
                 </div>
 
                 {/* Perks */}
-                <div className="p-7 flex-1">
-                  <ul className="flex flex-col gap-3">
-                    {p.perks.map((perk, j) => (
-                      <li key={j} className="flex items-start gap-3">
-                        <span className={`shrink-0 mt-0.5 text-[0.7rem] ${p.dark ? "text-gold" : "text-gold"}`}>✓</span>
-                        <span className={`text-[0.82rem] leading-snug ${p.dark ? "text-white/70" : "text-fifa-mid"}`}>
-                          {perk}
-                        </span>
+                <div style={{ padding: "20px", flex: 1 }}>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: 10, listStyle: "none" }}>
+                    {pkg.perks.map((perk, j) => (
+                      <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                        <FiCheck size={13} style={{ color: "rgba(255,255,255,0.55)", flexShrink: 0, marginTop: 2 }} />
+                        <span style={{ color: "rgba(255,255,255,0.55)", fontSize: 13, lineHeight: 1.5, fontFamily: FONT_B }}>{perk}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
                 {/* CTA */}
-                <div className="p-7 pt-0">
-                  <a href="#contact"
-                    className={`block text-center font-body font-bold text-[0.78rem] tracking-wide py-3.5 rounded-full transition-colors
-                      ${p.dark
-                        ? "bg-gold text-white hover:bg-[#e8c96a]"
-                        : "bg-fifa-black text-white hover:bg-gold"
-                      }`}>
-                    {p.cta} →
+                <div style={{ padding: "0 20px 20px" }}>
+                  <a href="#contact" className="btn-shim" style={{
+                    position: "relative", overflow: "hidden",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    background: "white", color: "#0d0d0d",
+                    fontFamily: FONT_B, fontSize: 13, fontWeight: 800, letterSpacing: "0.05em",
+                    padding: "14px", borderRadius: 100, textDecoration: "none",
+                    transition: "background 0.18s, transform 0.15s",
+                  }}
+                    onMouseOver={e => { e.currentTarget.style.background = "#ebebeb"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                    onMouseOut={e => { e.currentTarget.style.background = "white"; e.currentTarget.style.transform = "none"; }}>
+                    <span className="sh" />
+                    {pkg.cta} <FiArrowRight size={13} />
                   </a>
                 </div>
               </div>
             ))}
           </div>
-
-          <p className="text-center text-fifa-mid text-[0.72rem] mt-6">
-            * Tous les prix sont indicatifs et hors taxes. Contactez notre équipe pour un devis personnalisé.
+          <p style={{ textAlign: "center", fontSize: 11, marginTop: 20, color: "rgba(255,255,255,0.25)", fontFamily: FONT_B }}>
+            * Prix indicatifs hors taxes. Contactez notre équipe pour un devis personnalisé.
           </p>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════
-          TESTIMONIALS
-      ═══════════════════════════════════════════════ */}
-      <section className="bg-white py-20 px-5 sm:px-8 lg:px-14">
-        <div className="max-w-7xl mx-auto">
-
-          <div className="flex items-end justify-between mb-10 pb-5 border-b border-fifa-border">
-            <div>
-              <span className="block text-[0.58rem] tracking-[0.25em] text-fifa-mid font-bold uppercase mb-2">Témoignages</span>
-              <h2 className="font-display tracking-wide text-fifa-black" style={{ fontSize: "clamp(1.8rem,3.5vw,2.8rem)" }}>
-                Ce Qu'ils En Disent
-              </h2>
-            </div>
+      {/* ═══════════════════════════════════════
+          TESTIMONIALS — dark cards
+      ═══════════════════════════════════════ */}
+      <section style={{ background: "#111", padding: "clamp(64px,8vh,96px) 0" }}>
+        <div className="hw">
+          <div style={{ marginBottom: 48, paddingBottom: 20, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <span style={{ display: "block", fontSize: 9, fontWeight: 800, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8, fontFamily: FONT_B }}>Témoignages</span>
+            <h2 style={{ fontFamily: FONT_D, fontSize: "clamp(1.8rem,3.5vw,2.8rem)", fontWeight: 800, letterSpacing: "0.04em", color: "white", lineHeight: 1 }}>Ce Qu'ils En Disent</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="g3">
             {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="border border-fifa-border rounded-lg p-7 flex flex-col gap-5">
-                {/* Stars */}
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, j) => (
-                    <span key={j} className="text-gold text-[0.85rem]">★</span>
-                  ))}
+              <div key={i} style={{
+                background: "#0d0d0d", border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 10, padding: "clamp(20px,2.5vw,28px)",
+                display: "flex", flexDirection: "column", gap: 20,
+                transition: "border-color 0.2s",
+              }}
+                onMouseOver={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.28)"}
+                onMouseOut={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
+              >
+                <div style={{ display: "flex", gap: 3 }}>
+                  {[...Array(5)].map((_, j) => <FiStar key={j} size={13} fill="white" color="white" />)}
                 </div>
-                <p className="text-fifa-black text-[0.88rem] leading-relaxed flex-1">
+                <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 14, lineHeight: 1.72, fontFamily: FONT_B, flex: 1, fontWeight: 500 }}>
                   « {t.text} »
                 </p>
-                <div className="pt-4 border-t border-fifa-border flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#f5f5f5] border border-fifa-border flex items-center justify-center">
-                    <span className="text-[0.75rem] font-bold text-fifa-mid">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: "50%",
+                    background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)",
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "rgba(255,255,255,0.6)", fontFamily: FONT_D, letterSpacing: "0.05em" }}>
                       {t.name.split(" ").map(n => n[0]).join("")}
                     </span>
                   </div>
                   <div>
-                    <p className="font-body font-bold text-[0.82rem] text-fifa-black">{t.name}</p>
-                    <p className="text-fifa-mid text-[0.68rem]">{t.role} · {t.city}</p>
+                    <p style={{ fontWeight: 700, fontSize: 13, color: "white", fontFamily: FONT_B }}>{t.name}</p>
+                    <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: FONT_B, marginTop: 2 }}>{t.role} · {t.city}</p>
                   </div>
                 </div>
               </div>
@@ -339,112 +451,123 @@ export default function Hospitality() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════
+      {/* ═══════════════════════════════════════
           FAQ
-      ═══════════════════════════════════════════════ */}
-      <section className="bg-fifa-black py-20 px-5 sm:px-8 lg:px-14">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-16">
+      ═══════════════════════════════════════ */}
+      <section style={{ background: "#0d0d0d", padding: "clamp(64px,8vh,96px) 0" }}>
+        <div className="hw">
+          <div className="gfq">
             <div>
-              <span className="block text-[0.58rem] tracking-[0.25em] text-gold font-bold uppercase mb-2">FAQ</span>
-              <h2 className="font-display text-white tracking-wide" style={{ fontSize: "clamp(1.8rem,3.5vw,2.8rem)" }}>
-                Questions<br />Fréquentes
-              </h2>
-              <p className="text-white/35 text-[0.85rem] leading-relaxed mt-4 max-w-xs">
-                Notre équipe corporate est disponible 24h/24, 7j/7 pour répondre à toutes vos questions.
+              <span style={{ display: "block", fontSize: 9, fontWeight: 800, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12, fontFamily: FONT_B }}>FAQ</span>
+              <h2 style={{ fontFamily: FONT_D, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", fontWeight: 800, letterSpacing: "0.04em", color: "white", lineHeight: 1, marginBottom: 20 }}>Questions<br />Fréquentes</h2>
+              <p style={{ color: "rgba(255,255,255,0.38)", fontSize: 13, lineHeight: 1.75, fontFamily: FONT_B, marginBottom: 28, maxWidth: 280 }}>
+                Notre équipe est disponible 24h/24, 7j/7 pour répondre à toutes vos questions.
               </p>
-              <a href="#contact" className="mt-6 inline-flex text-[0.7rem] font-bold tracking-[0.12em] uppercase border border-white/20 text-white hover:border-gold hover:text-gold transition-colors px-5 py-2.5 rounded-full">
+              <a href="#contact" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                color: "white", fontFamily: FONT_B, fontSize: 12, fontWeight: 700,
+                letterSpacing: "0.12em", textTransform: "uppercase",
+                padding: "11px 22px", borderRadius: 100, textDecoration: "none",
+                border: "1px solid rgba(255,255,255,0.22)", transition: "all 0.2s",
+              }}
+                onMouseOver={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)"; e.currentTarget.style.background = "transparent"; }}>
                 Parler à un expert
               </a>
             </div>
-            <div className="border-t border-white/10">
-              {FAQ_HOSP.map((f, i) => <FAQ key={i} q={f.q} a={f.a} />)}
+            <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              {FAQ_ITEMS.map((f, i) => <FaqItem key={i} q={f.q} a={f.a} />)}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════
-          CONTACT / LEAD FORM
-      ═══════════════════════════════════════════════ */}
-      <section id="contact" className="bg-[#f5f5f5] py-20 px-5 sm:px-8 lg:px-14 border-t border-[#ddd]">
-        <div className="max-w-3xl mx-auto">
-
-          <div className="text-center mb-12">
-            <span className="block text-[0.58rem] tracking-[0.25em] text-fifa-mid font-bold uppercase mb-2">Contact</span>
-            <h2 className="font-display text-fifa-black tracking-wide" style={{ fontSize: "clamp(1.8rem,3.5vw,2.8rem)" }}>
-              Demandez Votre Devis
-            </h2>
-            <p className="text-fifa-mid text-[0.88rem] mt-3">
-              Notre équipe vous répond sous 24h ouvrées.
-            </p>
-          </div>
-
-          <div className="bg-white border border-[#ddd] rounded-lg p-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[0.68rem] font-bold tracking-[0.12em] uppercase text-fifa-mid">Prénom</label>
-                <input type="text" placeholder="Jean"
-                  className="border border-[#ddd] rounded-lg px-4 py-3 text-[0.85rem] font-body outline-none focus:border-fifa-black transition-colors" />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[0.68rem] font-bold tracking-[0.12em] uppercase text-fifa-mid">Nom</label>
-                <input type="text" placeholder="Dupont"
-                  className="border border-[#ddd] rounded-lg px-4 py-3 text-[0.85rem] font-body outline-none focus:border-fifa-black transition-colors" />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[0.68rem] font-bold tracking-[0.12em] uppercase text-fifa-mid">Email</label>
-                <input type="email" placeholder="jean@entreprise.com"
-                  className="border border-[#ddd] rounded-lg px-4 py-3 text-[0.85rem] font-body outline-none focus:border-fifa-black transition-colors" />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[0.68rem] font-bold tracking-[0.12em] uppercase text-fifa-mid">Téléphone</label>
-                <input type="tel" placeholder="+33 6 00 00 00 00"
-                  className="border border-[#ddd] rounded-lg px-4 py-3 text-[0.85rem] font-body outline-none focus:border-fifa-black transition-colors" />
-              </div>
+      {/* ═══════════════════════════════════════
+          CONTACT FORM
+      ═══════════════════════════════════════ */}
+      <section id="contact" style={{ background: "#111", padding: "clamp(64px,8vh,96px) 0" }}>
+        <div className="hw">
+          <div style={{ maxWidth: 680, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 48 }}>
+              <span style={{ display: "block", fontSize: 9, fontWeight: 800, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12, fontFamily: FONT_B }}>Contact</span>
+              <h2 style={{ fontFamily: FONT_D, fontSize: "clamp(1.8rem,3.5vw,2.8rem)", fontWeight: 800, letterSpacing: "0.04em", color: "white", lineHeight: 1, marginBottom: 12 }}>Demandez Votre Devis</h2>
+              <p style={{ color: "rgba(255,255,255,0.38)", fontSize: 14, fontFamily: FONT_B }}>Notre équipe vous répond sous 24h ouvrées.</p>
             </div>
-            <div className="flex flex-col gap-1.5 mb-4">
-              <label className="text-[0.68rem] font-bold tracking-[0.12em] uppercase text-fifa-mid">Package souhaité</label>
-              <select className="border border-[#ddd] rounded-lg px-4 py-3 text-[0.85rem] font-body outline-none focus:border-fifa-black transition-colors bg-white appearance-none">
-                <option value="">Sélectionnez un package</option>
-                <option value="premium">Premium — à partir de 2 500 €</option>
-                <option value="business">Business — à partir de 5 000 €</option>
-                <option value="prestige">Prestige — sur devis</option>
-                <option value="corporate">Corporate / Groupe</option>
-              </select>
-            </div>
-            <div className="flex flex-col gap-1.5 mb-6">
-              <label className="text-[0.68rem] font-bold tracking-[0.12em] uppercase text-fifa-mid">Message (optionnel)</label>
-              <textarea rows={3} placeholder="Précisez vos besoins, le nombre de personnes, les dates préférées…"
-                className="border border-[#ddd] rounded-lg px-4 py-3 text-[0.85rem] font-body outline-none focus:border-fifa-black transition-colors resize-none" />
-            </div>
-            <button
-              className="w-full bg-fifa-black text-white font-body font-bold text-[0.82rem] tracking-wide py-4 rounded-full hover:bg-gold transition-colors">
-              Envoyer ma demande →
-            </button>
-            <p className="text-center text-fifa-mid text-[0.68rem] mt-4">
-              En soumettant ce formulaire, vous acceptez les{" "}
-              <a href="#" className="underline hover:text-fifa-black transition-colors">conditions FIFA</a>.
-            </p>
-          </div>
 
-          {/* Trust badges */}
-          <div className="flex flex-wrap justify-center gap-6 mt-10">
-            {[
-              { icon: "🔒", label: "Paiement Sécurisé" },
-              { icon: "✅", label: "Officiel FIFA" },
-              { icon: "🌍", label: "Livraison Mondiale" },
-              { icon: "📞", label: "Support 24/7" },
-            ].map((b, i) => (
-              <div key={i} className="flex items-center gap-2 text-fifa-mid">
-                <span className="text-base">{b.icon}</span>
-                <span className="text-[0.68rem] font-bold tracking-wide">{b.label}</span>
+            <div style={{ background: "#0d0d0d", borderRadius: 10, padding: "clamp(24px,4vw,40px)", border: "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="g2c" style={{ marginBottom: 16 }}>
+                {[["Prénom","Jean","text"],["Nom","Dupont","text"],["Email","jean@entreprise.com","email"],["Téléphone","+33 6 00 00 00 00","tel"]].map(([label, ph, type]) => (
+                  <div key={label}>
+                    <label style={{ display: "block", marginBottom: 7, fontSize: 10, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.38)", fontFamily: FONT_B }}>{label}</label>
+                    <input type={type} placeholder={ph} style={{
+                      width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: 6, padding: "13px 16px", color: "white", fontFamily: FONT_B, fontSize: 14,
+                      outline: "none", transition: "border-color 0.18s",
+                    }}
+                      onFocus={e => e.target.style.borderColor = "rgba(255,255,255,0.45)"}
+                      onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"} />
+                  </div>
+                ))}
               </div>
-            ))}
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", marginBottom: 7, fontSize: 10, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.38)", fontFamily: FONT_B }}>Package souhaité</label>
+                <select style={{
+                  width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 6, padding: "13px 16px", color: "white", fontFamily: FONT_B, fontSize: 14,
+                  outline: "none", cursor: "pointer",
+                }}
+                  onFocus={e => e.target.style.borderColor = "rgba(255,255,255,0.45)"}
+                  onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"}>
+                  <option value="" style={{ background: "#1a1a1a" }}>Sélectionnez un package</option>
+                  <option style={{ background: "#1a1a1a" }}>Premium — à partir de 2 500 €</option>
+                  <option style={{ background: "#1a1a1a" }}>Business — à partir de 5 000 €</option>
+                  <option style={{ background: "#1a1a1a" }}>Prestige — sur devis</option>
+                  <option style={{ background: "#1a1a1a" }}>Corporate / Groupe</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 28 }}>
+                <label style={{ display: "block", marginBottom: 7, fontSize: 10, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.38)", fontFamily: FONT_B }}>Message (optionnel)</label>
+                <textarea rows={3} placeholder="Précisez vos besoins, le nombre de personnes, les dates préférées…" style={{
+                  width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 6, padding: "13px 16px", color: "white", fontFamily: FONT_B, fontSize: 14,
+                  outline: "none", resize: "none", transition: "border-color 0.18s",
+                }}
+                  onFocus={e => e.target.style.borderColor = "rgba(255,255,255,0.45)"}
+                  onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"} />
+              </div>
+
+              <button className="btn-shim" style={{
+                position: "relative", overflow: "hidden",
+                width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 9,
+                background: "white", color: "#0d0d0d",
+                fontFamily: FONT_B, fontSize: 14, fontWeight: 800, letterSpacing: "0.05em",
+                padding: "16px", borderRadius: 100, border: "none", cursor: "pointer",
+                transition: "background 0.18s",
+              }}
+                onMouseOver={e => e.currentTarget.style.background = "#ebebeb"}
+                onMouseOut={e => e.currentTarget.style.background = "white"}>
+                <span className="sh" />
+                Envoyer ma demande <FiArrowRight size={14} />
+              </button>
+
+              <p style={{ textAlign: "center", fontSize: 11, marginTop: 16, color: "rgba(255,255,255,0.25)", fontFamily: FONT_B }}>
+                En soumettant ce formulaire, vous acceptez les{" "}
+                <a href="#" style={{ color: "rgba(255,255,255,0.55)", textDecoration: "underline" }}>conditions FIFA</a>.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 28, marginTop: 36 }}>
+              {[[FiShield,"Paiement Sécurisé"],[FiStar,"Officiel FIFA"],[FiGlobe,"6 Nations Hôtes"],[FiPhone,"Support 24/7"]].map(([Icon, label]) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 7, color: "rgba(255,255,255,0.28)" }}>
+                  <Icon size={13} /><span style={{ fontSize: 11, fontWeight: 600, fontFamily: FONT_B }}>{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
-
     </div>
   );
 }
