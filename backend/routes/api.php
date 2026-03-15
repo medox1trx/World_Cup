@@ -1,18 +1,21 @@
 <?php
+
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
-Route::get('/search', function(Request $request){
+// ── Public API Routes ────────────────────────────────────────
+Route::prefix('v1')->group(function () {
 
-    $q = $request->q;
+    // Stats
+    Route::get('/stats', [ApiController::class, 'stats']);
 
-    return [
-        ['name'=>'France','type'=>'team'],
-        ['name'=>'Brazil','type'=>'team'],
-        ['name'=>'Final Match','type'=>'match']
-    ];
+    // Matches
+    Route::get('/matches',        [ApiController::class, 'matches']);
+    Route::get('/matches/{id}',   [ApiController::class, 'match']);
+    Route::post('/matches',       [ApiController::class, 'storeMatch']);
+    Route::put('/matches/{id}',   [ApiController::class, 'updateMatch']);
+    Route::delete('/matches/{id}',[ApiController::class, 'destroyMatch']);
 
+    // Search
+    Route::get('/search', [ApiController::class, 'search']);
 });
-
-Route::get('/test', [ApiController::class, 'test']);
