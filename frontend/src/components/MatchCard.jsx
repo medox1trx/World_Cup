@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { countryCodes } from "../api/countryCodes";
-import DateSection from "./DateSection";
+import GroupModal from "./GroupModal";
+
 
 // Fonction pour obtenir l'URL de l'image du drapeau
 function getFlagUrl(countryName) {
@@ -13,7 +14,7 @@ function getFlagUrl(countryName) {
   return `https://flagcdn.com/w40/${code}.png`;
 }
 
-const MatchCard = ({ match }) => {
+const MatchCard = ({ match, onOpenGroup }) => {
   const date = new Date(match.match_datetime);
   const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
@@ -49,7 +50,16 @@ const MatchCard = ({ match }) => {
       <div className="match-meta">
         <span className="meta-tag">{match.phase.name}</span>
         <div className="meta-separator"></div>
-        <span className="meta-tag">{match.group.name}</span>
+        <button 
+          className="meta-tag group-btn" 
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenGroup(match.group.id);
+          }}
+          title="Afficher le groupe"
+        >
+          {match.group.name}
+        </button>
         <div className="meta-separator"></div>
         <span className="meta-tag">{match.stadium.name} ({match.stadium.city})</span>
       </div>
@@ -60,6 +70,8 @@ const MatchCard = ({ match }) => {
     </div>
   );
 };
+
+
 
 export default MatchCard;
 

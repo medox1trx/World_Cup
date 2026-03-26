@@ -139,11 +139,22 @@
     font-weight: 500;
     color: var(--accent);
     letter-spacing: 0.04em;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
     opacity: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
   }
 
   .date-section:hover .date-toggle { opacity: 1; }
+
+  .date-toggle:hover {
+    text-decoration: underline;
+    opacity: 0.8 !important;
+  }
+
 
   .matches-list {
     display: flex;
@@ -349,6 +360,20 @@
     background: var(--accent-light);
     color: var(--accent);
     border-color: rgba(26,86,219,0.15);
+  }
+
+  .group-btn {
+    cursor: pointer;
+    font-family: inherit;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .group-btn:hover {
+    background: var(--accent) !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(26,86,219,0.3);
   }
 
   .meta-separator {
