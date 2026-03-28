@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->string('role')->default('user'); // Ajout du champ 'role' avec une valeur par défaut de 'user'
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
