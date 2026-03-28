@@ -16,7 +16,8 @@ function LiveBadge({ minute }) {
   return (
     <div style={{
       display: "inline-flex", alignItems: "center", gap: 6,
-      padding: "4px 10px", background: "#111", borderRadius: 2,
+      padding: "4px 10px", background: "#f0fff4", borderRadius: 2,
+      border: "1px solid rgba(34,197,94,0.3)"
     }}>
       <span style={{
         width: 6, height: 6, borderRadius: "50%",
@@ -24,7 +25,7 @@ function LiveBadge({ minute }) {
         animation: "mpulse 1.4s ease-in-out infinite",
       }} />
       <span style={{
-        color: "#22c55e", fontSize: 8, fontWeight: 900,
+        color: "#16a34a", fontSize: 8, fontWeight: 900,
         letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: FONT.body,
       }}>
         Live {minute ? `· ${minute}'` : ""}
@@ -45,26 +46,25 @@ function FeaturedMatch({ match }) {
   return (
     <div style={{
       background: "white",
-      border: `1px solid ${isLive ? "rgba(34,197,94,0.4)" : hovered ? "#999" : C.border}`,
-      borderRadius: 4, overflow: "hidden",
+      border: `1px solid ${isLive ? "#22c55e" : hovered ? "#0d0d0d" : "#eee"}`,
+      borderRadius: 8, overflow: "hidden",
       transition: "border-color 0.2s, box-shadow 0.25s",
-      boxShadow: hovered && !isLive ? "0 4px 20px rgba(0,0,0,0.08)" : "none",
+      boxShadow: hovered ? "0 10px 30px rgba(0,0,0,0.05)" : "none",
     }} {...hoverProps}>
 
       {/* Header bar */}
       <div style={{
-        padding: "10px 16px",
-        background: isLive ? "#0a0a0a" : "#efefef",
-        borderBottom: `1px solid ${isLive ? "rgba(255,255,255,0.08)" : "#ddd"}`,
+        padding: "12px 20px",
+        background: isLive ? "#f0fff4" : "#f8f8f8",
+        borderBottom: `1px solid ${isLive ? "rgba(34,197,94,0.1)" : "#eee"}`,
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        gap: 8, flexWrap: "wrap",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {isLive
             ? <LiveBadge minute={match.minute} />
             : <span style={{
                 fontSize: 9, fontWeight: 900, letterSpacing: "0.18em",
-                textTransform: "uppercase", color: "#444", fontFamily: FONT.body,
+                textTransform: "uppercase", color: "#666", fontFamily: FONT.body,
               }}>
                 {STAGE_LABEL[match.stage] || "Groupe"}{match.group_name ? ` · ${match.group_name}` : ""}
               </span>
@@ -73,103 +73,99 @@ function FeaturedMatch({ match }) {
         {!isLive && (
           <span style={{
             display: "flex", alignItems: "center", gap: 5,
-            fontSize: 10, color: "#444", fontFamily: FONT.body, fontWeight: 600,
+            fontSize: 10, color: "#888", fontFamily: FONT.body, fontWeight: 600,
           }}>
-            <FiCalendar size={9} /> {dateStr}
+            <FiCalendar size={10} /> {dateStr}
           </span>
         )}
       </div>
 
       {/* Teams */}
-      <div style={{ padding: "24px 16px 20px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <div style={{ padding: 32 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
 
           {/* Home */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <Flag code={getCode(match.home_team)} alt={match.home_team} size={44} />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+            <Flag code={getCode(match.home_team)} alt={match.home_team} size={56} />
             <span style={{
-              fontFamily: FONT.display, fontSize: "clamp(0.75rem,3.5vw,1.05rem)",
-              fontWeight: 900, letterSpacing: "0.06em",
-              color: C.black, textAlign: "center", textTransform: "uppercase",
+              fontFamily: FONT.display, fontSize: 20,
+              fontWeight: 900, letterSpacing: "0.04em",
+              color: "#0d0d0d", textAlign: "center", textTransform: "uppercase",
             }}>{match.home_team}</span>
           </div>
 
           {/* Score / VS */}
           <div style={{
             flexShrink: 0, display: "flex", flexDirection: "column",
-            alignItems: "center", gap: 2, padding: "0 6px", minWidth: 70,
+            alignItems: "center", gap: 4, minWidth: 100,
           }}>
             {isDone || isLive ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{
                   fontFamily: FONT.display, fontWeight: 900,
-                  fontSize: "clamp(1.8rem,7vw,3rem)", lineHeight: 1,
-                  color: isLive ? "#22c55e" : C.black,
-                  fontVariantNumeric: "tabular-nums",
+                  fontSize: 52, lineHeight: 1,
+                  color: isLive ? "#16a34a" : "#0d0d0d",
                 }}>{match.home_score ?? 0}</span>
                 <span style={{
                   fontFamily: FONT.display, fontWeight: 900,
-                  fontSize: "clamp(1.2rem,4vw,2rem)", lineHeight: 1,
-                  color: "rgba(0,0,0,0.2)",
+                  fontSize: 32, lineHeight: 1, color: "#ccc",
                 }}>–</span>
                 <span style={{
                   fontFamily: FONT.display, fontWeight: 900,
-                  fontSize: "clamp(1.8rem,7vw,3rem)", lineHeight: 1,
-                  color: isLive ? "#22c55e" : C.black,
-                  fontVariantNumeric: "tabular-nums",
+                  fontSize: 52, lineHeight: 1,
+                  color: isLive ? "#16a34a" : "#0d0d0d",
                 }}>{match.away_score ?? 0}</span>
               </div>
             ) : (
               <span style={{
                 fontFamily: FONT.display, fontWeight: 900,
-                color: C.black, fontSize: "clamp(1.4rem,6vw,2.4rem)", lineHeight: 1,
+                color: "#0d0d0d", fontSize: 42, lineHeight: 1,
               }}>{match.match_time?.slice(0, 5)}</span>
             )}
             <span style={{
-              fontSize: 8, fontWeight: 900, letterSpacing: "0.14em",
+              fontSize: 10, fontWeight: 900, letterSpacing: "0.14em",
               textTransform: "uppercase", fontFamily: FONT.body,
-              color: isLive ? "#22c55e" : "#555", marginTop: 4,
+              color: isLive ? "#16a34a" : "#888",
             }}>
-              {isLive ? "En direct" : isDone ? "Terminé" : "Coup d'envoi"}
+              {isLive ? "EN DIRECT" : isDone ? "TERMINÉ" : "COUP D'ENVOI"}
             </span>
           </div>
 
           {/* Away */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <Flag code={getCode(match.away_team)} alt={match.away_team} size={44} />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+            <Flag code={getCode(match.away_team)} alt={match.away_team} size={56} />
             <span style={{
-              fontFamily: FONT.display, fontSize: "clamp(0.75rem,3.5vw,1.05rem)",
-              fontWeight: 900, letterSpacing: "0.06em",
-              color: C.black, textAlign: "center", textTransform: "uppercase",
+              fontFamily: FONT.display, fontSize: 20,
+              fontWeight: 900, letterSpacing: "0.04em",
+              color: "#0d0d0d", textAlign: "center", textTransform: "uppercase",
             }}>{match.away_team}</span>
           </div>
         </div>
 
         {/* Footer */}
         <div style={{
-          marginTop: 18, paddingTop: 14,
-          borderTop: `1px solid #e8e8e8`,
+          marginTop: 32, paddingTop: 20,
+          borderTop: `1px solid #eee`,
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 8, flexWrap: "wrap",
         }}>
           <span style={{
-            display: "flex", alignItems: "center", gap: 5,
-            fontSize: 10, color: "#555", fontFamily: FONT.body, fontWeight: 600,
+            display: "flex", alignItems: "center", gap: 6,
+            fontSize: 12, color: "#666", fontFamily: FONT.body, fontWeight: 500,
           }}>
-            <FiMapPin size={9} /> {match.venue}, {match.city}
+            <FiMapPin size={12} /> {match.venue}, {match.city}
           </span>
           <a href="/tickets" style={{
-            display: "flex", alignItems: "center", gap: 6,
-            background: C.black, color: "white",
-            fontFamily: FONT.body, fontSize: 9, fontWeight: 900,
-            letterSpacing: "0.14em", textTransform: "uppercase",
-            padding: "7px 14px", borderRadius: 100, textDecoration: "none",
-            transition: "background 0.15s", whiteSpace: "nowrap",
+            display: "flex", alignItems: "center", gap: 8,
+            background: "#0d0d0d", color: "white",
+            fontFamily: FONT.body, fontSize: 11, fontWeight: 800,
+            letterSpacing: "0.08em", textTransform: "uppercase",
+            padding: "10px 20px", borderRadius: 100, textDecoration: "none",
+            transition: "all 0.2s",
           }}
-            onMouseOver={e => e.currentTarget.style.background = "#333"}
-            onMouseOut={e => e.currentTarget.style.background = C.black}
+            onMouseOver={e => e.currentTarget.style.transform = "scale(1.03)"}
+            onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
           >
-            <FiShoppingCart size={9} /> Billets
+            <FiShoppingCart size={13} /> Billets
           </a>
         </div>
       </div>
@@ -180,282 +176,93 @@ function FeaturedMatch({ match }) {
 function MatchRow({ m }) {
   const [hovered, hoverProps] = useHover();
   const isLive = m.status === "live";
-  const isDone = m.status === "finished";
   const date = new Date(m.match_date + "T00:00:00")
     .toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
 
   return (
     <div style={{
       display: "flex", alignItems: "center",
-      padding: "10px 12px",
-      borderBottom: `1px solid #ececec`,
-      background: hovered
-        ? (isLive ? "rgba(34,197,94,0.05)" : "#f2f2f2")
-        : (isLive ? "rgba(34,197,94,0.025)" : "white"),
-      cursor: "pointer", transition: "background 0.15s", gap: 6,
+      padding: "16px 20px",
+      borderBottom: `1px solid #f0f0f0`,
+      background: hovered ? "#f8f8f8" : "white",
+      cursor: "pointer", transition: "0.2s", gap: 12,
     }} {...hoverProps}>
-
-      {/* Date */}
-      <div style={{ width: 44, flexShrink: 0 }}>
-        {isLive
-          ? <span style={{
-              display: "flex", alignItems: "center", gap: 3,
-              fontSize: 8, fontWeight: 900, color: "#16a34a",
-              textTransform: "uppercase", fontFamily: FONT.body, letterSpacing: "0.1em",
-            }}>
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#22c55e", flexShrink: 0, animation: "mpulse 1.4s ease-in-out infinite" }} />
-              Live
-            </span>
-          : <span style={{ fontSize: 10, color: "#444", fontFamily: FONT.body, fontWeight: 700 }}>{date}</span>
-        }
+      <div style={{ width: 45, fontSize: 11, fontWeight: 700, color: isLive ? "#16a34a" : "#999" }}>
+        {isLive ? "LIVE" : date}
       </div>
-
-      {/* Home */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 5, justifyContent: "flex-end", minWidth: 0 }}>
-        <span style={{
-          fontSize: "clamp(10px,2.5vw,12px)", fontWeight: 700, color: C.black,
-          fontFamily: FONT.body, overflow: "hidden",
-          textOverflow: "ellipsis", whiteSpace: "nowrap",
-        }}>{m.home_team}</span>
-        <Flag code={getCode(m.home_team)} alt={m.home_team} size={16} />
+      <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+        <span style={{ fontSize: 14, fontWeight: 700 }}>{m.home_team}</span>
+        <Flag code={getCode(m.home_team)} size={18} />
       </div>
-
-      {/* Score */}
-      <div style={{ flexShrink: 0, width: 50, textAlign: "center" }}>
-        {isDone || isLive
-          ? <span style={{
-              fontFamily: FONT.display, fontWeight: 900,
-              fontSize: "clamp(0.9rem,3vw,1.05rem)", color: isLive ? "#16a34a" : C.black,
-              fontVariantNumeric: "tabular-nums",
-            }}>{m.home_score ?? 0}–{m.away_score ?? 0}</span>
-          : <span style={{
-              fontFamily: FONT.body, fontWeight: 800,
-              fontSize: "clamp(10px,2.5vw,12px)", color: "#333",
-            }}>{m.match_time?.slice(0, 5)}</span>
-        }
+      <div style={{ width: 60, textAlign: "center", fontFamily: FONT.display, fontWeight: 900, fontSize: 18 }}>
+        {m.status !== "upcoming" ? `${m.home_score}–${m.away_score}` : m.match_time?.slice(0, 5)}
       </div>
-
-      {/* Away */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 5, minWidth: 0 }}>
-        <Flag code={getCode(m.away_team)} alt={m.away_team} size={16} />
-        <span style={{
-          fontSize: "clamp(10px,2.5vw,12px)", fontWeight: 700, color: C.black,
-          fontFamily: FONT.body, overflow: "hidden",
-          textOverflow: "ellipsis", whiteSpace: "nowrap",
-        }}>{m.away_team}</span>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
+        <Flag code={getCode(m.away_team)} size={18} />
+        <span style={{ fontSize: 14, fontWeight: 700 }}>{m.away_team}</span>
       </div>
-
-      <FiChevronRight size={11} color={hovered ? C.black : "#aaa"} style={{ flexShrink: 0 }} />
+      <FiChevronRight size={14} color="#ccc" />
     </div>
   );
 }
 
 function TopScorers() {
   return (
-    <div style={{ border: `1px solid ${C.border}`, borderRadius: 4, overflow: "hidden" }}>
-      <div style={{
-        background: C.black, padding: "10px 16px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        <span style={{
-          color: "white", fontSize: 9, fontWeight: 900,
-          letterSpacing: "0.2em", textTransform: "uppercase", fontFamily: FONT.body,
-        }}>Meilleurs Buteurs</span>
-        <a href="/standings" style={{
-          display: "flex", alignItems: "center", gap: 3,
-          color: "rgba(255,255,255,0.5)", fontSize: 8, fontWeight: 800,
-          textTransform: "uppercase", letterSpacing: "0.12em",
-          textDecoration: "none", fontFamily: FONT.body, transition: "color 0.15s",
-        }}
-          onMouseOver={e => e.currentTarget.style.color = "white"}
-          onMouseOut={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}
-        >
-          Voir tout <FiChevronRight size={9} />
-        </a>
+    <div style={{ border: `1px solid #eee`, borderRadius: 8, overflow: "hidden", background: "white" }}>
+      <div style={{ background: "#f8f8f8", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
+        <span style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em" }}>Meilleurs Buteurs</span>
       </div>
-
-      {TOP_SCORERS.map((p, i) => {
-        const [hovered, hoverProps] = useHover(); // eslint-disable-line
-        return (
-          <div key={i} style={{
-            display: "flex", alignItems: "center", gap: 10,
-            padding: "10px 14px",
-            borderBottom: i < TOP_SCORERS.length - 1 ? `1px solid #ececec` : "none",
-            background: hovered ? "#f2f2f2" : "white",
-            transition: "background 0.15s", cursor: "pointer",
-          }} {...hoverProps}>
-            <span style={{
-              fontSize: 10, fontWeight: 900, color: "#aaa",
-              width: 14, textAlign: "center", fontFamily: FONT.body, flexShrink: 0,
-            }}>{i + 1}</span>
-            <Flag code={p.code} alt={p.team} size={16} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{
-                fontSize: 12, fontWeight: 700, color: C.black,
-                fontFamily: FONT.body, overflow: "hidden",
-                textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0,
-              }}>{p.player}</p>
-              <p style={{ fontSize: 10, color: "#555", fontFamily: FONT.body, fontWeight: 600, margin: "2px 0 0" }}>{p.team}</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 3, flexShrink: 0 }}>
-              <span style={{
-                fontFamily: FONT.display, fontWeight: 900,
-                fontSize: "1.3rem", color: C.black, lineHeight: 1,
-              }}>{p.goals}</span>
-              <span style={{
-                fontSize: 8, color: "#555", textTransform: "uppercase",
-                letterSpacing: "0.1em", fontWeight: 700, fontFamily: FONT.body,
-              }}>buts</span>
-            </div>
+      {TOP_SCORERS.map((p, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: i < TOP_SCORERS.length - 1 ? "1px solid #f5f5f5" : "none" }}>
+          <span style={{ fontSize: 12, color: "#ccc", fontWeight: 900, width: 16 }}>{i + 1}</span>
+          <Flag code={p.code} size={20} />
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>{p.player}</p>
+            <p style={{ fontSize: 11, color: "#888", margin: 0 }}>{p.team}</p>
           </div>
-        );
-      })}
+          <span style={{ fontFamily: FONT.display, fontWeight: 900, fontSize: 20 }}>{p.goals}</span>
+        </div>
+      ))}
     </div>
   );
 }
 
-function FilterTab({ label, active, dot, icon: Icon, onClick }) {
-  const [hovered, hoverProps] = useHover();
-  return (
-    <button onClick={onClick} style={{
-      flexShrink: 0,
-      display: "flex", alignItems: "center", gap: 6,
-      fontSize: 9, fontWeight: 900, letterSpacing: "0.14em", textTransform: "uppercase",
-      padding: "8px 16px", borderRadius: 100,
-      border: `1px solid ${active ? C.black : hovered ? "#666" : "#ccc"}`,
-      background: active ? C.black : "white",
-      color: active ? "white" : hovered ? C.black : "#444",
-      cursor: "pointer", transition: "all 0.15s",
-      fontFamily: FONT.body, outline: "none",
-    }} {...hoverProps}>
-      {dot
-        ? <span style={{
-            width: 6, height: 6, borderRadius: "50%",
-            background: active ? "#4ade80" : "#22c55e",
-            animation: "mpulse 1.4s ease-in-out infinite",
-          }} />
-        : Icon && <Icon size={10} />
-      }
-      {label}
-    </button>
-  );
-}
-
 export function MatchesSection({ matchFilter, setMatchFilter }) {
-  const allMatches    = MATCHES.filter(m => m.status === matchFilter);
-  const featuredMatch = allMatches[0] || null;
-  const restMatches   = allMatches.slice(1);
+  const allMatches = MATCHES.filter(m => m.status === matchFilter);
+  const featuredMatch = allMatches[0];
 
   const FILTERS = [
-    { k: "upcoming", l: "À venir",   icon: FiClock },
-    { k: "live",     l: "En direct", dot: true      },
-    { k: "finished", l: "Résultats", icon: FiAward  },
+    { k: "upcoming", l: "À venir" },
+    { k: "live",     l: "En direct" },
+    { k: "finished", l: "Résultats" },
   ];
 
   return (
-    <>
-      <style>{`
-        @keyframes mpulse {
-          0%,100% { opacity:1; transform:scale(1); }
-          50%      { opacity:.3; transform:scale(.65); }
-        }
-        .ms-grid {
-          display: grid;
-          grid-template-columns: 1fr 260px;
-          gap: 16px;
-          align-items: start;
-        }
-        .ms-left  { display: flex; flex-direction: column; gap: 12px; }
-        .ms-right { position: sticky; top: 20px; }
-        .ms-filters { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
-        .ms-filters::-webkit-scrollbar { display: none; }
-        @media (max-width: 720px) {
-          .ms-grid {
-            grid-template-columns: 1fr;
-          }
-          .ms-right {
-            position: static;
-          }
-        }
-      `}</style>
-
-      <section style={{ background: C.gray, padding: "clamp(24px,5vw,48px) 0" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(12px,4vw,24px)" }}>
-
-          <SectionHead eyebrow="Calendrier" title="Matchs" action="Tous les matchs" href="/matches" />
-
-          {/* Filters */}
-          <div className="ms-filters">
-            {FILTERS.map(f => (
-              <FilterTab
-                key={f.k} label={f.l} active={matchFilter === f.k}
-                dot={f.dot} icon={f.icon}
-                onClick={() => setMatchFilter(f.k)}
-              />
-            ))}
-          </div>
-
-          {/* Empty state */}
-          {!allMatches.length ? (
-            <div style={{
-              background: "white", border: `1px solid ${C.border}`,
-              borderRadius: 4, padding: "48px 24px",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-            }}>
-              <FiZap size={18} color="#555" />
-              <span style={{ fontSize: 13, color: "#444", fontFamily: FONT.body, fontWeight: 600 }}>
-                Aucun match disponible.
-              </span>
-            </div>
-          ) : (
-            <div className="ms-grid">
-              {/* Left col */}
-              <div className="ms-left">
-                {featuredMatch && <FeaturedMatch match={featuredMatch} />}
-                {restMatches.length > 0 && (
-                  <div style={{
-                    background: "white", border: `1px solid ${C.border}`,
-                    borderRadius: 4, overflow: "hidden",
-                  }}>
-                    <div style={{
-                      padding: "9px 14px", background: "#efefef",
-                      borderBottom: "1px solid #ddd",
-                    }}>
-                      <span style={{
-                        fontSize: 9, fontWeight: 900, letterSpacing: "0.2em",
-                        textTransform: "uppercase", color: "#444", fontFamily: FONT.body,
-                      }}>Autres matchs</span>
-                    </div>
-                    {restMatches.map(m => <MatchRow key={m.id} m={m} />)}
-                  </div>
-                )}
-              </div>
-
-              {/* Right col — scorers */}
-              <div className="ms-right">
-                <TopScorers />
-              </div>
-            </div>
-          )}
-
-          {/* CTA */}
-          <a href="/matches" style={{
-            marginTop: 16,
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            fontSize: 9, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase",
-            color: C.black, border: `1px solid ${C.black}`,
-            padding: "13px 0", borderRadius: 100,
-            textDecoration: "none", width: "100%",
-            transition: "all 0.15s", fontFamily: FONT.body,
-            background: "transparent",
-          }}
-            onMouseOver={e => { e.currentTarget.style.background = C.black; e.currentTarget.style.color = "white"; }}
-            onMouseOut={e  => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.black; }}
-          >
-            Voir tous les matchs <FiArrowRight size={12} />
-          </a>
+    <section style={{ background: "#fcfcfc", padding: "80px 0", borderTop: "1px solid #eee" }}>
+      <div style={{ maxWidth: 1380, margin: "0 auto", padding: "0 32px" }}>
+        <SectionHead eyebrow="Calendrier" title="Matchs" action="Tout le programme" href="/matches" />
+        
+        <div style={{ display: "flex", gap: 12, marginBottom: 32 }}>
+          {FILTERS.map(f => (
+            <button key={f.k} onClick={() => setMatchFilter(f.k)} style={{
+              padding: "10px 24px", borderRadius: 100, border: `1px solid ${matchFilter === f.k ? "#0d0d0d" : "#eee"}`,
+              background: matchFilter === f.k ? "#0d0d0d" : "white",
+              color: matchFilter === f.k ? "white" : "#666",
+              fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s"
+            }}>{f.l}</button>
+          ))}
         </div>
-      </section>
-    </>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 32 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            {featuredMatch && <FeaturedMatch match={featuredMatch} />}
+            <div style={{ background: "white", border: "1px solid #eee", borderRadius: 8, overflow: "hidden" }}>
+              {allMatches.slice(1).map(m => <MatchRow key={m.id} m={m} />)}
+            </div>
+          </div>
+          <TopScorers />
+        </div>
+      </div>
+    </section>
   );
 }

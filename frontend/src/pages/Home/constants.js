@@ -1,18 +1,17 @@
-// ─── COLORS ───────────────────────────────────────────────────
-export const C = {
-  black:  "#0d0d0d",
-  white:  "#ffffff",
-  red:    "#c8102e",
-  gray:   "#f5f5f5",
-  border: "#e8e8e8",
-  mid:    "#8a8a8a",
-  muted:  "rgba(255,255,255,0.45)",
-};
 
 // ─── FONTS ────────────────────────────────────────────────────
 export const FONT = {
   display: "'Barlow Condensed', sans-serif",
   body:    "'Barlow', sans-serif",
+};
+
+export const C = {
+  black:  "#0d0d0d",
+  mid:    "#666666",
+  light:  "#f8f8f8",
+  border: "#eeeeee",
+  white:  "#ffffff",
+  red:    "#c8102e",
 };
 
 // ─── COUNTRY CODES ────────────────────────────────────────────

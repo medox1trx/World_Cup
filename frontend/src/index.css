@@ -22,4 +22,4 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: #8a8a8a; }
 
 /* Selection */
-::selection { background: #0a0a0a; color: #fff; }
+::selection { background: #c8102e; color: #fff; }

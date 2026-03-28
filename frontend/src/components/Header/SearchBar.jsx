@@ -101,6 +101,7 @@ export default function SearchBar({ compact = false }) {
           ))}
         </ul>
       )}
+
     </div>
   );
 }

@@ -30,6 +30,9 @@ import Login          from "./pages/Login";
   So HeroSection uses: calc(100svh - 146px)  (102 + 44)
 */
 
+// i18next setup
+import "./i18n/i18n";
+
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -61,7 +64,6 @@ function App() {
 
       {/* ── FOOTER ── */}
       <Footer />
-
     </Router>
   );
 }
