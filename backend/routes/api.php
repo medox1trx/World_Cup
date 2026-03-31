@@ -6,6 +6,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\AccommodationController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TickerController;
+use App\Http\Controllers\TeamController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -89,6 +90,9 @@ Route::prefix('v1')->group(function () {
     // Hospitalities (Public)
     Route::get('/hospitalities', [ApiController::class, 'indexHospitalities']);
 
+    // Teams (Public)
+    Route::get('/teams', [TeamController::class, 'index']);
+
     // Admin routes (protected)
     Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'user']);
@@ -135,5 +139,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/ticker',                  [TickerController::class, 'store']);
         Route::put('/ticker/{ticker}',          [TickerController::class, 'update']);
         Route::delete('/ticker/{ticker}',       [TickerController::class, 'destroy']);
+
+        // Admin Teams Management
+        Route::post('/teams',                   [TeamController::class, 'store']);
+        Route::put('/teams/{team}',             [TeamController::class, 'update']);
+        Route::delete('/teams/{team}',          [TeamController::class, 'destroy']);
     });
 });

@@ -100,4 +100,10 @@ export const createHospitality = (data) => api.post("/admin/hospitalities", data
 export const updateHospitality = (id, data) => api.put(`/admin/hospitalities/${id}`, data);
 export const deleteHospitality = (id) => api.delete(`/admin/hospitalities/${id}`);
 
+// ── Teams ───────────────────────────────────────────────────
+export const getTeams = () => api.get("/teams");
+export const createTeam = (data) => api.post("/admin/teams", data);
+export const updateTeam = (id, data) => api.put(`/admin/teams/${id}`, data);
+export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);
+
 export default api;
