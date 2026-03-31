@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import {
   FiSearch, FiGlobe, FiUser, FiX,
-  FiChevronDown, FiShoppingCart,
+  FiChevronDown, FiShoppingCart, FiSun, FiMoon,
 } from "react-icons/fi";
 
 // ─── Navigation structure ─────────────────────────────────────
@@ -51,11 +51,17 @@ export default function Header() {
   const [query,      setQuery]      = useState("");
   const [lang,       setLang]       = useState("FR");
   const [scrolled,   setScrolled]   = useState(false);
+  const [darkMode,   setDarkMode]   = useState(true); // default: dark
 
   const searchRef = useRef(null);
   const langRef   = useRef(null);
   const navRef    = useRef(null);
   const location  = useLocation();
+
+  // Apply theme to <html> so child pages can also react to it
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   useEffect(() => {
     setMenuOpen(false); setSearchOpen(false);
@@ -93,6 +99,61 @@ export default function Header() {
   const groupActive = (item) =>
     item.children?.some(c => isActive(c.href));
 
+  // ─── Light-mode palette overrides ───────────────────────────
+  const lightVars = darkMode ? "" : `
+    :root {
+      --hbg:     #ffffff;
+      --hborder: rgba(0,0,0,0.08);
+      --hmuted:  rgba(0,0,0,0.45);
+      --hhover:  rgba(0,0,0,0.05);
+    }
+    .hdr.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
+    .hdr-ham span               { background: #0d0d0d; }
+    .hdr-link                   { color: rgba(0,0,0,0.5); }
+    .hdr-link:hover             { color: #0d0d0d; }
+    .hdr-link::after            { background: #0d0d0d; }
+    .hdr-link.act               { color: #0d0d0d; }
+    .hdr-link.grp               { color: rgba(0,0,0,0.72); }
+    .hdr-badge                  { background: #0d0d0d; color: white; }
+    .hdr-drop                   { background: #fafafa; border-color: rgba(0,0,0,0.08); border-top-color: #0d0d0d; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+    .hdr-drop-item              { color: rgba(0,0,0,0.48); border-bottom-color: rgba(0,0,0,0.05); }
+    .hdr-drop-item:hover        { background: rgba(0,0,0,0.04); color: #0d0d0d; }
+    .hdr-drop-item.act          { color: #0d0d0d; background: rgba(0,0,0,0.04); }
+    .hdr-drop-item.act::before  { background: #0d0d0d; }
+    .hdr-drop-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.5); }
+    .hdr-btn                    { color: rgba(0,0,0,0.45); }
+    .hdr-btn:hover              { background: rgba(0,0,0,0.05); color: #0d0d0d; }
+    .hdr-btn.is-open            { background: rgba(0,0,0,0.05); color: #0d0d0d; }
+    .hdr-lang-btn               { border-color: rgba(0,0,0,0.12); color: rgba(0,0,0,0.5); }
+    .hdr-lang-btn:hover         { border-color: rgba(0,0,0,0.35); color: #0d0d0d; }
+    .hdr-lang-drop              { background: #fafafa; border-color: rgba(0,0,0,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
+    .hdr-lang-opt               { color: rgba(0,0,0,0.4); border-bottom-color: rgba(0,0,0,0.04); }
+    .hdr-lang-opt:hover         { background: rgba(0,0,0,0.04); color: #0d0d0d; }
+    .hdr-lang-opt.sel           { color: #0d0d0d; }
+    .hdr-tickets                { background: #0d0d0d; color: white; }
+    .hdr-tickets:hover          { background: #333; }
+    .hdr-search                 { background: #f5f5f5; border-bottom-color: rgba(0,0,0,0.06); }
+    .hdr-search-inner           { border-bottom-color: rgba(0,0,0,0.06); }
+    .hdr-search-input           { color: #0d0d0d; }
+    .hdr-search-input::placeholder { color: rgba(0,0,0,0.25); }
+    .hdr-mob                    { background: #f8f8f8; border-top-color: rgba(0,0,0,0.06); }
+    .hdr-macc                   { color: rgba(0,0,0,0.4); border-color: rgba(0,0,0,0.06); }
+    .hdr-macc:hover             { color: rgba(0,0,0,0.75); background: rgba(0,0,0,0.02); }
+    .hdr-macc.open              { color: #0d0d0d; }
+    .hdr-macc.grp               { color: rgba(0,0,0,0.75); }
+    .hdr-msub                   { background: rgba(0,0,0,0.03); }
+    .hdr-msub-link              { color: rgba(0,0,0,0.35); border-bottom-color: rgba(0,0,0,0.04); }
+    .hdr-msub-link:hover        { color: #0d0d0d; background: rgba(0,0,0,0.02); }
+    .hdr-msub-link.act          { color: #0d0d0d; }
+    .hdr-msub-link:last-child   { border-bottom-color: rgba(0,0,0,0.05); }
+    .hdr-msub-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.5); }
+    .hdr-mfooter                { border-top-color: rgba(0,0,0,0.07); }
+    .hdr-mtickets               { background: #0d0d0d; color: white; }
+    .hdr-mtickets:hover         { background: #333; }
+    .hdr-theme-btn              { color: rgba(0,0,0,0.45) !important; }
+    .hdr-theme-btn:hover        { background: rgba(0,0,0,0.05) !important; color: #0d0d0d !important; }
+  `;
+
   return (
     <>
       <style>{`
@@ -113,7 +174,7 @@ export default function Header() {
           position: sticky; top: 0; z-index: 1000;
           background: var(--hbg);
           border-bottom: 1px solid var(--hborder);
-          transition: box-shadow 0.3s;
+          transition: box-shadow 0.3s, background 0.3s, border-color 0.3s;
         }
         .hdr.scrolled { box-shadow: 0 4px 40px rgba(0,0,0,0.65); }
 
@@ -136,7 +197,7 @@ export default function Header() {
         .hdr-ham:hover { background: var(--hhover); }
         .hdr-ham span {
           display: block; height: 2px; background: white;
-          transition: transform 0.26s, opacity 0.2s, width 0.2s;
+          transition: transform 0.26s, opacity 0.2s, width 0.2s, background 0.3s;
           transform-origin: center; border-radius: 1px;
         }
         .hdr-ham span:nth-child(1) { width: 20px; }
@@ -228,7 +289,7 @@ export default function Header() {
         }
         .hdr-drop.open { opacity: 1; pointer-events: all; transform: translateY(0); }
 
-        /* Dropdown items — text only, no icons */
+        /* Dropdown items */
         .hdr-drop-item {
           display: flex; align-items: center; justify-content: space-between;
           padding: 12px 18px;
@@ -272,6 +333,17 @@ export default function Header() {
         }
         .hdr-btn:hover   { background: var(--hhover); color: white; }
         .hdr-btn.is-open { background: var(--hhover); color: white; }
+
+        /* ── THEME TOGGLE ── */
+        .hdr-theme-btn {
+          background: none; border: none; cursor: pointer;
+          color: var(--hmuted); width: 36px; height: 36px;
+          display: flex; align-items: center; justify-content: center;
+          border-radius: 3px;
+          transition: background 0.15s, color 0.15s, transform 0.3s; flex-shrink: 0;
+        }
+        .hdr-theme-btn:hover { background: var(--hhover); color: white; }
+        .hdr-theme-btn:active { transform: rotate(20deg); }
 
         /* Language selector */
         .hdr-lang-wrap { position: relative; }
@@ -429,6 +501,9 @@ export default function Header() {
           .hdr-logo img { height: 28px; }
           .hdr-btn.xs-hide { display: none; }
         }
+
+        /* ── LIGHT MODE OVERRIDES ── */
+        ${lightVars}
       `}</style>
 
       <header className={`hdr${scrolled ? " scrolled" : ""}`}>
@@ -481,7 +556,7 @@ export default function Header() {
                     <FiChevronDown size={10} className="hdr-chev" />
                   </button>
 
-                  {/* Dropdown — text only, no icons */}
+                  {/* Dropdown */}
                   <div className={`hdr-drop${isOpen ? " open" : ""}`} role="menu">
                     {item.children.map(child => (
                       <a key={child.href} href={child.href} role="menuitem"
@@ -507,6 +582,16 @@ export default function Header() {
               onClick={() => setSearchOpen(o => !o)}
               aria-label="Rechercher">
               {searchOpen ? <FiX size={17} /> : <FiSearch size={17} />}
+            </button>
+
+            {/* Dark / Light mode toggle */}
+            <button
+              className="hdr-theme-btn"
+              onClick={() => setDarkMode(d => !d)}
+              aria-label={darkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+              title={darkMode ? "Mode clair" : "Mode sombre"}
+            >
+              {darkMode ? <FiSun size={17} /> : <FiMoon size={17} />}
             </button>
 
             {/* Language */}
@@ -605,13 +690,22 @@ export default function Header() {
 
           {/* Mobile footer */}
           <div className="hdr-mfooter">
+            {/* Dark/light toggle in mobile footer too */}
+            <button
+              className="hdr-theme-btn"
+              onClick={() => setDarkMode(d => !d)}
+              aria-label={darkMode ? "Mode clair" : "Mode sombre"}
+              style={{ color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)", background: darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)", borderRadius: 3 }}
+            >
+              {darkMode ? <FiSun size={17} /> : <FiMoon size={17} />}
+            </button>
             <button className="hdr-btn"
-              style={{ color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.06)", borderRadius: 3 }}
+              style={{ color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)", background: darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)", borderRadius: 3 }}
               aria-label="Langue">
               <FiGlobe size={17} />
             </button>
             <a href="/login" className="hdr-btn"
-              style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}
+              style={{ color: darkMode ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", textDecoration: "none" }}
               aria-label="Mon compte">
               <FiUser size={17} />
             </a>
