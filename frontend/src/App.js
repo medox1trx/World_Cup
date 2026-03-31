@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import CountdownBanner from "./components/CountdownBanner/CountdownBanner"; // 40px
 import Header          from "./components/Header/Header";                   // 62px
 import Footer          from "./components/Footer/Footer";
-
+import { ThemeProvider } from "./context/ThemeContext";
 import Home           from "./pages/Home/Home";
 import Matches        from "./pages/Matches";
 import Standings      from "./pages/Standings";
@@ -33,7 +33,7 @@ import Login          from "./pages/Login";
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-
+ <ThemeProvider>
       {/* ── STICKY: CountdownBanner + Header (102px total) ── */}
       <div style={{ position: "sticky", top: 0, zIndex: 50 }}>
         <CountdownBanner />
@@ -61,7 +61,7 @@ function App() {
 
       {/* ── FOOTER ── */}
       <Footer />
-
+      </ThemeProvider>
     </Router>
   );
 }

@@ -1,5 +1,6 @@
+import { useTheme } from "../../context/ThemeContext";
+
 // ─── Inlined constants ────────────────────────────────────────
-const C    = { black: "#0d0d0d", border: "#e8e8e8", mid: "#8a8a8a" };
 const FONT = { display: "'Barlow Condensed', sans-serif", body: "'Barlow', sans-serif" };
 
 // ─── Social icons ─────────────────────────────────────────────
@@ -31,7 +32,7 @@ const SOCIALS = [
   },
 ];
 
-// ─── Sponsor logo data (real SVG/PNG from Wikimedia — CSS filter makes them white) ──
+// ─── Sponsor logo data ────────────────────────────────────────
 const GROUPS = [
   {
     label: "FIFA PARTNERS",
@@ -67,13 +68,14 @@ const GROUPS = [
 ];
 
 // ─── Logo image component ─────────────────────────────────────
-function Logo({ name, src, h }) {
+function Logo({ name, src, h, darkMode }) {
   return (
-    <div style={{
-      display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "0 clamp(12px,2vw,24px)",
-      opacity: 0.55, transition: "opacity 0.2s", cursor: "default",
-    }}
+    <div
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "0 clamp(12px,2vw,24px)",
+        opacity: 0.55, transition: "opacity 0.2s", cursor: "default",
+      }}
       onMouseOver={e => e.currentTarget.style.opacity = "0.9"}
       onMouseOut={e  => e.currentTarget.style.opacity = "0.55"}
     >
@@ -82,20 +84,20 @@ function Logo({ name, src, h }) {
         style={{
           height: h, width: "auto", maxWidth: 120,
           objectFit: "contain", display: "block",
-          // Make any logo appear white on dark background
-          filter: "brightness(0) invert(1)",
+          // In dark mode: make all logos white. In light mode: show natural colors.
+          filter: darkMode ? "brightness(0) invert(1)" : "none",
+          transition: "filter 0.3s",
         }}
         onError={e => {
-          // Fallback to text if image fails
           e.target.style.display = "none";
           e.target.nextSibling.style.display = "block";
         }}
       />
-      {/* Text fallback */}
       <span style={{
         display: "none",
         fontFamily: FONT.display, fontWeight: 900,
-        fontSize: 14, color: "rgba(255,255,255,0.55)",
+        fontSize: 14,
+        color: darkMode ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.45)",
         letterSpacing: "0.06em", whiteSpace: "nowrap",
       }}>{name}</span>
     </div>
@@ -103,30 +105,41 @@ function Logo({ name, src, h }) {
 }
 
 // ─── Store badge ──────────────────────────────────────────────
-function StoreBadge({ store }) {
+function StoreBadge({ store, darkMode }) {
   const apple = store === "apple";
+
+  // Colors adapt to theme
+  const borderColor    = darkMode ? "rgba(255,255,255,0.3)"  : "rgba(0,0,0,0.2)";
+  const borderHover    = darkMode ? "rgba(255,255,255,0.7)"  : "rgba(0,0,0,0.5)";
+  const bgHover        = darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
+  const iconFill       = darkMode ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.7)";
+  const labelColor     = darkMode ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)";
+  const nameColor      = darkMode ? "rgba(255,255,255,0.88)" : "rgba(0,0,0,0.85)";
+
   return (
-    <a href={apple ? "https://apps.apple.com" : "https://play.google.com"}
+    <a
+      href={apple ? "https://apps.apple.com" : "https://play.google.com"}
       target="_blank" rel="noreferrer"
       style={{
         display: "flex", alignItems: "center", gap: 8,
-        border: "1px solid rgba(255,255,255,0.3)",
+        border: `1px solid ${borderColor}`,
         borderRadius: 5, padding: "5px 12px",
-        textDecoration: "none", transition: "border-color 0.2s, background 0.2s",
+        textDecoration: "none",
+        transition: "border-color 0.2s, background 0.2s",
         minWidth: 126, background: "transparent",
       }}
-      onMouseOver={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.7)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
-      onMouseOut={e  => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"; e.currentTarget.style.background = "transparent"; }}
+      onMouseOver={e => { e.currentTarget.style.borderColor = borderHover; e.currentTarget.style.background = bgHover; }}
+      onMouseOut={e  => { e.currentTarget.style.borderColor = borderColor; e.currentTarget.style.background = "transparent"; }}
     >
       {apple
-        ? <svg width="17" height="17" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        : <svg width="17" height="17" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)"><path d="M3.18 23.76c.33.19.7.24 1.06.14L14 14 4.1.14C3.74.04 3.37.1 3.04.3A2 2 0 002 2.06v19.88a2 2 0 001.18 1.82zM16.54 11.6l2.76-2.76-9.19-5.3 6.43 8.06zm-6.43 4.46l9.19-5.3-2.76-2.76-6.43 8.06zM20.82 10.1l-1.22-.7 1.22-.7A2 2 0 0022 7.06v9.88a2 2 0 01-1.18 1.82l-1.22-.7-1.22-.7 1.44-.83z"/></svg>
+        ? <svg width="17" height="17" viewBox="0 0 24 24" fill={iconFill}><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        : <svg width="17" height="17" viewBox="0 0 24 24" fill={iconFill}><path d="M3.18 23.76c.33.19.7.24 1.06.14L14 14 4.1.14C3.74.04 3.37.1 3.04.3A2 2 0 002 2.06v19.88a2 2 0 001.18 1.82zM16.54 11.6l2.76-2.76-9.19-5.3 6.43 8.06zm-6.43 4.46l9.19-5.3-2.76-2.76-6.43 8.06zM20.82 10.1l-1.22-.7 1.22-.7A2 2 0 0022 7.06v9.88a2 2 0 01-1.18 1.82l-1.22-.7-1.22-.7 1.44-.83z"/></svg>
       }
       <div>
-        <div style={{ fontFamily: FONT.body, fontSize: 8, color: "rgba(255,255,255,0.45)", letterSpacing: "0.05em" }}>
+        <div style={{ fontFamily: FONT.body, fontSize: 8, color: labelColor, letterSpacing: "0.05em" }}>
           {apple ? "Download on the" : "GET IT ON"}
         </div>
-        <div style={{ fontFamily: FONT.body, fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.88)", letterSpacing: "0.01em" }}>
+        <div style={{ fontFamily: FONT.body, fontSize: 13, fontWeight: 700, color: nameColor, letterSpacing: "0.01em" }}>
           {apple ? "App Store" : "Google Play"}
         </div>
       </div>
@@ -136,193 +149,165 @@ function StoreBadge({ store }) {
 
 // ─── FOOTER ──────────────────────────────────────────────────
 export default function Footer() {
+  const { darkMode } = useTheme();
+
+  // ── Derived color tokens ──────────────────────────────────
+  const bg          = darkMode ? "#0a0a0a"                  : "#f5f5f5";
+  const border      = darkMode ? "rgba(255,255,255,0.07)"   : "rgba(0,0,0,0.08)";
+  const wordmark    = darkMode ? "white"                    : "#0d0d0d";
+  const socColor    = darkMode ? "rgba(255,255,255,0.4)"    : "rgba(0,0,0,0.4)";
+  const socHoverBg  = darkMode ? "rgba(255,255,255,0.07)"   : "rgba(0,0,0,0.06)";
+  const socHoverClr = darkMode ? "white"                    : "#0d0d0d";
+  const dlLabel     = darkMode ? "rgba(255,255,255,0.35)"   : "rgba(0,0,0,0.4)";
+  const groupLabel  = darkMode ? "rgba(255,255,255,0.3)"    : "rgba(0,0,0,0.3)";
+  const divider     = darkMode ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.07)";
+  const legalLink   = darkMode ? "rgba(255,255,255,0.32)"   : "rgba(0,0,0,0.35)";
+  const legalHover  = darkMode ? "white"                    : "#0d0d0d";
+  const copy        = darkMode ? "rgba(255,255,255,0.22)"   : "rgba(0,0,0,0.3)";
+  const vline       = darkMode ? "rgba(255,255,255,0.12)"   : "rgba(0,0,0,0.12)";
+
   return (
-    <>
-      <style>{`
-        .ft-root {
-          background: #0a0a0a;
-          border-top: 1px solid rgba(255,255,255,0.07);
-          font-family: ${FONT.body};
-        }
+    <footer style={{
+      background: bg,
+      borderTop: `1px solid ${border}`,
+      fontFamily: FONT.body,
+      transition: "background 0.3s, border-color 0.3s",
+    }}>
 
-        /* ── Top bar ── */
-        .ft-top {
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
-        .ft-top-inner {
-          max-width: 1440px; margin: 0 auto;
-          padding: 0 clamp(16px,2.5vw,32px);
-          height: 52px;
-          display: flex; align-items: center;
-          gap: clamp(8px,1.5vw,20px);
-          overflow: hidden;
-        }
+      {/* ── TOP BAR ── */}
+      <div style={{ borderBottom: `1px solid ${border}`, transition: "border-color 0.3s" }}>
+        <div style={{
+          maxWidth: 1440, margin: "0 auto",
+          padding: "0 clamp(16px,2.5vw,32px)",
+          height: 52,
+          display: "flex", alignItems: "center",
+          gap: "clamp(8px,1.5vw,20px)",
+          overflow: "hidden",
+        }}>
+          {/* Wordmark */}
+          <a href="/" style={{
+            fontFamily: FONT.display, fontSize: 22, fontWeight: 900,
+            color: wordmark, letterSpacing: "0.06em", textDecoration: "none",
+            flexShrink: 0, transition: "color 0.3s",
+          }}>FIFA</a>
 
-        .ft-wordmark {
-          font-family: ${FONT.display};
-          font-size: 22px; font-weight: 900;
-          color: white; letter-spacing: 0.06em;
-          text-decoration: none; flex-shrink: 0;
-        }
+          {/* Vertical divider */}
+          <div style={{ width: 1, height: 18, flexShrink: 0, background: vline, transition: "background 0.3s" }} />
 
-        .ft-vline {
-          width: 1px; height: 18px; flex-shrink: 0;
-          background: rgba(255,255,255,0.12);
-        }
+          {/* Socials */}
+          <div style={{ display: "flex", alignItems: "center", gap: 1, flexShrink: 0 }}>
+            {SOCIALS.map(s => (
+              <a
+                key={s.label} href={s.href}
+                target="_blank" rel="noreferrer" aria-label={s.label}
+                style={{
+                  width: 32, height: 32, borderRadius: 3,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: socColor, textDecoration: "none",
+                  transition: "background 0.15s, color 0.15s",
+                }}
+                onMouseOver={e => { e.currentTarget.style.background = socHoverBg; e.currentTarget.style.color = socHoverClr; }}
+                onMouseOut={e  => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = socColor; }}
+              >
+                {s.icon}
+              </a>
+            ))}
+          </div>
 
-        .ft-socials {
-          display: flex; align-items: center; gap: 1px; flex-shrink: 0;
-        }
-        .ft-soc {
-          width: 32px; height: 32px; border-radius: 3px;
-          display: flex; align-items: center; justify-content: center;
-          color: rgba(255,255,255,0.4); text-decoration: none;
-          transition: background 0.15s, color 0.15s;
-        }
-        .ft-soc:hover { background: rgba(255,255,255,0.07); color: white; }
+          {/* Vertical divider */}
+          <div style={{ width: 1, height: 18, flexShrink: 0, background: vline, transition: "background 0.3s" }} />
 
-        .ft-dl-label {
-          flex: 1; min-width: 0;
-          font-size: clamp(10px,0.9vw,12px);
-          color: rgba(255,255,255,0.35);
-          letter-spacing: 0.02em;
-          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
+          {/* Download label */}
+          <span style={{
+            flex: 1, minWidth: 0,
+            fontSize: "clamp(10px,0.9vw,12px)",
+            color: dlLabel,
+            letterSpacing: "0.02em",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+            transition: "color 0.3s",
+          }}>
+            Télécharger dès maintenant FIFA+ pour plus de contenus
+          </span>
 
-        .ft-badges {
-          display: flex; align-items: center; gap: 8px; flex-shrink: 0;
-        }
-
-        @media (max-width: 900px)  { .ft-dl-label { display: none; } }
-        @media (max-width: 640px)  { .ft-badges   { display: none; } }
-
-        /* ── Sponsor section ── */
-        .ft-sponsors {
-          max-width: 1440px; margin: 0 auto;
-          padding: clamp(20px,3vh,32px) clamp(16px,2.5vw,32px);
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
-
-        .ft-group { margin-bottom: 24px; }
-        .ft-group:last-child { margin-bottom: 0; }
-
-        .ft-glabel {
-          text-align: center;
-          font-size: 9px; font-weight: 800;
-          letter-spacing: 0.28em; text-transform: uppercase;
-          color: rgba(255,255,255,0.3);
-          margin-bottom: 16px;
-        }
-
-        .ft-logos {
-          display: flex; align-items: center; justify-content: center;
-          flex-wrap: wrap; gap: 0;
-        }
-
-        /* ── Divider between groups ── */
-        .ft-hdiv {
-          border: none;
-          border-top: 1px solid rgba(255,255,255,0.06);
-          margin: 20px 0;
-        }
-
-        /* ── Bottom bar ── */
-        .ft-bottom {
-          border-top: 1px solid rgba(255,255,255,0.07);
-        }
-        .ft-bottom-inner {
-          max-width: 1440px; margin: 0 auto;
-          padding: 0 clamp(16px,2.5vw,32px);
-          height: 48px;
-          display: flex; align-items: center;
-          justify-content: space-between; gap: 16px;
-        }
-
-        .ft-legal {
-          display: flex; align-items: center;
-          gap: clamp(14px,2vw,28px); flex-wrap: wrap;
-        }
-        .ft-llink {
-          font-size: clamp(9px,0.72vw,11px); font-weight: 700;
-          letter-spacing: 0.1em; text-transform: uppercase;
-          color: rgba(255,255,255,0.32); text-decoration: none;
-          transition: color 0.15s;
-        }
-        .ft-llink:hover { color: white; }
-
-        .ft-copy {
-          font-size: clamp(9px,0.72vw,11px);
-          color: rgba(255,255,255,0.22);
-          letter-spacing: 0.03em; white-space: nowrap;
-        }
-
-        @media (max-width: 520px) {
-          .ft-bottom-inner {
-            height: auto; padding: 12px clamp(16px,3vw,24px);
-            flex-direction: column; align-items: flex-start; gap: 6px;
-          }
-        }
-      `}</style>
-
-      <footer className="ft-root">
-
-        {/* ── TOP BAR ── */}
-        <div className="ft-top">
-          <div className="ft-top-inner">
-            <a href="/" className="ft-wordmark">FIFA</a>
-            <div className="ft-vline" />
-            <div className="ft-socials">
-              {SOCIALS.map(s => (
-                <a key={s.label} href={s.href} className="ft-soc"
-                  target="_blank" rel="noreferrer" aria-label={s.label}>
-                  {s.icon}
-                </a>
-              ))}
-            </div>
-            <div className="ft-vline" />
-            <span className="ft-dl-label">
-              Télécharger dès maintenant FIFA+ pour plus de contenus
-            </span>
-            <div className="ft-badges">
-              <StoreBadge store="google" />
-              <StoreBadge store="apple" />
-            </div>
+          {/* Store badges */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+            <StoreBadge store="google" darkMode={darkMode} />
+            <StoreBadge store="apple"  darkMode={darkMode} />
           </div>
         </div>
+      </div>
 
-        {/* ── SPONSORS ── */}
-        <div className="ft-sponsors">
-          {GROUPS.map((g, gi) => (
-            <div key={g.label}>
-              {gi > 0 && <hr className="ft-hdiv" />}
-              <div className="ft-group">
-                <p className="ft-glabel">{g.label}</p>
-                <div className="ft-logos">
-                  {g.items.map(item => (
-                    <Logo key={item.name} {...item} />
-                  ))}
-                </div>
+      {/* ── SPONSORS ── */}
+      <div style={{
+        maxWidth: 1440, margin: "0 auto",
+        padding: "clamp(20px,3vh,32px) clamp(16px,2.5vw,32px)",
+        borderBottom: `1px solid ${border}`,
+        transition: "border-color 0.3s",
+      }}>
+        {GROUPS.map((g, gi) => (
+          <div key={g.label}>
+            {gi > 0 && (
+              <hr style={{ border: "none", borderTop: `1px solid ${divider}`, margin: "20px 0", transition: "border-color 0.3s" }} />
+            )}
+            <div style={{ marginBottom: gi === GROUPS.length - 1 ? 0 : 24 }}>
+              <p style={{
+                textAlign: "center",
+                fontSize: 9, fontWeight: 800,
+                letterSpacing: "0.28em", textTransform: "uppercase",
+                color: groupLabel,
+                marginBottom: 16, transition: "color 0.3s",
+              }}>{g.label}</p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexWrap: "wrap", gap: 0 }}>
+                {g.items.map(item => (
+                  <Logo key={item.name} {...item} darkMode={darkMode} />
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* ── BOTTOM BAR ── */}
-        <div className="ft-bottom">
-          <div className="ft-bottom-inner">
-            <nav className="ft-legal">
-              <a href="/privacy"  className="ft-llink">Politique de confidentialité</a>
-              <a href="/terms"    className="ft-llink">Conditions d'utilisation</a>
-              <a href="/cookies"  className="ft-llink">Cookies</a>
-              <a href="/contact"  className="ft-llink">Contact</a>
-            </nav>
-            <span className="ft-copy">
-              Copyright © 1994 – 2030 FIFA. Tous droits réservés.
-            </span>
           </div>
-        </div>
+        ))}
+      </div>
 
-      </footer>
-    </>
+      {/* ── BOTTOM BAR ── */}
+      <div style={{ borderTop: `1px solid ${border}`, transition: "border-color 0.3s" }}>
+        <div style={{
+          maxWidth: 1440, margin: "0 auto",
+          padding: "0 clamp(16px,2.5vw,32px)",
+          height: 48,
+          display: "flex", alignItems: "center",
+          justifyContent: "space-between", gap: 16,
+        }}>
+          <nav style={{ display: "flex", alignItems: "center", gap: "clamp(14px,2vw,28px)", flexWrap: "wrap" }}>
+            {[
+              { label: "Politique de confidentialité", href: "/privacy"  },
+              { label: "Conditions d'utilisation",     href: "/terms"    },
+              { label: "Cookies",                      href: "/cookies"  },
+              { label: "Contact",                      href: "/contact"  },
+            ].map(l => (
+              <a
+                key={l.href} href={l.href}
+                style={{
+                  fontSize: "clamp(9px,0.72vw,11px)", fontWeight: 700,
+                  letterSpacing: "0.1em", textTransform: "uppercase",
+                  color: legalLink, textDecoration: "none",
+                  transition: "color 0.15s",
+                }}
+                onMouseOver={e => e.currentTarget.style.color = legalHover}
+                onMouseOut={e  => e.currentTarget.style.color = legalLink}
+              >
+                {l.label}
+              </a>
+            ))}
+          </nav>
+          <span style={{
+            fontSize: "clamp(9px,0.72vw,11px)",
+            color: copy, letterSpacing: "0.03em", whiteSpace: "nowrap",
+            transition: "color 0.3s",
+          }}>
+            Copyright © 1994 – 2030 FIFA. Tous droits réservés.
+          </span>
+        </div>
+      </div>
+
+    </footer>
   );
 }

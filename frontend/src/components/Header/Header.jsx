@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import {
   FiSearch, FiGlobe, FiUser, FiX,
-  FiChevronDown, FiShoppingCart,
+  FiChevronDown, FiShoppingCart, FiSun, FiMoon,
 } from "react-icons/fi";
+import { useTheme } from "../../context/ThemeContext";
 
 // ─── Navigation structure ─────────────────────────────────────
 const NAV = [
@@ -52,6 +53,8 @@ export default function Header() {
   const [lang,       setLang]       = useState("FR");
   const [scrolled,   setScrolled]   = useState(false);
 
+  const { darkMode, toggleTheme } = useTheme();
+
   const searchRef = useRef(null);
   const langRef   = useRef(null);
   const navRef    = useRef(null);
@@ -93,6 +96,61 @@ export default function Header() {
   const groupActive = (item) =>
     item.children?.some(c => isActive(c.href));
 
+  // ─── Light-mode palette overrides ──────────────────────────
+  const lightVars = darkMode ? "" : `
+    :root {
+      --hbg:     #ffffff;
+      --hborder: rgba(0,0,0,0.08);
+      --hmuted:  rgba(0,0,0,0.45);
+      --hhover:  rgba(0,0,0,0.05);
+    }
+    .hdr.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
+    .hdr-ham span               { background: #0d0d0d; }
+    .hdr-link                   { color: rgba(0,0,0,0.5); }
+    .hdr-link:hover             { color: #0d0d0d; }
+    .hdr-link::after            { background: #0d0d0d; }
+    .hdr-link.act               { color: #0d0d0d; }
+    .hdr-link.grp               { color: rgba(0,0,0,0.72); }
+    .hdr-badge                  { background: #0d0d0d; color: white; }
+    .hdr-drop                   { background: #fafafa; border-color: rgba(0,0,0,0.08); border-top-color: #0d0d0d; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+    .hdr-drop-item              { color: rgba(0,0,0,0.48); border-bottom-color: rgba(0,0,0,0.05); }
+    .hdr-drop-item:hover        { background: rgba(0,0,0,0.04); color: #0d0d0d; }
+    .hdr-drop-item.act          { color: #0d0d0d; background: rgba(0,0,0,0.04); }
+    .hdr-drop-item.act::before  { background: #0d0d0d; }
+    .hdr-drop-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.5); }
+    .hdr-btn                    { color: rgba(0,0,0,0.45); }
+    .hdr-btn:hover              { background: rgba(0,0,0,0.05); color: #0d0d0d; }
+    .hdr-btn.is-open            { background: rgba(0,0,0,0.05); color: #0d0d0d; }
+    .hdr-theme-btn              { color: rgba(0,0,0,0.45) !important; }
+    .hdr-theme-btn:hover        { background: rgba(0,0,0,0.05) !important; color: #0d0d0d !important; }
+    .hdr-lang-btn               { border-color: rgba(0,0,0,0.12); color: rgba(0,0,0,0.5); }
+    .hdr-lang-btn:hover         { border-color: rgba(0,0,0,0.35); color: #0d0d0d; }
+    .hdr-lang-drop              { background: #fafafa; border-color: rgba(0,0,0,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
+    .hdr-lang-opt               { color: rgba(0,0,0,0.4); border-bottom-color: rgba(0,0,0,0.04); }
+    .hdr-lang-opt:hover         { background: rgba(0,0,0,0.04); color: #0d0d0d; }
+    .hdr-lang-opt.sel           { color: #0d0d0d; }
+    .hdr-tickets                { background: #0d0d0d; color: white; }
+    .hdr-tickets:hover          { background: #333; }
+    .hdr-search                 { background: #f5f5f5; border-bottom-color: rgba(0,0,0,0.06); }
+    .hdr-search-inner           { border-bottom-color: rgba(0,0,0,0.06); }
+    .hdr-search-input           { color: #0d0d0d; }
+    .hdr-search-input::placeholder { color: rgba(0,0,0,0.25); }
+    .hdr-mob                    { background: #f8f8f8; border-top-color: rgba(0,0,0,0.06); }
+    .hdr-macc                   { color: rgba(0,0,0,0.4); border-color: rgba(0,0,0,0.06); }
+    .hdr-macc:hover             { color: rgba(0,0,0,0.75); background: rgba(0,0,0,0.02); }
+    .hdr-macc.open              { color: #0d0d0d; }
+    .hdr-macc.grp               { color: rgba(0,0,0,0.75); }
+    .hdr-msub                   { background: rgba(0,0,0,0.03); }
+    .hdr-msub-link              { color: rgba(0,0,0,0.35); border-bottom-color: rgba(0,0,0,0.04); }
+    .hdr-msub-link:hover        { color: #0d0d0d; background: rgba(0,0,0,0.02); }
+    .hdr-msub-link.act          { color: #0d0d0d; }
+    .hdr-msub-link:last-child   { border-bottom-color: rgba(0,0,0,0.05); }
+    .hdr-msub-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.5); }
+    .hdr-mfooter                { border-top-color: rgba(0,0,0,0.07); }
+    .hdr-mtickets               { background: #0d0d0d; color: white; }
+    .hdr-mtickets:hover         { background: #333; }
+  `;
+
   return (
     <>
       <style>{`
@@ -108,16 +166,14 @@ export default function Header() {
           --hbody: 'Barlow', sans-serif;
         }
 
-        /* ── ROOT ── */
         .hdr {
           position: sticky; top: 0; z-index: 1000;
           background: var(--hbg);
           border-bottom: 1px solid var(--hborder);
-          transition: box-shadow 0.3s;
+          transition: box-shadow 0.3s, background 0.3s, border-color 0.3s;
         }
         .hdr.scrolled { box-shadow: 0 4px 40px rgba(0,0,0,0.65); }
 
-        /* ── MAIN BAR ── */
         .hdr-bar {
           max-width: 1440px; margin: 0 auto; padding: 0 20px;
           display: flex; align-items: center;
@@ -125,7 +181,6 @@ export default function Header() {
           position: relative;
         }
 
-        /* ── HAMBURGER ── */
         .hdr-ham {
           display: none; flex-direction: column; justify-content: center; gap: 5px;
           background: none; border: none; cursor: pointer;
@@ -136,7 +191,7 @@ export default function Header() {
         .hdr-ham:hover { background: var(--hhover); }
         .hdr-ham span {
           display: block; height: 2px; background: white;
-          transition: transform 0.26s, opacity 0.2s, width 0.2s;
+          transition: transform 0.26s, opacity 0.2s, width 0.2s, background 0.3s;
           transform-origin: center; border-radius: 1px;
         }
         .hdr-ham span:nth-child(1) { width: 20px; }
@@ -146,7 +201,6 @@ export default function Header() {
         .hdr-ham.open span:nth-child(2) { opacity: 0; width: 0; }
         .hdr-ham.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); width: 20px; }
 
-        /* ── LOGO ── */
         .hdr-logo {
           display: flex; align-items: center; gap: 8px;
           text-decoration: none; flex-shrink: 0; margin-right: 20px;
@@ -156,7 +210,6 @@ export default function Header() {
         .hdr-logo-fb .t1 { color: white; font-family: var(--hfont); font-size: 13px; font-weight: 900; letter-spacing: 0.1em; line-height: 1; }
         .hdr-logo-fb .t2 { color: rgba(255,255,255,0.45); font-family: var(--hfont); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; line-height: 1; }
 
-        /* ── DESKTOP NAV ── */
         .hdr-nav {
           flex: 1; min-width: 0;
           display: flex; align-items: stretch;
@@ -166,7 +219,6 @@ export default function Header() {
 
         .hdr-item { position: relative; display: flex; align-items: center; height: 100%; }
 
-        /* Nav link / button */
         .hdr-link {
           display: flex; align-items: center; gap: 4px;
           padding: 0 12px; height: 100%;
@@ -179,7 +231,6 @@ export default function Header() {
           transition: color 0.15s;
           position: relative;
         }
-        /* Animated underline */
         .hdr-link::after {
           content: ''; position: absolute;
           bottom: 0; left: 12px; right: 12px;
@@ -194,15 +245,9 @@ export default function Header() {
         .hdr-link.grp          { color: rgba(255,255,255,0.72); }
         .hdr-link.grp::after   { transform: scaleX(1); opacity: 0.35; }
 
-        .hdr-chev {
-          opacity: 0.35; flex-shrink: 0;
-          transition: transform 0.2s, opacity 0.15s;
-        }
-        .hdr-link.drop-open .hdr-chev {
-          transform: rotate(180deg); opacity: 0.65;
-        }
+        .hdr-chev { opacity: 0.35; flex-shrink: 0; transition: transform 0.2s, opacity 0.15s; }
+        .hdr-link.drop-open .hdr-chev { transform: rotate(180deg); opacity: 0.65; }
 
-        /* Badge pill */
         .hdr-badge {
           display: inline-flex; align-items: center;
           background: white; color: #0d0d0d;
@@ -211,15 +256,13 @@ export default function Header() {
           margin-left: 3px; line-height: 1.4; flex-shrink: 0;
         }
 
-        /* ── DROPDOWN ── */
         .hdr-drop {
           position: absolute; top: calc(100% + 1px); left: 0;
           background: #171717;
           border: 1px solid rgba(255,255,255,0.1);
           border-top: 2px solid white;
           border-radius: 0 0 4px 4px;
-          overflow: hidden;
-          min-width: 210px;
+          overflow: hidden; min-width: 210px;
           box-shadow: 0 20px 50px rgba(0,0,0,0.7);
           z-index: 9999;
           opacity: 0; pointer-events: none;
@@ -228,7 +271,6 @@ export default function Header() {
         }
         .hdr-drop.open { opacity: 1; pointer-events: all; transform: translateY(0); }
 
-        /* Dropdown items — text only, no icons */
         .hdr-drop-item {
           display: flex; align-items: center; justify-content: space-between;
           padding: 12px 18px;
@@ -240,14 +282,8 @@ export default function Header() {
           position: relative;
         }
         .hdr-drop-item:last-child { border-bottom: none; }
-        .hdr-drop-item:hover {
-          background: rgba(255,255,255,0.05);
-          color: white;
-          padding-left: 22px;
-        }
+        .hdr-drop-item:hover { background: rgba(255,255,255,0.05); color: white; padding-left: 22px; }
         .hdr-drop-item.act { color: white; background: rgba(255,255,255,0.04); }
-
-        /* Active indicator dot */
         .hdr-drop-item.act::before {
           content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
           width: 3px; height: 3px; border-radius: 50%; background: white;
@@ -260,7 +296,6 @@ export default function Header() {
           flex-shrink: 0; margin-left: 8px;
         }
 
-        /* ── RIGHT CONTROLS ── */
         .hdr-right { display: flex; align-items: center; gap: 2px; margin-left: 12px; flex-shrink: 0; }
 
         .hdr-btn {
@@ -273,7 +308,16 @@ export default function Header() {
         .hdr-btn:hover   { background: var(--hhover); color: white; }
         .hdr-btn.is-open { background: var(--hhover); color: white; }
 
-        /* Language selector */
+        .hdr-theme-btn {
+          background: none; border: none; cursor: pointer;
+          color: var(--hmuted); width: 36px; height: 36px;
+          display: flex; align-items: center; justify-content: center;
+          border-radius: 3px;
+          transition: background 0.15s, color 0.15s, transform 0.3s; flex-shrink: 0;
+        }
+        .hdr-theme-btn:hover { background: var(--hhover); color: white; }
+        .hdr-theme-btn:active { transform: rotate(20deg); }
+
         .hdr-lang-wrap { position: relative; }
         .hdr-lang-btn {
           display: flex; align-items: center; gap: 5px;
@@ -307,7 +351,6 @@ export default function Header() {
         .hdr-lang-opt:hover { background: rgba(255,255,255,0.06); color: white; }
         .hdr-lang-opt.sel { color: white; }
 
-        /* Tickets CTA */
         .hdr-tickets {
           display: flex; align-items: center; gap: 7px;
           background: white; color: #0d0d0d; text-decoration: none;
@@ -320,7 +363,6 @@ export default function Header() {
         .hdr-tickets:hover  { background: #e8e8e8; transform: translateY(-1px); }
         .hdr-tickets:active { transform: translateY(0); }
 
-        /* ── SEARCH PANEL ── */
         .hdr-search {
           overflow: hidden;
           background: #111;
@@ -341,7 +383,6 @@ export default function Header() {
         }
         .hdr-search-input::placeholder { color: rgba(255,255,255,0.2); }
 
-        /* ── MOBILE MENU ── */
         .hdr-mob {
           overflow: hidden; background: #0f0f0f;
           transition: max-height 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.22s;
@@ -350,12 +391,10 @@ export default function Header() {
         .hdr-mob.closed { max-height: 0; opacity: 0; border-top-color: transparent; }
         .hdr-mob.open   { max-height: 1000px; opacity: 1; }
 
-        /* Accordion trigger */
         .hdr-macc {
           display: flex; align-items: center; justify-content: space-between;
           padding: 15px 20px;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
-          color: rgba(255,255,255,0.4); text-decoration: none;
+          color: rgba(255,255,255,0.4);
           font-family: var(--hfont); font-size: 13.5px; font-weight: 800;
           letter-spacing: 0.12em; text-transform: uppercase;
           background: none; border-width: 0 0 1px; border-style: solid;
@@ -369,7 +408,6 @@ export default function Header() {
         .hdr-mchev { opacity: 0.35; transition: transform 0.22s, opacity 0.15s; }
         .hdr-macc.open .hdr-mchev { transform: rotate(180deg); opacity: 0.7; }
 
-        /* Sub links */
         .hdr-msub {
           overflow: hidden; background: rgba(0,0,0,0.25);
           transition: max-height 0.24s ease;
@@ -393,7 +431,6 @@ export default function Header() {
           letter-spacing: 0.14em; padding: 2px 5px; border-radius: 2px;
         }
 
-        /* Mobile footer */
         .hdr-mfooter {
           display: flex; align-items: center; gap: 8px;
           padding: 13px 20px; border-top: 1px solid rgba(255,255,255,0.07);
@@ -407,16 +444,15 @@ export default function Header() {
         }
         .hdr-mtickets:hover { background: #e8e8e8; }
 
-        /* ── BREAKPOINTS ── */
         @media (max-width: 1180px) {
           .hdr-tickets { display: none; }
           .hdr-link    { padding: 0 9px; font-size: 11px; }
           .hdr-link::after { left: 9px; right: 9px; }
         }
         @media (max-width: 900px) {
-          .hdr-nav  { display: none !important; }
+          .hdr-nav       { display: none !important; }
           .hdr-lang-wrap { display: none !important; }
-          .hdr-ham  { display: flex; }
+          .hdr-ham       { display: flex; }
         }
         @media (max-width: 600px) {
           .hdr-bar { padding: 0 14px; }
@@ -429,6 +465,9 @@ export default function Header() {
           .hdr-logo img { height: 28px; }
           .hdr-btn.xs-hide { display: none; }
         }
+
+        /* ── Light mode overrides ── */
+        ${lightVars}
       `}</style>
 
       <header className={`hdr${scrolled ? " scrolled" : ""}`}>
@@ -460,12 +499,12 @@ export default function Header() {
           {/* Desktop nav */}
           <nav className="hdr-nav" ref={navRef} aria-label="Navigation principale">
             {NAV.map((item) => {
-              const isOpen   = openDrop === item.label;
-              const gActive  = groupActive(item);
-              const linkCls  = [
+              const isOpen  = openDrop === item.label;
+              const gActive = groupActive(item);
+              const linkCls = [
                 "hdr-link",
-                gActive  ? "grp"       : "",
-                isOpen   ? "drop-open" : "",
+                gActive ? "grp"       : "",
+                isOpen  ? "drop-open" : "",
               ].filter(Boolean).join(" ");
 
               return (
@@ -481,15 +520,12 @@ export default function Header() {
                     <FiChevronDown size={10} className="hdr-chev" />
                   </button>
 
-                  {/* Dropdown — text only, no icons */}
                   <div className={`hdr-drop${isOpen ? " open" : ""}`} role="menu">
                     {item.children.map(child => (
                       <a key={child.href} href={child.href} role="menuitem"
                         className={`hdr-drop-item${isActive(child.href) ? " act" : ""}`}>
                         {child.label}
-                        {child.badge && (
-                          <span className="hdr-drop-badge">{child.badge}</span>
-                        )}
+                        {child.badge && <span className="hdr-drop-badge">{child.badge}</span>}
                       </a>
                     ))}
                   </div>
@@ -507,6 +543,16 @@ export default function Header() {
               onClick={() => setSearchOpen(o => !o)}
               aria-label="Rechercher">
               {searchOpen ? <FiX size={17} /> : <FiSearch size={17} />}
+            </button>
+
+            {/* Dark / Light toggle */}
+            <button
+              className="hdr-theme-btn"
+              onClick={toggleTheme}
+              aria-label={darkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+              title={darkMode ? "Mode clair" : "Mode sombre"}
+            >
+              {darkMode ? <FiSun size={17} /> : <FiMoon size={17} />}
             </button>
 
             {/* Language */}
@@ -566,7 +612,6 @@ export default function Header() {
 
         {/* ── MOBILE MENU ── */}
         <nav className={`hdr-mob${menuOpen ? " open" : " closed"}`} aria-hidden={!menuOpen}>
-
           {NAV.map((item) => {
             const isOpen  = mobileOpen === item.label;
             const gActive = groupActive(item);
@@ -578,9 +623,7 @@ export default function Header() {
                   <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     {item.label}
                     {item.badge && (
-                      <span className="hdr-badge" style={{ display: "inline-flex" }}>
-                        {item.badge}
-                      </span>
+                      <span className="hdr-badge" style={{ display: "inline-flex" }}>{item.badge}</span>
                     )}
                   </span>
                   <div className="hdr-macc-r">
@@ -593,9 +636,7 @@ export default function Header() {
                     <a key={child.href} href={child.href}
                       className={`hdr-msub-link${isActive(child.href) ? " act" : ""}`}>
                       {child.label}
-                      {child.badge && (
-                        <span className="hdr-msub-badge">{child.badge}</span>
-                      )}
+                      {child.badge && <span className="hdr-msub-badge">{child.badge}</span>}
                     </a>
                   ))}
                 </div>
@@ -605,13 +646,30 @@ export default function Header() {
 
           {/* Mobile footer */}
           <div className="hdr-mfooter">
+            {/* Theme toggle in mobile too */}
+            <button
+              className="hdr-theme-btn"
+              onClick={toggleTheme}
+              aria-label={darkMode ? "Mode clair" : "Mode sombre"}
+              style={{
+                color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)",
+                background: darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+                borderRadius: 3,
+              }}
+            >
+              {darkMode ? <FiSun size={17} /> : <FiMoon size={17} />}
+            </button>
             <button className="hdr-btn"
-              style={{ color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.06)", borderRadius: 3 }}
+              style={{
+                color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)",
+                background: darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+                borderRadius: 3,
+              }}
               aria-label="Langue">
               <FiGlobe size={17} />
             </button>
             <a href="/login" className="hdr-btn"
-              style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}
+              style={{ color: darkMode ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", textDecoration: "none" }}
               aria-label="Mon compte">
               <FiUser size={17} />
             </a>
