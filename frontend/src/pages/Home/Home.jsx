@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTheme } from "../../context/ThemeContext";
 import { GlobalFonts }                           from "./ui";
 import { NewsTicker, HeroSection }               from "./HeroSection";
 import { StatsBar, NewsSection, MoreNewsSection } from "./NewsSection";
@@ -8,26 +9,11 @@ import { PromoSection, TournamentSection, FanZoneSection } from "./PromoSection"
 import { useStats, useMatches }                   from "../../hooks/useWorldCup";
 
 
-/*
-  VERTICAL STACK inside <Home>:
-  ┌──────────────────────────────────────────────────────┐
-  │  NewsTicker          44px  (dark bar, news feed)     │
-  │  HeroSection         calc(100svh - 146px)            │
-  │    └─ 146px = 40 CountdownBanner                     │
-  │              + 62 Header                             │
-  │              + 44 NewsTicker                         │
-  │  StatsBar            ~80px                           │
-  │  NewsSection         ...                             │
-  │  MatchesSection      ...                             │
-  │  StandingsSection    ...                             │
-  │  PromoSection        ...                             │
-  │  CitiesSection       ...                             │
-  │  MoreNewsSection     ...                             │
-  │  TournamentSection   ...                             │
-  │  FanZoneSection      ...                             │
-  └──────────────────────────────────────────────────────┘
-*/
+
 export default function Home() {
+  const { darkMode } = useTheme();
+  const bg = darkMode ? "#0d0d0d" : "#ffffff";
+
   const [matchFilter, setMatchFilter] = useState("upcoming");
   const [mounted,     setMounted]     = useState(false);
 
@@ -43,9 +29,9 @@ export default function Home() {
   return (
     <div style={{
       fontFamily: "'Barlow', sans-serif",
-      background: "white",
+      background: bg,
       opacity:    mounted ? 1 : 0,
-      transition: "opacity 0.4s",
+      transition: "opacity 0.4s, background 0.3s",
     }}>
       <GlobalFonts />
 

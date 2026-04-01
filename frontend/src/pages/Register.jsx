@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { loginUser } from "../services/api";
+import { registerUser } from "../services/api";
 
 const FD = "'Barlow Condensed', sans-serif";
 const FB = "'Barlow', sans-serif";
@@ -69,9 +69,9 @@ function Divider({ border, textMuted }) {
   );
 }
 
-export default function Login() {
+export default function Register() {
   const { darkMode } = useTheme();
-  const { login }    = useAuth();
+  const { register } = useAuth();
   const navigate     = useNavigate();
 
   const bg            = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -83,26 +83,32 @@ export default function Login() {
   const hover         = darkMode ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.04)";
   const inputBg       = darkMode ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.05)";
 
-  const [email, setEmail] = useState("");
-  const [pass, setPass]   = useState("");
-  const [showPass, setShowPass]         = useState(false);
-  const [remember, setRemember]         = useState(false);
-  const [loading, setLoading]           = useState(false);
-  const [errors, setErrors]             = useState({});
-  const [touched, setTouched]           = useState({});
-  const [serverError, setServerError]   = useState(null);
-  const [toast, setToast]               = useState(null);
+  const [name, setName]               = useState("");
+  const [email, setEmail]             = useState("");
+  const [pass, setPass]               = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
+  const [showPass, setShowPass]       = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading]         = useState(false);
+  const [errors, setErrors]           = useState({});
+  const [touched, setTouched]         = useState({});
+  const [serverError, setServerError] = useState(null);
+  const [toast, setToast]             = useState(null);
 
-  const validate = (fields = { email, pass }) => {
+  const validate = (f = { name, email, pass, confirmPass }) => {
     const err = {};
-    if (!fields.email.includes("@")) err.email = "Adresse e-mail invalide";
-    if (fields.pass.length < 6) err.pass = "Minimum 6 caractères";
+    if (!f.name.trim()) err.name = "Le nom est obligatoire";
+    else if (f.name.trim().length < 2) err.name = "Minimum 2 caractères";
+    if (!f.email.includes("@")) err.email = "Adresse e-mail invalide";
+    if (f.pass.length < 6) err.pass = "Minimum 6 caractères";
+    if (!f.confirmPass) err.confirmPass = "Veuillez confirmer le mot de passe";
+    else if (f.pass !== f.confirmPass) err.confirmPass = "Les mots de passe ne correspondent pas";
     return err;
   };
 
   useEffect(() => {
     if (Object.keys(touched).length) setErrors(validate());
-  }, [email, pass]); // eslint-disable-line
+  }, [name, email, pass, confirmPass]); // eslint-disable-line
 
   const handleBlur = (field) => {
     setTouched(t => ({ ...t, [field]: true }));
@@ -115,7 +121,7 @@ export default function Login() {
   };
 
   const handleSubmit = async () => {
-    setTouched({ email: true, pass: true });
+    setTouched({ name: true, email: true, pass: true, confirmPass: true });
     const err = validate();
     setErrors(err);
     if (Object.keys(err).length) return;
@@ -124,17 +130,23 @@ export default function Login() {
     setServerError(null);
 
     try {
-      const res = await loginUser({ email, password: pass });
-      login(res.user);
-      showToast("success", "Connexion réussie !");
+      const res = await registerUser({
+        name, email,
+        password: pass,
+        password_confirmation: confirmPass,
+      });
+      register(res.user);
+      showToast("success", "Compte créé avec succès !");
       setTimeout(() => navigate("/"), 1200);
     } catch (err) {
       const serverErrors = err.errors || {};
       const mappedErrors = {};
-      if (serverErrors.email)   mappedErrors.email = serverErrors.email[0];
-      if (serverErrors.password) mappedErrors.pass = serverErrors.password[0];
+      if (serverErrors.name)                  mappedErrors.name = serverErrors.name[0];
+      if (serverErrors.email)                 mappedErrors.email = serverErrors.email[0];
+      if (serverErrors.password)              mappedErrors.pass = serverErrors.password[0];
+      if (serverErrors.password_confirmation) mappedErrors.confirmPass = serverErrors.password_confirmation[0];
       if (!Object.keys(mappedErrors).length) {
-        setServerError(err.message || "Erreur de connexion");
+        setServerError(err.message || "Erreur lors de l'inscription");
       } else {
         setErrors(mappedErrors);
       }
@@ -149,13 +161,13 @@ export default function Login() {
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@300;400;500;600&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
         body { background: ${bg}; margin: 0; transition: background 0.3s; }
-        .login-wrap {
+        .register-wrap {
           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
           background: radial-gradient(ellipse 600px 400px at 70% 30%, ${darkMode ? "rgba(255,255,255,.025)" : "rgba(0,0,0,.025)"} 0%, transparent 70%), ${bg};
           transition: background 0.3s;
         }
-        .card {
-          width: 380px; background: ${card}; padding: 44px 40px 40px;
+        .reg-card {
+          width: 400px; background: ${card}; padding: 44px 40px 40px;
           border-radius: 16px; border: 1px solid ${border};
           animation: fadeUp .4s ease both; transition: background 0.3s, border-color 0.3s;
         }
@@ -188,33 +200,13 @@ export default function Login() {
           padding: 2px; display: flex; align-items: center; transition: color 0.3s;
         }
         .eye-btn:hover { color: ${textSecondary}; }
-        .bottom-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; margin-top: 4px; }
-        .remember-label {
-          display: flex; align-items: center; gap: 7px; cursor: pointer;
-          font-family: ${FB}; font-size: 11px; color: ${textSecondary}; user-select: none; transition: color 0.3s;
-        }
-        .remember-label input[type=checkbox] {
-          appearance: none; width: 14px; height: 14px;
-          border: 1px solid ${border}; border-radius: 4px; background: transparent;
-          cursor: pointer; position: relative; transition: border-color 0.3s, background 0.3s; flex-shrink: 0;
-        }
-        .remember-label input[type=checkbox]:checked { background: ${textPrimary}; border-color: ${textPrimary}; }
-        .remember-label input[type=checkbox]:checked::after {
-          content: ''; position: absolute; left: 3px; top: 1px; width: 5px; height: 8px;
-          border: 1.5px solid ${bg}; border-top: none; border-left: none; transform: rotate(45deg);
-        }
-        .forgot-link {
-          background: none; border: none; color: ${textSecondary}; font-family: ${FB};
-          font-size: 11px; cursor: pointer; letter-spacing: .02em; transition: color 0.3s; text-decoration: none;
-        }
-        .forgot-link:hover { color: ${textPrimary}; }
         .submit-btn {
           width: 100%; padding: 14px; border-radius: 100px; border: none;
           background: ${textPrimary}; font-family: ${FD};
           letter-spacing: .18em; font-size: 12px; font-weight: 800;
           cursor: pointer; color: ${bg};
           transition: opacity 0.3s, transform 0.1s, background 0.3s, color 0.3s;
-          position: relative; overflow: hidden;
+          position: relative; overflow: hidden; margin-top: 8px;
         }
         .submit-btn:hover:not(:disabled) { opacity: .92; }
         .submit-btn:active:not(:disabled) { transform: scale(.99); }
@@ -256,11 +248,11 @@ export default function Login() {
         </div>
       )}
 
-      <div className="login-wrap">
-        <div className="card">
+      <div className="register-wrap">
+        <div className="reg-card">
           <div className="brand">
-            <p className="brand-title">CONNEXION</p>
-            <p className="brand-sub">Bienvenue — connectez-vous pour continuer</p>
+            <p className="brand-title">CRÉER UN COMPTE</p>
+            <p className="brand-sub">Rejoignez la communauté FIFA 2030</p>
           </div>
 
           <div className="soc-grid">
@@ -271,6 +263,15 @@ export default function Login() {
           <Divider border={border} textMuted={textMuted} />
 
           {serverError && <div className="server-error">{serverError}</div>}
+
+          <Field label="Nom complet" error={errors.name} textSecondary={textSecondary}>
+            <input
+              className={`field-input${errors.name && touched.name ? " has-error" : ""}`}
+              value={name} onChange={e => setName(e.target.value)}
+              onBlur={() => handleBlur("name")}
+              placeholder="Votre nom" type="text" autoComplete="name"
+            />
+          </Field>
 
           <Field label="Adresse e-mail" error={errors.email} textSecondary={textSecondary}>
             <input
@@ -287,7 +288,7 @@ export default function Login() {
                 className={`field-input${errors.pass && touched.pass ? " has-error" : ""}`}
                 type={showPass ? "text" : "password"} value={pass}
                 onChange={e => setPass(e.target.value)} onBlur={() => handleBlur("pass")}
-                placeholder="••••••••" autoComplete="current-password"
+                placeholder="••••••••" autoComplete="new-password"
               />
               <button type="button" className="eye-btn" onClick={() => setShowPass(!showPass)} tabIndex={-1}>
                 <EyeIcon open={showPass} />
@@ -295,24 +296,30 @@ export default function Login() {
             </div>
           </Field>
 
-          <div className="bottom-row">
-            <label className="remember-label">
-              <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
-              Se souvenir de moi
-            </label>
-            <button className="forgot-link">Mot de passe oublié ?</button>
-          </div>
+          <Field label="Confirmer le mot de passe" error={errors.confirmPass} textSecondary={textSecondary}>
+            <div className="pass-wrap">
+              <input
+                className={`field-input${errors.confirmPass && touched.confirmPass ? " has-error" : ""}`}
+                type={showConfirm ? "text" : "password"} value={confirmPass}
+                onChange={e => setConfirmPass(e.target.value)} onBlur={() => handleBlur("confirmPass")}
+                placeholder="••••••••" autoComplete="new-password"
+              />
+              <button type="button" className="eye-btn" onClick={() => setShowConfirm(!showConfirm)} tabIndex={-1}>
+                <EyeIcon open={showConfirm} />
+              </button>
+            </div>
+          </Field>
 
           <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
             {loading
-              ? <><span className="spinner" />Connexion…</>
-              : "SE CONNECTER"
+              ? <><span className="spinner" />Création…</>
+              : "CRÉER MON COMPTE"
             }
           </button>
 
           <p className="footer-text">
-            Pas encore de compte ?
-            <a href="/register" className="footer-link" style={{ textDecoration: "underline" }}>S'inscrire</a>
+            Vous avez déjà un compte ?
+            <a href="/login" className="footer-link" style={{ textDecoration: "underline" }}>Se connecter</a>
           </p>
         </div>
       </div>
