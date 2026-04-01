@@ -1,11 +1,24 @@
 import { useState, useEffect } from "react";
 import { FiShoppingCart, FiArrowRight, FiPlay, FiCalendar } from "react-icons/fi";
 import { FONT, TICKER_ITEMS } from "./constants";
+import { useTheme } from "../../context/ThemeContext";
 
 const YT_VIDEO_ID = "RDtdVQgB9ME";
 
 // ─── NEWS TICKER ───────────────────────────────────────────────
 export function NewsTicker() {
+  const { darkMode } = useTheme();
+
+  const bg            = darkMode ? "#0a0a0a"                  : "#f5f5f5";
+  const borderColor   = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
+  const badgeBg       = darkMode ? "#ffffff"                   : "#0d0d0d";
+  const badgeText     = darkMode ? "#0a0a0a"                   : "#ffffff";
+  const divider       = darkMode ? "rgba(255,255,255,0.12)"    : "rgba(0,0,0,0.08)";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.5)"     : "rgba(0,0,0,0.5)";
+  const dotActive     = darkMode ? "#ffffff"                    : "#0d0d0d";
+  const dotInactive   = darkMode ? "rgba(255,255,255,0.2)"     : "rgba(0,0,0,0.15)";
+  const brandRed      = "#c8102e";
+
   const [idx,  setIdx]  = useState(0);
   const [fade, setFade] = useState(true);
 
@@ -18,32 +31,40 @@ export function NewsTicker() {
   }, []);
 
   return (
-    <div style={{ background: "#0a0a0a", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+    <div style={{
+      background: bg, borderBottom: `1px solid ${borderColor}`,
+      transition: "background 0.3s, border-color 0.3s",
+    }}>
       <div style={{
         maxWidth: 1380, margin: "0 auto", padding: "0 clamp(16px,3vw,32px)",
         display: "flex", alignItems: "center", height: 44, gap: 14,
       }}>
         <div style={{
           flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
-          background: "white", padding: "4px 10px", borderRadius: 2,
+          background: badgeBg, padding: "4px 10px", borderRadius: 2,
+          transition: "background 0.3s",
         }}>
           <span style={{
-            width: 6, height: 6, borderRadius: "50%", background: "#c8102e",
+            width: 6, height: 6, borderRadius: "50%", background: brandRed,
             flexShrink: 0, animation: "tdot 1.4s ease-in-out infinite",
           }} />
           <span style={{
-            color: "#0a0a0a", fontSize: 9, fontWeight: 900,
+            color: badgeText, fontSize: 9, fontWeight: 900,
             letterSpacing: "0.2em", textTransform: "uppercase",
             fontFamily: FONT.body, whiteSpace: "nowrap",
+            transition: "color 0.3s",
           }}>En Direct</span>
         </div>
 
-        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.12)", flexShrink: 0 }} />
+        <div style={{
+          width: 1, height: 16, background: divider, flexShrink: 0,
+          transition: "background 0.3s",
+        }} />
 
         <p style={{
-          flex: 1, color: "rgba(255,255,255,0.5)", fontSize: 12,
+          flex: 1, color: textSecondary, fontSize: 12,
           fontFamily: FONT.body, overflow: "hidden", whiteSpace: "nowrap",
-          textOverflow: "ellipsis", opacity: fade ? 1 : 0, transition: "opacity 0.28s",
+          textOverflow: "ellipsis", opacity: fade ? 1 : 0, transition: "opacity 0.28s, color 0.3s",
           minWidth: 0,
         }}>
           {TICKER_ITEMS[idx]}
@@ -56,7 +77,7 @@ export function NewsTicker() {
               style={{
                 width: i === idx ? 14 : 5, height: 5, borderRadius: 3,
                 border: "none", cursor: "pointer", padding: 0,
-                background: i === idx ? "white" : "rgba(255,255,255,0.2)",
+                background: i === idx ? dotActive : dotInactive,
                 transition: "all 0.3s",
               }}
             />
@@ -71,6 +92,40 @@ export function NewsTicker() {
 
 // ─── HERO ──────────────────────────────────────────────────────
 export function HeroSection() {
+  const { darkMode } = useTheme();
+
+  /* ── colour tokens ── */
+  const heroBg          = darkMode ? "#0a0a0a"                   : "#f5f5f5";
+  const oR              = darkMode ? "10,10,10"                  : "245,245,245";
+  const textPrimary     = darkMode ? "#ffffff"                   : "#0d0d0d";
+  const textSub         = darkMode ? "rgba(255,255,255,0.38)"   : "rgba(0,0,0,0.35)";
+  const textMuted       = darkMode ? "rgba(255,255,255,0.4)"    : "rgba(0,0,0,0.35)";
+  const textFaint       = darkMode ? "rgba(255,255,255,0.28)"   : "rgba(0,0,0,0.22)";
+  const textVFaint      = darkMode ? "rgba(255,255,255,0.18)"   : "rgba(0,0,0,0.15)";
+  const strokeColor     = darkMode ? "rgba(255,255,255,0.55)"   : "rgba(0,0,0,0.45)";
+  const borderBase      = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
+  const borderSub       = darkMode ? "rgba(255,255,255,0.1)"    : "rgba(0,0,0,0.1)";
+  const borderMed       = darkMode ? "rgba(255,255,255,0.18)"   : "rgba(0,0,0,0.18)";
+  const borderStrong    = darkMode ? "rgba(255,255,255,0.35)"   : "rgba(0,0,0,0.3)";
+  const borderBright    = darkMode ? "rgba(255,255,255,0.8)"    : "rgba(0,0,0,0.7)";
+  const hover           = darkMode ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.04)";
+  const hoverStrong     = darkMode ? "rgba(255,255,255,0.14)"   : "rgba(0,0,0,0.1)";
+  const subtleBg        = darkMode ? "rgba(255,255,255,0.04)"   : "rgba(0,0,0,0.03)";
+  const subtleHover     = darkMode ? "rgba(255,255,255,0.09)"   : "rgba(0,0,0,0.06)";
+  const accent          = darkMode ? "#ffffff"                   : "#0d0d0d";
+  const accentContrast  = darkMode ? "#0a0a0a"                  : "#ffffff";
+  const accentHover     = darkMode ? "#efefef"                   : "#333333";
+  const cardBg          = darkMode ? "rgba(10,10,10,0.78)"      : "rgba(255,255,255,0.85)";
+  const shadow          = darkMode ? "rgba(0,0,0,0.4)"          : "rgba(0,0,0,0.15)";
+  const shadowStrong    = darkMode ? "rgba(0,0,0,0.55)"         : "rgba(0,0,0,0.25)";
+  const dotBg           = darkMode ? "rgba(255,255,255,0.3)"    : "rgba(0,0,0,0.2)";
+  const dotActive       = darkMode ? "#ffffff"                   : "#0d0d0d";
+  const lineBg          = darkMode ? "rgba(255,255,255,0.28)"   : "rgba(0,0,0,0.2)";
+  const shimmerColor    = darkMode ? "rgba(255,255,255,0.55)"   : "rgba(255,255,255,0.55)";
+  const textHeroStrong  = darkMode ? "rgba(255,255,255,0.85)"   : "rgba(0,0,0,0.75)";
+  const textHeroSec     = darkMode ? "rgba(255,255,255,0.6)"    : "rgba(0,0,0,0.5)";
+  const liveGreen       = "#22c55e";
+
   const [vis,     setVis]     = useState(false);
   const [ytReady, setYtReady] = useState(false);
 
@@ -100,12 +155,6 @@ export function HeroSection() {
     transition: `opacity .6s ease ${d}s, transform .6s ease ${d}s`,
   });
 
-  const WORDS = [
-    { word: "LE",    cls: "h1-w", sizeClass: "h1-le",    delay: 0.12 },
-    { word: "MONDE", cls: "h1-o", sizeClass: "h1-monde", delay: 0.20 },
-    { word: "UNI.",  cls: "h1-w", sizeClass: "h1-uni",   delay: 0.28 },
-  ];
-
   return (
     <>
 <style>{`
@@ -119,12 +168,13 @@ export function HeroSection() {
         .hero-root {
           --bars: 146px;
           position: relative;
-          background: #0a0a0a;
+          background: ${heroBg};
           min-height: max(500px, calc(100svh - var(--bars)));
           display: flex;
           align-items: center;
           overflow-x: hidden;
           overflow-y: visible;
+          transition: background 0.3s;
         }
 
         .hero-bg {
@@ -138,13 +188,15 @@ export function HeroSection() {
         .hero-ov-b {
           position: absolute; inset: 0; pointer-events: none;
           background: linear-gradient(to top,
-            #0a0a0a 0%, rgba(10,10,10,.82) 38%,
-            rgba(10,10,10,.3) 68%, rgba(10,10,10,.55) 100%);
+            ${heroBg} 0%, rgba(${oR},.82) 38%,
+            rgba(${oR},.3) 68%, rgba(${oR},.55) 100%);
+          transition: background 0.3s;
         }
         .hero-ov-l {
           position: absolute; inset: 0; pointer-events: none;
           background: linear-gradient(to right,
-            rgba(10,10,10,.96) 0%, rgba(10,10,10,.55) 52%, transparent 100%);
+            rgba(${oR},.96) 0%, rgba(${oR},.55) 52%, transparent 100%);
+          transition: background 0.3s;
         }
 
         .hero-dots {
@@ -154,9 +206,9 @@ export function HeroSection() {
         .hero-dot {
           height: 5px; border-radius: 3px; border: none;
           cursor: pointer; padding: 0;
-          background: rgba(255,255,255,.3); transition: all .35s;
+          background: ${dotBg}; transition: all .35s;
         }
-        .hero-dot.on  { width: 18px; background: white; }
+        .hero-dot.on  { width: 18px; background: ${dotActive}; }
         .hero-dot.off { width: 5px; }
 
         .hero-wrap {
@@ -174,12 +226,13 @@ export function HeroSection() {
           margin-bottom: clamp(10px,1.5vh,18px);
           width: 100%;
         }
-        .hero-ey-line { width: 32px; height: 1px; background: rgba(255,255,255,.28); flex-shrink: 0; }
+        .hero-ey-line { width: 32px; height: 1px; background: ${lineBg}; flex-shrink: 0; transition: background 0.3s; }
         .hero-ey-txt {
-          color: rgba(255,255,255,.35);
+          color: ${textMuted};
           font-family: 'Barlow', sans-serif;
           font-size: clamp(8px,1vw,10px); font-weight: 800;
           letter-spacing: .4em; text-transform: uppercase;
+          transition: color 0.3s;
         }
 
 .hero-h1 {
@@ -195,19 +248,21 @@ export function HeroSection() {
         .h1-monde { font-size: clamp(64px, 10vw, 140px); }
         .h1-uni   { font-size: clamp(64px, 10vw, 140px); }
 
-.h1-w { color: white; }
+.h1-w { color: ${textPrimary}; transition: color 0.3s; }
 .h1-o {
   color: transparent;
-  -webkit-text-stroke: clamp(1px, 0.13vw, 2px) rgba(255,255,255,.55);
+  -webkit-text-stroke: clamp(1px, 0.13vw, 2px) ${strokeColor};
+  transition: -webkit-text-stroke-color 0.3s;
 }
 
         .hero-sub {
-          color: rgba(255,255,255,.38);
+          color: ${textSub};
           font-family: 'Barlow', sans-serif;
           font-size: clamp(12px,1.4vw,15px);
           font-weight: 400; line-height: 1.8;
           margin: clamp(14px,2vh,22px) 0 clamp(24px,3.5vh,36px);
           max-width: 30ch; width: 100%;
+          transition: color 0.3s;
         }
 
         .hero-cta {
@@ -220,24 +275,24 @@ export function HeroSection() {
         .btn-buy {
           position: relative; overflow: hidden;
           display: inline-flex; align-items: center; gap: 8px;
-          background: white; color: #0a0a0a;
+          background: ${accent}; color: ${accentContrast};
           font-family: 'Barlow', sans-serif;
           font-size: clamp(12px,1.2vw,14px); font-weight: 800; letter-spacing: .04em;
           padding: clamp(11px,1.4vh,14px) clamp(20px,2.2vw,28px);
           border-radius: 100px; text-decoration: none;
-          box-shadow: 0 4px 20px rgba(0,0,0,.4);
-          transition: transform .2s ease, box-shadow .2s ease, background .15s;
+          box-shadow: 0 4px 20px ${shadow};
+          transition: transform .2s ease, box-shadow .2s ease, background .3s, color 0.3s;
           white-space: nowrap;
         }
         .btn-buy:hover {
-          background: #efefef;
+          background: ${accentHover};
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(0,0,0,.55);
+          box-shadow: 0 10px 30px ${shadowStrong};
         }
         .btn-buy:active { transform: translateY(0); }
         .btn-buy .shimmer {
           position: absolute; top: 0; left: -80%; width: 50%; height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+          background: linear-gradient(90deg, transparent, ${shimmerColor}, transparent);
           pointer-events: none;
         }
         .btn-buy:hover .shimmer { animation: shim .5s ease forwards; }
@@ -247,67 +302,69 @@ export function HeroSection() {
         .btn-watch {
           display: inline-flex; align-items: center; gap: 9px;
           text-decoration: none;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.18);
+          background: ${hover};
+          border: 1px solid ${borderMed};
           border-radius: 100px;
           padding: clamp(11px,1.4vh,14px) clamp(16px,2vw,22px);
-          transition: background .22s, border-color .22s;
+          transition: background .3s, border-color .3s;
           white-space: nowrap;
         }
         .btn-watch:hover {
-          background: rgba(255,255,255,.14);
-          border-color: rgba(255,255,255,.45);
+          background: ${hoverStrong};
+          border-color: ${borderBright};
         }
         .btn-watch-circle {
           width: clamp(22px,2.2vw,26px); height: clamp(22px,2.2vw,26px);
-          border-radius: 50%; border: 1.5px solid rgba(255,255,255,.35);
+          border-radius: 50%; border: 1.5px solid ${borderStrong};
           display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; transition: border-color .22s;
+          flex-shrink: 0; transition: border-color .3s;
         }
-        .btn-watch:hover .btn-watch-circle { border-color: rgba(255,255,255,.8); }
+        .btn-watch:hover .btn-watch-circle { border-color: ${borderBright}; }
         .btn-watch-label {
-          color: rgba(255,255,255,.6); font-family: 'Barlow', sans-serif;
+          color: ${textHeroSec}; font-family: 'Barlow', sans-serif;
           font-size: clamp(11px,1.1vw,13px); font-weight: 700; letter-spacing: .04em;
-          transition: color .2s;
+          transition: color .3s;
         }
-        .btn-watch:hover .btn-watch-label { color: rgba(255,255,255,.95); }
+        .btn-watch:hover .btn-watch-label { color: ${textPrimary}; }
 
         .hero-live {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 8px 14px; border-radius: 100px;
-          border: 1px solid rgba(255,255,255,.1);
-          background: rgba(255,255,255,.04);
+          border: 1px solid ${borderSub};
+          background: ${subtleBg};
           backdrop-filter: blur(8px);
-          text-decoration: none; transition: all .2s;
+          text-decoration: none; transition: all .3s;
           width: fit-content;
         }
-        .hero-live:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22); }
+        .hero-live:hover { background: ${subtleHover}; border-color: ${borderMed}; }
         .live-dot {
           width: 7px; height: 7px; border-radius: 50%;
-          background: #22c55e; flex-shrink: 0;
+          background: ${liveGreen}; flex-shrink: 0;
           animation: lpul 1.8s ease-in-out infinite;
         }
         .live-txt {
-          color: rgba(255,255,255,.42); font-family: 'Barlow', sans-serif;
+          color: ${textMuted}; font-family: 'Barlow', sans-serif;
           font-size: clamp(10px,1vw,11px); font-weight: 500; letter-spacing: .05em;
-          white-space: nowrap;
+          white-space: nowrap; transition: color 0.3s;
         }
 
         .match-card {
-          background: rgba(10,10,10,.78);
-          border: 1px solid rgba(255,255,255,.1);
+          background: ${cardBg};
+          border: 1px solid ${borderSub};
           border-radius: clamp(10px,1.2vw,16px);
           padding: clamp(14px,1.8vw,22px);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
           width: clamp(180px,18vw,240px);
           flex-shrink: 0;
+          transition: background 0.3s, border-color 0.3s;
         }
         .mc-head { display: flex; align-items: center; gap: 6px; margin-bottom: clamp(12px,1.5vh,18px); }
         .mc-head-txt {
-          color: rgba(255,255,255,.4); font-family: 'Barlow', sans-serif;
+          color: ${textMuted}; font-family: 'Barlow', sans-serif;
           font-size: clamp(8px,.9vw,9px); font-weight: 800;
           letter-spacing: .2em; text-transform: uppercase;
+          transition: color 0.3s;
         }
         .mc-teams {
           display: grid; grid-template-columns: 1fr auto 1fr;
@@ -318,30 +375,34 @@ export function HeroSection() {
         .mc-flag {
           width: clamp(32px,3.5vw,44px); height: clamp(22px,2.3vw,30px);
           object-fit: cover; border-radius: 3px; display: block;
-          box-shadow: 0 2px 8px rgba(0,0,0,.45);
+          box-shadow: 0 2px 8px ${shadow};
         }
         .mc-code {
-          color: white; font-family: 'Barlow Condensed', sans-serif;
+          color: ${textPrimary}; font-family: 'Barlow Condensed', sans-serif;
           font-size: clamp(11px,1.1vw,14px); font-weight: 800; letter-spacing: .08em;
+          transition: color 0.3s;
         }
         .mc-vs { text-align: center; }
         .mc-vs-t {
-          display: block; color: rgba(255,255,255,.18); font-family: 'Barlow', sans-serif;
+          display: block; color: ${textVFaint}; font-family: 'Barlow', sans-serif;
           font-size: clamp(10px,1vw,12px); font-weight: 600;
+          transition: color 0.3s;
         }
         .mc-time {
-          display: block; color: rgba(255,255,255,.28); font-family: 'Barlow', sans-serif;
+          display: block; color: ${textFaint}; font-family: 'Barlow', sans-serif;
           font-size: clamp(9px,.9vw,10px); margin-top: 3px;
+          transition: color 0.3s;
         }
         .mc-btn {
           display: flex; align-items: center; justify-content: center; gap: 6px;
-          background: white; color: #0a0a0a; font-family: 'Barlow', sans-serif;
+          background: ${accent}; color: ${accentContrast}; font-family: 'Barlow', sans-serif;
           font-size: clamp(9px,.95vw,11px); font-weight: 800;
           letter-spacing: .12em; text-transform: uppercase;
           padding: clamp(8px,1vh,11px) 14px;
-          border-radius: 100px; text-decoration: none; transition: background .18s;
+          border-radius: 100px; text-decoration: none;
+          transition: background .3s, color 0.3s;
         }
-        .mc-btn:hover { background: #e8e8e8; }
+        .mc-btn:hover { background: ${accentHover}; }
 
 @media (max-width: 1024px) {
           .hero-wrap { grid-template-columns: 1fr auto; gap: 24px; }
@@ -356,9 +417,9 @@ export function HeroSection() {
           .hero-right { display: none; }
           .hero-ov-l {
             background: linear-gradient(to right,
-              rgba(10,10,10,.95) 0%,
-              rgba(10,10,10,.7)  50%,
-              rgba(10,10,10,.3)  100%);
+              rgba(${oR},.95) 0%,
+              rgba(${oR},.7)  50%,
+              rgba(${oR},.3)  100%);
           }
           .hero-h1  { font-size: clamp(66px, 14vw, 130px); }
           .hero-sub { max-width: 42ch; }
@@ -377,7 +438,7 @@ export function HeroSection() {
           .hero-cta { flex-direction: column; align-items: stretch; gap: 10px; width: 100%; }
           .btn-buy  { width: 100%; justify-content: center; box-sizing: border-box; padding: 14px 20px; font-size: 13px; }
           .btn-watch{ width: 100%; justify-content: center; box-sizing: border-box; padding: 13px 20px; }
-          .btn-watch-label { display: inline !important; font-size: 13px; color: rgba(255,255,255,.85); }
+          .btn-watch-label { display: inline !important; font-size: 13px; color: ${textHeroStrong}; }
           .btn-watch-circle { display: flex; }
         }
 
@@ -449,7 +510,7 @@ export function HeroSection() {
               </a>
               <a href="/highlights" className="btn-watch">
                 <div className="btn-watch-circle">
-                  <FiPlay size={12} color="white" style={{ marginLeft: 2 }} />
+                  <FiPlay size={12} color={textPrimary} style={{ marginLeft: 2 }} />
                 </div>
                 <span className="btn-watch-label">Voir les temps forts</span>
               </a>

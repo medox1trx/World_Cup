@@ -1,10 +1,23 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ApiController;
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 // ── Public API Routes ────────────────────────────────────────
 Route::prefix('v1')->group(function () {
+
+    // Auth (public)
+    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/login',    [AuthController::class, 'login']);
+
+    // Auth (protected — session-based)
+    Route::middleware('auth:web')->group(function () {
+        Route::post('/auth/logout',  [AuthController::class, 'logout']);
+        Route::get('/auth/user',     [AuthController::class, 'user']);
+        Route::put('/auth/profile',  [AuthController::class, 'updateProfile']);
+    });
 
     // Stats
     Route::get('/stats', [ApiController::class, 'stats']);
@@ -18,4 +31,9 @@ Route::prefix('v1')->group(function () {
 
     // Search
     Route::get('/search', [ApiController::class, 'search']);
+
+    // Admin routes (protected)
+    Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {
+        Route::get('/dashboard', [AuthController::class, 'user']);
+    });
 });
