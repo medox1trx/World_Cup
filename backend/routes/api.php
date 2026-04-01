@@ -6,8 +6,12 @@ use Illuminate\Support\Facades\Route;
 // ── Public API Routes ────────────────────────────────────────
 Route::prefix('v1')->group(function () {
 
-    // Stats
-    Route::get('/stats', [ApiController::class, 'stats']);
+    // Stats & Standings
+    Route::get('/stats',     [ApiController::class, 'stats']);
+    Route::get('/standings', [ApiController::class, 'standings']);
+
+    // News Proxy
+    Route::get('/news',  [ApiController::class, 'news']);
 
     // Matches
     Route::get('/matches',        [ApiController::class, 'matches']);
