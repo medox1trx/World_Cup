@@ -17,6 +17,12 @@ Route::prefix('v1')->group(function () {
     // Auth (public)
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/login',    [AuthController::class, 'login']);
+    
+    // Social Auth (public)
+    Route::get('/auth/google/redirect', [\App\Http\Controllers\Auth\SocialController::class, 'redirectToGoogle']);
+    Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\SocialController::class, 'handleGoogleCallback']);
+    Route::get('/auth/facebook/redirect', [\App\Http\Controllers\Auth\SocialController::class, 'redirectToFacebook']);
+    Route::get('/auth/facebook/callback', [\App\Http\Controllers\Auth\SocialController::class, 'handleFacebookCallback']);
 
     // Auth (protected — session-based)
     Route::middleware('auth:web')->group(function () {
