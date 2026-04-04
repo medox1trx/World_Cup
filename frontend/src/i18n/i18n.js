@@ -55,32 +55,6 @@ allRightsReserved: "Tous droits réservés.",
 WorldCup:"Coupe du Monde"
 }
 },
-
-ar: {
-translation: {
-home: "الرئيسية",
-matches: "النتائج والمباريات",
-standings: "الترتيب",
-teams: "الفرق",
-qualifications: "التصفيات",
-cities: "المدن المستضيفة",
-tickets: "التذاكر",
-hospitality: "الضيافة",
-fans: "منطقة الجماهير",
-tournaments: "بطولات فيفا",
-login: "تسجيل الدخول",
-homeWorldCup: "الرئيسية كأس العالم",
-footerDescription: "بوابتك لأخبار كأس العالم، النتائج والتحديثات.",
-quickLinks: "روابط سريعة",
-followUs: "تابعنا",
-newsletter: "النشرة الإخبارية",
-yourEmail: "بريدك الإلكتروني",
-subscribe: "اشترك",
-allRightsReserved: "جميع الحقوق محفوظة.",
-WorldCup:"كأس العالم"
-}
-}
-
 },
 
 fallbackLng: "en",

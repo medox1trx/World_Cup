@@ -7,8 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class TeamStanding extends Model
 {
     protected $fillable = [
-        'group_name', 'position', 'team_name', 'team_code',
-        'played', 'won', 'drawn', 'lost',
-        'goals_for', 'goals_against', 'goal_difference', 'points'
+        'group_name',
+        'position',
+        'team_name',
+        'team_code',
+        'played',
+        'won',
+        'drawn',
+        'lost',
+        'goals_for',
+        'goals_against',
+        'goal_difference',
+        'points'
     ];
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
 }
