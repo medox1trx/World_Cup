@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\FootballMatch;
+use App\Models\Highlight;
 use App\Models\Stat;
 use App\Models\TeamStanding;
 use Illuminate\Http\Request;
@@ -148,6 +150,146 @@ class ApiController extends Controller
     {
         FootballMatch::findOrFail($id)->delete();
         return response()->json(['message' => 'Match deleted']);
+    }
+
+    // ── HIGHLIGHTS (Admin & Public) ──────────────────────────
+    public function indexHighlights(Request $request): JsonResponse
+    {
+        $highlights = Highlight::latest()
+            ->withCount('comments')
+            ->get();
+
+        if ($user = $request->user()) {
+            $userLikes = \DB::table('highlight_likes')
+                ->where('user_id', $user->id)
+                ->pluck('highlight_id')
+                ->toArray();
+            
+            $highlights->map(function ($h) use ($userLikes) {
+                $h->liked_by_user = in_array($h->id, $userLikes);
+                return $h;
+            });
+        } else {
+            $highlights->map(function ($h) {
+                $h->liked_by_user = false;
+                return $h;
+            });
+        }
+
+        return response()->json($highlights);
+    }
+
+    public function storeHighlight(Request $request): JsonResponse
+    {
+        \Log::info('Store Highlight Request:', $request->all());
+        
+        try {
+            $validated = $request->validate([
+                'title'     => 'required|string',
+                'image_url' => 'required',
+                'duration'  => 'required',
+                'category'  => 'required',
+                'status'    => 'in:published,draft',
+                'video_url' => 'nullable|string'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation Errors:', $e->errors());
+            return response()->json(['errors' => $e->errors()], 422);
+        }
+
+        $highlight = Highlight::create($validated);
+        return response()->json($highlight, 201);
+    }
+
+    public function updateHighlight(Request $request, Highlight $highlight): JsonResponse
+    {
+        \Log::info('Update Highlight Request ID: ' . $highlight->id, $request->all());
+
+        try {
+            $validated = $request->validate([
+                'title'     => 'sometimes|string',
+                'image_url' => 'sometimes',
+                'duration'  => 'sometimes',
+                'category'  => 'sometimes',
+                'status'    => 'sometimes|in:published,draft',
+                'video_url' => 'nullable|string'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation Errors:', $e->errors());
+            return response()->json(['errors' => $e->errors()], 422);
+        }
+
+        $highlight->update($validated);
+        return response()->json($highlight);
+    }
+
+    public function destroyHighlight(Highlight $highlight): JsonResponse
+    {
+        \Log::info('Destroy Highlight Request ID: ' . $highlight->id);
+        $highlight->delete();
+        return response()->json(['message' => 'Highlight deleted']);
+    }
+
+    public function incrementHighlightView(Highlight $highlight): JsonResponse
+    {
+        $highlight->increment('views');
+        return response()->json(['views' => $highlight->views]);
+    }
+
+    public function toggleHighlightLike(Request $request, Highlight $highlight): JsonResponse
+    {
+        if (!$request->user()) {
+            return response()->json(['message' => 'Veuillez vous connecter pour aimer.'], 401);
+        }
+
+        $userId = $request->user()->id;
+        $exists = \DB::table('highlight_likes')
+            ->where('user_id', $userId)
+            ->where('highlight_id', $highlight->id)
+            ->first();
+
+        if ($exists) {
+            \DB::table('highlight_likes')
+                ->where('user_id', $userId)
+                ->where('highlight_id', $highlight->id)
+                ->delete();
+            $highlight->decrement('likes');
+            return response()->json(['likes' => $highlight->likes, 'liked' => false]);
+        }
+
+        \DB::table('highlight_likes')->insert([
+            'user_id' => $userId,
+            'highlight_id' => $highlight->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $highlight->increment('likes');
+        return response()->json(['likes' => $highlight->likes, 'liked' => true]);
+    }
+
+    public function indexHighlightComments(Highlight $highlight): JsonResponse
+    {
+        $comments = $highlight->comments()->with('user')->latest()->get();
+        return response()->json($comments);
+    }
+
+    public function storeHighlightComment(Request $request, Highlight $highlight): JsonResponse
+    {
+        if (!$request->user()) {
+            return response()->json(['message' => 'Veuillez vous connecter pour commenter.'], 401);
+        }
+
+        $validated = $request->validate([
+            'content'   => 'required|string',
+        ]);
+
+        $comment = $highlight->comments()->create([
+            'content'   => $validated['content'],
+            'user_id'   => $request->user()->id,
+            'user_name' => $request->user()->name
+        ]);
+
+        return response()->json($comment->load('user'), 201);
     }
 
     // ── GET /api/v1/search?q=xxx ─────────────────────────────

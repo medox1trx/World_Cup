@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/v1",
+  baseURL: "http://localhost:8000/api/v1",
   headers: { "Content-Type": "application/json", Accept: "application/json" },
   withCredentials: true,
 });
@@ -25,6 +25,18 @@ export const getMatch   = (id)          => api.get(`/matches/${id}`);
 export const createMatch = (data)       => api.post("/matches", data);
 export const updateMatch = (id, data)   => api.put(`/matches/${id}`, data);
 export const deleteMatch = (id)         => api.delete(`/matches/${id}`);
+
+// ── Highlights ──────────────────────────────────────────────
+export const getHighlights = () => api.get("/highlights");
+export const createHighlight = (data) => api.post("/admin/highlights", data);
+export const updateHighlight = (id, data) => api.put(`/admin/highlights/${id}`, data);
+export const deleteHighlight = (id) => api.delete(`/admin/highlights/${id}`);
+
+// Interaction
+export const viewHighlight = (id) => api.post(`/highlights/${id}/view`);
+export const likeHighlight = (id) => api.post(`/highlights/${id}/like`);
+export const getComments = (id) => api.get(`/highlights/${id}/comments`);
+export const postComment = (id, data) => api.post(`/highlights/${id}/comments`, data);
 
 // ── Search ───────────────────────────────────────────────────
 export const search = (q) => api.get("/search", { params: { q } });

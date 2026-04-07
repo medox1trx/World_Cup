@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FiSearch, FiGlobe, FiUser, FiX,
   FiChevronDown, FiShoppingCart,
@@ -653,7 +653,7 @@ export default function Header() {
             <span /><span /><span />
           </button>
 
-          <a href="/" className="hdr-logo">
+          <Link to="/" className="hdr-logo">
             <img src="/WC26_Logo.avif" alt="FIFA World Cup 2030"
               onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
             />
@@ -661,7 +661,7 @@ export default function Header() {
               <span className="t1">WORLD CUP</span>
               <span className="t2">2030 ™</span>
             </div>
-          </a>
+          </Link>
 
           <nav className="hdr-nav" ref={navRef} aria-label="Navigation principale">
             {NAV.map((item) => {
@@ -686,11 +686,11 @@ export default function Header() {
                   </button>
                   <div className={`hdr-drop${isOpen ? " open" : ""}`} role="menu">
                     {item.children.map(child => (
-                      <a key={child.href} href={child.href} role="menuitem"
+                      <Link key={child.href} to={child.href} role="menuitem"
                         className={`hdr-drop-item${isActive(child.href) ? " act" : ""}`}>
                         {child.label}
                         {child.badge && <span className="hdr-drop-badge">{child.badge}</span>}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -701,20 +701,20 @@ export default function Header() {
             {isAdmin && (
               <>
                 <div className="hdr-item">
-                  <a href="/admin/news"
-                    className={`hdr-link admin-link${isActive("/admin/news") ? " act" : ""}`}>
+                  <Link to="/admin/highlights"
+                    className={`hdr-link admin-link${isActive("/admin/highlights") ? " act" : ""}`}>
                     <FiFileText size={12} style={{ marginRight: 4 }} />
-                    News
+                    Vidéos
                     <span className="hdr-badge admin-badge">ADMIN</span>
-                  </a>
+                  </Link>
                 </div>
                 <div className="hdr-item">
-                  <a href="/admin/teams"
+                  <Link to="/admin/teams"
                     className={`hdr-link admin-link${isActive("/admin/teams") ? " act" : ""}`}>
                     <FiUsers size={12} style={{ marginRight: 4 }} />
                     Équipes
                     <span className="hdr-badge admin-badge">ADMIN</span>
-                  </a>
+                  </Link>
                 </div>
               </>
             )}
@@ -815,10 +815,10 @@ export default function Header() {
               )}
             </div>
 
-            <a href="/tickets" className="hdr-tickets">
+            <Link to="/tickets" className="hdr-tickets">
               <FiShoppingCart size={12} />
               Billets
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -861,11 +861,11 @@ export default function Header() {
                 </button>
                 <div className={`hdr-msub${isOpen ? " open" : " closed"}`}>
                   {item.children.map(child => (
-                    <a key={child.href} href={child.href}
+                    <Link key={child.href} to={child.href}
                       className={`hdr-msub-link${isActive(child.href) ? " act" : ""}`}>
                       {child.label}
                       {child.badge && <span className="hdr-msub-badge">{child.badge}</span>}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -874,11 +874,11 @@ export default function Header() {
 
           {/* Profile mobile link */}
           {user && (
-            <a href="/profile" className="hdr-msub-link" style={{ paddingLeft: 20, fontWeight: 700 }}>
+            <Link to="/profile" className="hdr-msub-link" style={{ paddingLeft: 20, fontWeight: 700 }}>
               <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <FiUser size={14} /> Mon Profil
               </span>
-            </a>
+            </Link>
           )}
 
           {/* Season selector mobile */}
@@ -917,14 +917,14 @@ export default function Header() {
           {/* Admin mobile links */}
           {isAdmin && (
             <>
-              <a href="/admin/news" className="hdr-msub-link" style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800 }}>
-                <span>Actualités (Admin)</span>
+              <Link to="/admin/highlights" className="hdr-msub-link" style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800 }}>
+                <span>Vidéos (Admin)</span>
                 <span className="hdr-msub-badge" style={{ background: "rgba(239,68,68,0.2)", color: "#fca5a5" }}>ADMIN</span>
-              </a>
-              <a href="/admin/teams" className="hdr-msub-link" style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800 }}>
+              </Link>
+              <Link to="/admin/teams" className="hdr-msub-link" style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800 }}>
                 <span>Équipes (Admin)</span>
                 <span className="hdr-msub-badge" style={{ background: "rgba(239,68,68,0.2)", color: "#fca5a5" }}>ADMIN</span>
-              </a>
+              </Link>
             </>
           )}
 
@@ -940,10 +940,10 @@ export default function Header() {
               aria-label="Mon compte">
               <FiUser size={17} />
             </button>
-            <a href="/tickets" className="hdr-mtickets">
+            <Link to="/tickets" className="hdr-mtickets">
               <FiShoppingCart size={13} />
               Acheter des billets
-            </a>
+            </Link>
           </div>
         </nav>
 

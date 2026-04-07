@@ -21,7 +21,7 @@ import Tournaments    from "./pages/Tournaments";
 import Login          from "./pages/Login";
 import Register       from "./pages/Register";
 import Profile        from "./pages/Profile";
-import AdminNews      from "./pages/admin/AdminNews";
+import AdminHighlights  from "./pages/admin/AdminHighlights";
 import AdminTeams     from "./pages/admin/AdminTeams";
 
 /*
@@ -69,7 +69,7 @@ function App() {
                 <Route path="/profile"  element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
                 {/* Admin routes (protected) */}
-                <Route path="/admin/news"  element={<AdminRoute><AdminNews /></AdminRoute>} />
+                <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
                 <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
               </Routes>
             </main>

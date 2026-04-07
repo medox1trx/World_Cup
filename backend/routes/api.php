@@ -38,8 +38,20 @@ Route::prefix('v1')->group(function () {
     // Search
     Route::get('/search', [ApiController::class, 'search']);
 
+    // Highlights (Public)
+    Route::get('/highlights', [ApiController::class, 'indexHighlights']);
+    Route::post('/highlights/{highlight}/view',     [ApiController::class, 'incrementHighlightView']);
+    Route::post('/highlights/{highlight}/like',     [ApiController::class, 'toggleHighlightLike']);
+    Route::get('/highlights/{highlight}/comments',  [ApiController::class, 'indexHighlightComments']);
+    Route::post('/highlights/{highlight}/comments', [ApiController::class, 'storeHighlightComment']);
+
     // Admin routes (protected)
     Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'user']);
+        
+        // Admin Highlights Management
+        Route::post('/highlights',        [ApiController::class, 'storeHighlight']);
+        Route::put('/highlights/{highlight}', [ApiController::class, 'updateHighlight']);
+        Route::delete('/highlights/{highlight}', [ApiController::class, 'destroyHighlight']);
     });
 });
