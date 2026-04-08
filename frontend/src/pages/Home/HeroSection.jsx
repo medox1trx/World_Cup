@@ -302,30 +302,30 @@ export function HeroSection() {
         .btn-watch {
           display: inline-flex; align-items: center; gap: 9px;
           text-decoration: none;
-          background: ${hover};
-          border: 1px solid ${borderMed};
+          background: ${darkMode ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"};
+          border: none;
           border-radius: 100px;
           padding: clamp(11px,1.4vh,14px) clamp(16px,2vw,22px);
-          transition: background .3s, border-color .3s;
+          transition: background .25s, transform .2s;
           white-space: nowrap;
         }
         .btn-watch:hover {
-          background: ${hoverStrong};
-          border-color: ${borderBright};
+          background: ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.14)"};
+          transform: translateY(-2px);
         }
+        .btn-watch:active { transform: translateY(0); }
         .btn-watch-circle {
           width: clamp(22px,2.2vw,26px); height: clamp(22px,2.2vw,26px);
-          border-radius: 50%; border: 1.5px solid ${borderStrong};
+          border-radius: 50%; background: ${darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"};
           display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; transition: border-color .3s;
+          flex-shrink: 0; transition: background .25s;
         }
-        .btn-watch:hover .btn-watch-circle { border-color: ${borderBright}; }
+        .btn-watch:hover .btn-watch-circle { background: ${darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.18)"}; }
         .btn-watch-label {
-          color: ${textHeroSec}; font-family: 'Barlow', sans-serif;
+          color: ${textPrimary}; font-family: 'Barlow', sans-serif;
           font-size: clamp(11px,1.1vw,13px); font-weight: 700; letter-spacing: .04em;
           transition: color .3s;
         }
-        .btn-watch:hover .btn-watch-label { color: ${textPrimary}; }
 
         .hero-live {
           display: inline-flex; align-items: center; gap: 8px;
