@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiClock, FiMapPin, FiFilter, FiCalendar, FiSun, FiCloud, FiCloudRain, FiWind, FiZap } from "react-icons/fi";
+import { FiClock, FiMapPin, FiFilter, FiCalendar, FiSun, FiCloud, FiCloudRain, FiWind, FiZap, FiPlayCircle } from "react-icons/fi";
 import { useMatches } from "../hooks/useWorldCup";
 import { MATCHES as MOCK_MATCHES, FONT, C, getCode } from "./Home/constants";
 import { Flag } from "./Home/ui";
@@ -114,7 +114,7 @@ export default function Matches() {
               <div style={{ flex: "2 1 400px", display: "flex", justifyContent: "center", alignItems: "center", gap: 40 }}>
                 <div style={{ flex: 1, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 20 }}>
                   <span style={{ fontFamily: FONT.display, fontSize: 22, fontWeight: 900, textTransform: "uppercase" }}>{m.home_team}</span>
-                  <Flag code={getCode(m.home_team)} size={32} />
+                  <Flag code={m.home_flag || getCode(m.home_team)} size={32} />
                 </div>
 
                 <div style={{ 
@@ -126,16 +126,25 @@ export default function Matches() {
                 </div>
 
                 <div style={{ flex: 1, textAlign: "left", display: "flex", alignItems: "center", gap: 20 }}>
-                  <Flag code={getCode(m.away_team)} size={32} />
+                  <Flag code={m.away_flag || getCode(m.away_team)} size={32} />
                   <span style={{ fontFamily: FONT.display, fontSize: 22, fontWeight: 900, textTransform: "uppercase" }}>{m.away_team}</span>
                 </div>
               </div>
 
-              <div style={{ flex: "0 0 auto" }}>
+              <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", gap: 8 }}>
+                {m.video_url && (
+                    <a href={m.video_url} target="_blank" rel="noreferrer" style={{
+                      background: "rgba(200, 16, 46, 0.1)", color: "#c8102e", padding: "10px 24px", borderRadius: 100, 
+                      fontSize: 10, fontWeight: 800, textDecoration: "none", textTransform: "uppercase", 
+                      letterSpacing: "0.05em", transition: "0.2s", display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid rgba(200, 16, 46, 0.2)"
+                    }}>
+                      <FiPlayCircle size={14} /> Résumé Vidéo
+                    </a>
+                )}
                 <Link to={`/tickets?match_id=${m.id}`} style={{
                   background: "#0d0d0d", color: "white", padding: "12px 28px", borderRadius: 100, 
                   fontSize: 11, fontWeight: 800, textDecoration: "none", textTransform: "uppercase", 
-                  letterSpacing: "0.05em", transition: "0.2s", display: "inline-block"
+                  letterSpacing: "0.05em", transition: "0.2s", display: "inline-block", textAlign: "center"
                 }}>
                   Billetterie
                 </Link>

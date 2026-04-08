@@ -17,10 +17,33 @@ export function GlobalFonts() {
 // ─── FLAG ─────────────────────────────────────────────────────
 export function Flag({ code, alt = "", size = 28 }) {
   if (!code) return null;
+
+  // If it's a full URL
+  if (code.startsWith('http')) {
+     return (
+       <img 
+         src={code} 
+         alt={alt} 
+         loading="lazy" 
+         style={{ width: size * 1.5, height: size, objectFit: "cover", borderRadius: 2 }} 
+       />
+     );
+  }
+
+  // If it looks like an emoji (non-ascii)
+  if (/[^\x00-\x7F]/.test(code)) {
+    return (
+      <span style={{ fontSize: size, lineHeight: 1, display: "inline-block", verticalAlign: "middle" }}>
+        {code}
+      </span>
+    );
+  }
+
+  // Standard flagcdn code
   return (
     <img
-      src={`https://flagcdn.com/w80/${code}.png`}
-      srcSet={`https://flagcdn.com/w160/${code}.png 2x`}
+      src={`https://flagcdn.com/w80/${code.toLowerCase()}.png`}
+      srcSet={`https://flagcdn.com/w160/${code.toLowerCase()}.png 2x`}
       alt={alt}
       loading="lazy"
       style={{

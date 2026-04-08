@@ -14,7 +14,8 @@ export default function AdminMatches() {
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
     home_team: "",
-    away_team: "",
+    home_flag: "",
+    away_flag: "",
     venue: "",
     city: "",
     match_date: "",
@@ -25,6 +26,7 @@ export default function AdminMatches() {
     home_score: 0,
     away_score: 0,
     stadium_image: "",
+    video_url: "",
     referee: "",
     assistant_referees: "",
     weather_condition: "",
@@ -76,10 +78,10 @@ export default function AdminMatches() {
 
   const resetForm = () => {
     setFormData({
-      home_team: "", away_team: "", venue: "", city: "",
+      home_team: "", away_team: "", home_flag: "", away_flag: "", venue: "", city: "",
       match_date: "", match_time: "", stage: "group", group_name: "",
       status: "upcoming", home_score: 0, away_score: 0,
-      stadium_image: "", referee: "", assistant_referees: "",
+      stadium_image: "", video_url: "", referee: "", assistant_referees: "",
       weather_condition: "", weather_temp: ""
     });
     setEditId(null);
@@ -99,7 +101,10 @@ export default function AdminMatches() {
       status: m.status,
       home_score: m.home_score || 0,
       away_score: m.away_score || 0,
+      home_flag: m.home_flag || "",
+      away_flag: m.away_flag || "",
       stadium_image: m.stadium_image || "",
+      video_url: m.video_url || "",
       referee: m.referee || "",
       assistant_referees: m.assistant_referees || "",
       weather_condition: m.weather_condition || "",
@@ -286,6 +291,17 @@ export default function AdminMatches() {
 
               <div className="form-grid">
                 <div className="form-group">
+                  <label className="form-label">Drapeau Domicile (Emoji ou URL)</label>
+                  <input className="form-input" value={formData.home_flag} onChange={e => setFormData({...formData, home_flag: e.target.value})} placeholder="Ex: 🇲🇦" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Drapeau Extérieur (Emoji ou URL)</label>
+                  <input className="form-input" value={formData.away_flag} onChange={e => setFormData({...formData, away_flag: e.target.value})} placeholder="Ex: 🇫🇷" />
+                </div>
+              </div>
+
+              <div className="form-grid">
+                <div className="form-group">
                   <label className="form-label">Stade / Venue</label>
                   <input className="form-input" value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} required placeholder="Ex: Grand Stade de Casablanca" />
                 </div>
@@ -323,9 +339,15 @@ export default function AdminMatches() {
                 </div>
               </div>
 
-                <div className="form-group">
-                  <label className="form-label">URL Image du Stade</label>
-                  <input className="form-input" value={formData.stadium_image} onChange={e => setFormData({...formData, stadium_image: e.target.value})} placeholder="https://images.unsplash.com/..." />
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label className="form-label">URL Image du Stade</label>
+                    <input className="form-input" value={formData.stadium_image} onChange={e => setFormData({...formData, stadium_image: e.target.value})} placeholder="https://images.unsplash.com/..." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">URL Vidéo (Résumé)</label>
+                    <input className="form-input" value={formData.video_url} onChange={e => setFormData({...formData, video_url: e.target.value})} placeholder="https://www.youtube.com/..." />
+                  </div>
                 </div>
 
                 <div className="form-grid">

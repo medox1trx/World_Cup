@@ -17,7 +17,7 @@ class FootballMatch extends Model
         'stage', 'group_name',
         'home_score', 'away_score',
         'status',
-        'stadium_image', 'referee', 'assistant_referees',
+        'stadium_image', 'video_url', 'referee', 'assistant_referees',
         'weather_condition', 'weather_temp',
     ];
 
