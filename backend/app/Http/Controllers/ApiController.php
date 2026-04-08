@@ -7,6 +7,7 @@ use App\Models\FootballMatch;
 use App\Models\Highlight;
 use App\Models\Stat;
 use App\Models\TeamStanding;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
@@ -75,7 +76,7 @@ class ApiController extends Controller
     // ── GET /api/v1/matches ──────────────────────────────────
     public function matches(Request $request): JsonResponse
     {
-        $query = FootballMatch::query();
+        $query = FootballMatch::with('tickets');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -95,7 +96,7 @@ class ApiController extends Controller
     // ── GET /api/v1/matches/{id} ─────────────────────────────
     public function match(int $id): JsonResponse
     {
-        $match = FootballMatch::findOrFail($id);
+        $match = FootballMatch::with('tickets')->findOrFail($id);
         return response()->json($match);
     }
 
@@ -114,6 +115,11 @@ class ApiController extends Controller
             'stage'      => 'required|in:group,round_of_16,quarter,semi,final',
             'group_name' => 'nullable|string',
             'status'     => 'in:upcoming,live,finished',
+            'stadium_image' => 'nullable|string',
+            'referee'    => 'nullable|string',
+            'assistant_referees' => 'nullable|string',
+            'weather_condition'  => 'nullable|string',
+            'weather_temp'       => 'nullable|integer',
         ]);
 
         $match = FootballMatch::create($validated);
@@ -139,6 +145,11 @@ class ApiController extends Controller
             'home_score' => 'nullable|integer',
             'away_score' => 'nullable|integer',
             'status'     => 'sometimes|in:upcoming,live,finished',
+            'stadium_image' => 'nullable|string',
+            'referee'    => 'nullable|string',
+            'assistant_referees' => 'nullable|string',
+            'weather_condition'  => 'nullable|string',
+            'weather_temp'       => 'nullable|integer',
         ]);
 
         $match->update($validated);
@@ -290,6 +301,54 @@ class ApiController extends Controller
         ]);
 
         return response()->json($comment->load('user'), 201);
+    }
+
+    // ── TICKETS (Admin & Public) ─────────────────────────────
+    public function indexTickets(): JsonResponse
+    {
+        return response()->json(Ticket::with('match')->latest()->get());
+    }
+
+    public function storeTicket(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'match_id'  => 'required|exists:matches,id',
+            'category'  => 'required|string',
+            'price'     => 'required|numeric|min:0',
+            'quantity'  => 'required|integer|min:0',
+            'status'    => 'sometimes|in:available,sold_out'
+        ]);
+
+        $validated['available'] = $validated['quantity'];
+        
+        $ticket = Ticket::create($validated);
+        return response()->json($ticket->load('match'), 201);
+    }
+
+    public function updateTicket(Request $request, Ticket $ticket): JsonResponse
+    {
+        $validated = $request->validate([
+            'match_id'  => 'sometimes|exists:matches,id',
+            'category'  => 'sometimes|string',
+            'price'     => 'sometimes|numeric|min:0',
+            'quantity'  => 'sometimes|integer|min:0',
+            'status'    => 'sometimes|in:available,sold_out'
+        ]);
+
+        if (isset($validated['quantity'])) {
+            // Simple logic: if quantity changes, update available (might be complex if sales exist)
+            $diff = $validated['quantity'] - $ticket->quantity;
+            $validated['available'] = max(0, $ticket->available + $diff);
+        }
+
+        $ticket->update($validated);
+        return response()->json($ticket->load('match'));
+    }
+
+    public function destroyTicket(Ticket $ticket): JsonResponse
+    {
+        $ticket->delete();
+        return response()->json(['message' => 'Ticket deleted']);
     }
 
     // ── GET /api/v1/search?q=xxx ─────────────────────────────

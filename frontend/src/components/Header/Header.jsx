@@ -180,7 +180,7 @@ export default function Header() {
 
         .hdr-logo {
           display: flex; align-items: center; gap: 8px;
-          text-decoration: none; flex-shrink: 0; margin-right: 20px;
+          text-decoration: none; flex-shrink: 0; margin-right: 12px;
         }
         .hdr-logo img { height: 38px; width: auto; display: block; }
         .hdr-logo-fb { display: none; flex-direction: column; gap: 2px; }
@@ -197,12 +197,12 @@ export default function Header() {
         .hdr-item { position: relative; display: flex; align-items: center; height: 100%; }
 
         .hdr-link {
-          display: flex; align-items: center; gap: 4px;
-          padding: 0 12px; height: 100%;
+          display: flex; align-items: center; gap: 2px;
+          padding: 0 8px; height: 100%;
           color: var(--hmuted); text-decoration: none;
           font-family: var(--hfont);
-          font-size: clamp(10.5px, 0.95vw, 12.5px);
-          font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+          font-size: clamp(10px, 0.85vw, 11.5px);
+          font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
           white-space: nowrap; cursor: pointer;
           background: none; border: none;
           transition: color 0.15s;
@@ -236,11 +236,12 @@ export default function Header() {
           display: inline-flex; align-items: center;
           background: white; color: #0d0d0d;
           font-family: var(--hfont); font-size: 7px; font-weight: 900;
-          letter-spacing: 0.14em; padding: 2px 5px; border-radius: 2px;
-          margin-left: 3px; line-height: 1.4; flex-shrink: 0;
+          letter-spacing: 0.05em; padding: 1px 4px; border-radius: 2px;
+          margin-left: 2px; line-height: 1.2; flex-shrink: 0;
         }
         .hdr-badge.admin-badge {
           background: #ef4444; color: white;
+          font-size: 6px;
         }
 
         .hdr-drop {
@@ -703,16 +704,28 @@ export default function Header() {
                 <div className="hdr-item">
                   <Link to="/admin/highlights"
                     className={`hdr-link admin-link${isActive("/admin/highlights") ? " act" : ""}`}>
-                    <FiFileText size={12} style={{ marginRight: 4 }} />
                     Vidéos
+                    <span className="hdr-badge admin-badge">ADMIN</span>
+                  </Link>
+                </div>
+                <div className="hdr-item">
+                  <Link to="/admin/matches"
+                    className={`hdr-link admin-link${isActive("/admin/matches") ? " act" : ""}`}>
+                    Calendrier
                     <span className="hdr-badge admin-badge">ADMIN</span>
                   </Link>
                 </div>
                 <div className="hdr-item">
                   <Link to="/admin/teams"
                     className={`hdr-link admin-link${isActive("/admin/teams") ? " act" : ""}`}>
-                    <FiUsers size={12} style={{ marginRight: 4 }} />
                     Équipes
+                    <span className="hdr-badge admin-badge">ADMIN</span>
+                  </Link>
+                </div>
+                <div className="hdr-item">
+                  <Link to="/admin/tickets"
+                    className={`hdr-link admin-link${isActive("/admin/tickets") ? " act" : ""}`}>
+                    Billets
                     <span className="hdr-badge admin-badge">ADMIN</span>
                   </Link>
                 </div>

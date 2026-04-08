@@ -17,9 +17,16 @@ class FootballMatch extends Model
         'stage', 'group_name',
         'home_score', 'away_score',
         'status',
+        'stadium_image', 'referee', 'assistant_referees',
+        'weather_condition', 'weather_temp',
     ];
 
     protected $casts = [
         'match_date' => 'date',
     ];
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'match_id');
+    }
 }

@@ -1,64 +1,47 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { FiCheck, FiInfo, FiMapPin, FiCalendar, FiClock, FiChevronRight, FiShield, FiZap } from "react-icons/fi";
-import { FONT, C, MATCHES, getCode } from "./Home/constants";
+import { useSearchParams } from "react-router-dom";
+import { FiCheck, FiInfo, FiMapPin, FiCalendar, FiClock, FiChevronRight, FiShield, FiZap, FiShoppingBag } from "react-icons/fi";
+import { FONT, C, getCode } from "./Home/constants";
 import { useTheme } from "../context/ThemeContext";
+import { getMatches } from "../services/api";
 import "./Tickets.css";
-
-const API_BASE_URL = "http://localhost:8000/api/v1";
-
-const TICKET_TYPES = [
-  { cat: "Catégorie 1", price: "250€", perks: ["Vision Premium", "Salon VIP", "Parking inclus"] },
-  { cat: "Catégorie 2", price: "150€", perks: ["Excellente vue", "Accès Fan Zone", "Billet Digital"] },
-  { cat: "Catégorie 3", price: "85€", perks: ["Ambiance Club", "Billet Digital", "Accès Boissons"] },
-];
 
 export default function Tickets() {
   const { darkMode } = useTheme();
+  const [searchParams] = useSearchParams();
+  const matchId = searchParams.get("match_id");
+
   const [mounted, setMounted] = useState(false);
   const [filter, setFilter] = useState("all");
-  const [standings, setStandings] = useState([]);
   const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => { 
     setMounted(true); 
-    const fetchData = async () => {
-      try {
-        const [standingsRes, matchesRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/standings`),
-          axios.get(`${API_BASE_URL}/matches`)
-        ]);
-        setStandings(standingsRes.data);
-        setMatches(matchesRes.data);
-      } catch (err) {
-        console.error("Tickets data fetch failed:", err);
-      }
-    };
     fetchData();
   }, []);
 
-  const getDynamicPrice = (match, basePrice) => {
-    if (match.stage !== "group") return basePrice;
-    
-    let bonus = 0;
-    standings.forEach(g => {
-       g.teams.forEach(t => {
-          if (t.team === match.home_team || t.team === match.away_team) {
-             if (t.pos === 1) bonus += 50;
-             else if (t.pos === 2) bonus += 25;
-          }
-       });
-    });
-
-    const final = parseInt(basePrice.replace("€", "")) + bonus;
-    return final + "€";
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const matchesData = await getMatches();
+      setMatches(matchesData);
+    } catch (err) {
+      console.error("Tickets data fetch failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const stages = ["all", "group", "round_of_16", "quarter", "semi", "final"];
 
-  const filteredMatches = filter === "all" 
+  let filteredMatches = filter === "all" 
     ? matches 
     : matches.filter(m => m.stage === filter);
+
+  if (matchId) {
+    filteredMatches = matches.filter(m => String(m.id) === String(matchId));
+  }
 
   const getFlag = (team) => {
     const code = getCode(team);
@@ -126,20 +109,32 @@ export default function Tickets() {
               </div>
               <div className="ticket-options">
                 <h5 className="options-title">
-                  Catégories disponibles {m.stage === "group" && <span style={{ color: C.red, fontSize: 9 }}>Demand-Pricing Actif</span>}
+                  Catégories disponibles
                 </h5>
-                {TICKET_TYPES.map((t) => (
-                  <div key={t.cat} className="ticket-row">
+                {m.tickets && m.tickets.length > 0 ? m.tickets.map((t) => (
+                  <div key={t.id} className="ticket-row">
                     <div className="ticket-info">
-                      <div className="cat-name">{t.cat}</div>
-                      <div className="perks">{t.perks.slice(0, 2).join(" · ")}</div>
+                      <div className="cat-name">{t.category}</div>
+                      <div className="perks">
+                         {t.status === 'available' ? `${t.available} places restantes` : 'Complet'}
+                      </div>
                     </div>
                     <div className="ticket-price-action">
-                      <span className="ticket-price">{getDynamicPrice(m, t.price)}</span>
-                      <button className="buy-btn" style={darkMode ? {background: '#fff', color: '#000'} : {}}>Acheter</button>
+                      <span className="ticket-price">{t.price}€</span>
+                      <button 
+                        className="buy-btn" 
+                        disabled={t.status !== 'available'}
+                        style={darkMode ? {background: '#fff', color: '#000'} : {}}
+                      >
+                        {t.status === 'available' ? 'Acheter' : 'Épuisé'}
+                      </button>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div style={{ padding: 20, textAlign: "center", color: "#999", fontSize: 13 }}>
+                    Aucun billet disponible pour le moment
+                  </div>
+                )}
               </div>
             </article>
           ))}

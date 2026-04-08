@@ -117,7 +117,7 @@ export default function Highlights() {
       transition: "opacity 0.6s ease",
       paddingBottom: 100
     }}>
-      <section style={{ padding: "100px 32px", maxWidth: 1380, margin: "0 auto" }}>
+      <section style={{ padding: "64px 32px", maxWidth: 1380, margin: "0 auto" }}>
         
         <div style={{ textAlign: "center", marginBottom: 60 }}>
           <span style={{ color: "#c8102e", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 13, marginBottom: 20, display: "block" }}>FIFA+ Archive</span>

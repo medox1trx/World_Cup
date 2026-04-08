@@ -22,9 +22,9 @@ export const getStats = () => api.get("/stats");
 // ── Matches ──────────────────────────────────────────────────
 export const getMatches = (params = {}) => api.get("/matches", { params });
 export const getMatch   = (id)          => api.get(`/matches/${id}`);
-export const createMatch = (data)       => api.post("/matches", data);
-export const updateMatch = (id, data)   => api.put(`/matches/${id}`, data);
-export const deleteMatch = (id)         => api.delete(`/matches/${id}`);
+export const createMatch = (data)       => api.post("/admin/matches", data);
+export const updateMatch = (id, data)   => api.put(`/admin/matches/${id}`, data);
+export const deleteMatch = (id)         => api.delete(`/admin/matches/${id}`);
 
 // ── Highlights ──────────────────────────────────────────────
 export const getHighlights = () => api.get("/highlights");
@@ -37,6 +37,13 @@ export const viewHighlight = (id) => api.post(`/highlights/${id}/view`);
 export const likeHighlight = (id) => api.post(`/highlights/${id}/like`);
 export const getComments = (id) => api.get(`/highlights/${id}/comments`);
 export const postComment = (id, data) => api.post(`/highlights/${id}/comments`, data);
+
+// ── Tickets ─────────────────────────────────────────────────
+export const getTickets = () => api.get("/tickets");
+export const adminGetTickets = () => api.get("/admin/tickets");
+export const createTicket = (data) => api.post("/admin/tickets", data);
+export const updateTicket = (id, data) => api.put(`/admin/tickets/${id}`, data);
+export const deleteTicket = (id) => api.delete(`/admin/tickets/${id}`);
 
 // ── Search ───────────────────────────────────────────────────
 export const search = (q) => api.get("/search", { params: { q } });

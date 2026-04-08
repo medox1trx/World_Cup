@@ -28,12 +28,9 @@ Route::prefix('v1')->group(function () {
     // Stats
     Route::get('/stats', [ApiController::class, 'stats']);
 
-    // Matches
+    // Matches (Public GETs)
     Route::get('/matches',        [ApiController::class, 'matches']);
     Route::get('/matches/{id}',   [ApiController::class, 'match']);
-    Route::post('/matches',       [ApiController::class, 'storeMatch']);
-    Route::put('/matches/{id}',   [ApiController::class, 'updateMatch']);
-    Route::delete('/matches/{id}',[ApiController::class, 'destroyMatch']);
 
     // Search
     Route::get('/search', [ApiController::class, 'search']);
@@ -45,6 +42,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/highlights/{highlight}/comments',  [ApiController::class, 'indexHighlightComments']);
     Route::post('/highlights/{highlight}/comments', [ApiController::class, 'storeHighlightComment']);
 
+    // Tickets (Public)
+    Route::get('/tickets', [ApiController::class, 'indexTickets']);
+
     // Admin routes (protected)
     Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'user']);
@@ -53,5 +53,16 @@ Route::prefix('v1')->group(function () {
         Route::post('/highlights',        [ApiController::class, 'storeHighlight']);
         Route::put('/highlights/{highlight}', [ApiController::class, 'updateHighlight']);
         Route::delete('/highlights/{highlight}', [ApiController::class, 'destroyHighlight']);
+
+        // Admin Tickets Management
+        Route::get('/tickets', [ApiController::class, 'indexTickets']);
+        Route::post('/tickets', [ApiController::class, 'storeTicket']);
+        Route::put('/tickets/{ticket}', [ApiController::class, 'updateTicket']);
+        Route::delete('/tickets/{ticket}', [ApiController::class, 'destroyTicket']);
+
+        // Admin Matches Management
+        Route::post('/matches',       [ApiController::class, 'storeMatch']);
+        Route::put('/matches/{id}',   [ApiController::class, 'updateMatch']);
+        Route::delete('/matches/{id}',[ApiController::class, 'destroyMatch']);
     });
 });

@@ -23,6 +23,8 @@ import Register       from "./pages/Register";
 import Profile        from "./pages/Profile";
 import AdminHighlights  from "./pages/admin/AdminHighlights";
 import AdminTeams     from "./pages/admin/AdminTeams";
+import AdminTickets   from "./pages/admin/AdminTickets";
+import AdminMatches   from "./pages/admin/AdminMatches";
 
 /*
   HEIGHT BUDGET (sticky bars above page content):
@@ -40,14 +42,14 @@ function App() {
       <ThemeProvider>
         <SeasonProvider>
           <AuthProvider>
-            {/* ── STICKY: CountdownBanner + Header (102px total) ── */}
-            <div style={{ position: "sticky", top: 0, zIndex: 50 }}>
+            {/* ── FIXED: CountdownBanner + Header (102px total) ── */}
+            <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 2000 }}>
               <CountdownBanner />
               <Header />
-            </div>
+            </header>
 
             {/* ── PAGE CONTENT ── */}
-            <main style={{ minHeight: "calc(100vh - 102px)" }}>
+            <main style={{ minHeight: "calc(100vh - 102px)", paddingTop: 102 }}>
               <Routes>
                 {/* Public routes */}
                 <Route path="/"               element={<Home />}           />
@@ -71,6 +73,8 @@ function App() {
                 {/* Admin routes (protected) */}
                 <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
                 <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
+                <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
+                <Route path="/admin/matches" element={<AdminRoute><AdminMatches /></AdminRoute>} />
               </Routes>
             </main>
 

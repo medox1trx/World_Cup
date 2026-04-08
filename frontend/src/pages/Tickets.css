@@ -6,12 +6,14 @@
 }
 
 .tickets-hero {
-  height: 60vh;
+  height: 65vh;
+  min-height: 500px;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   background-color: #000;
+  padding-top: 102px; /* Matches navbar height */
 }
 
 .hero-bg {

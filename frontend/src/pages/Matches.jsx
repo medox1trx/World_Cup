@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { FiClock, FiMapPin, FiFilter, FiCalendar } from "react-icons/fi";
+import { Link } from "react-router-dom";
+import { FiClock, FiMapPin, FiFilter, FiCalendar, FiSun, FiCloud, FiCloudRain, FiWind, FiZap } from "react-icons/fi";
 import { useMatches } from "../hooks/useWorldCup";
 import { MATCHES as MOCK_MATCHES, FONT, C, getCode } from "./Home/constants";
 import { Flag } from "./Home/ui";
@@ -30,7 +31,7 @@ export default function Matches() {
       transition: "opacity 0.4s",
       paddingBottom: 100
     }}>
-      <section style={{ padding: "80px 32px", maxWidth: 1380, margin: "0 auto" }}>
+      <section style={{ padding: "64px 32px", maxWidth: 1380, margin: "0 auto" }}>
         
         <div style={{ textAlign: "center", marginBottom: 64 }}>
           <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(3rem,8vw,5.5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, marginBottom: 24 }}>Calendrier</h1>
@@ -90,8 +91,23 @@ export default function Matches() {
                     <FiCalendar size={16} color="#c8102e" /> {new Date(m.match_date).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', weekday: 'long' })}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#888", fontSize: 13, fontWeight: 500 }}>
-                    <FiClock size={16} /> {m.match_time.substring(0,5)} · <FiMapPin size={16} /> {m.city}
+                    <FiClock size={16} /> {m.match_time?.substring(0,5)} · <FiMapPin size={16} /> {m.city} ({m.venue})
                   </div>
+                  {m.referee && (
+                    <div style={{ fontSize: 11, color: "#c8102e", fontWeight: 700, textTransform: "uppercase", marginTop: 4, letterSpacing: '0.05em' }}>
+                      Arbitre: {m.referee}
+                    </div>
+                  )}
+                  {m.weather_condition && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#f59e0b", fontWeight: 700, marginTop: 4, textTransform: "uppercase" }}>
+                      {m.weather_condition === 'Sunny' && <FiSun size={14} />}
+                      {m.weather_condition === 'Cloudy' && <FiCloud size={14} />}
+                      {m.weather_condition === 'Rainy' && <FiCloudRain size={14} />}
+                      {m.weather_condition === 'Windy' && <FiWind size={14} />}
+                      {m.weather_condition === 'Stormy' && <FiZap size={14} />}
+                      {m.weather_temp}°C · {m.weather_condition}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -116,13 +132,13 @@ export default function Matches() {
               </div>
 
               <div style={{ flex: "0 0 auto" }}>
-                <a href="/tickets" style={{
+                <Link to={`/tickets?match_id=${m.id}`} style={{
                   background: "#0d0d0d", color: "white", padding: "12px 28px", borderRadius: 100, 
                   fontSize: 11, fontWeight: 800, textDecoration: "none", textTransform: "uppercase", 
                   letterSpacing: "0.05em", transition: "0.2s", display: "inline-block"
                 }}>
                   Billetterie
-                </a>
+                </Link>
               </div>
 
             </div>
