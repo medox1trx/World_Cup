@@ -172,17 +172,19 @@ export default function Footer() {
       borderTop: `1px solid ${border}`,
       fontFamily: FONT.body,
       transition: "background 0.3s, border-color 0.3s",
+      overflow: "hidden",
     }}>
 
       {/* ── TOP BAR ── */}
       <div style={{ borderBottom: `1px solid ${border}`, transition: "border-color 0.3s" }}>
         <div style={{
           maxWidth: 1440, margin: "0 auto",
-          padding: "0 clamp(16px,2.5vw,32px)",
-          height: 52,
+          padding: "10px clamp(10px,2vw,32px)",
           display: "flex", alignItems: "center",
-          gap: "clamp(8px,1.5vw,20px)",
+          gap: "clamp(6px,1vw,20px)",
           overflow: "hidden",
+          flexWrap: "wrap",
+          justifyContent: "center",
         }}>
           {/* Wordmark */}
           <a href="/" style={{
@@ -271,22 +273,22 @@ export default function Footer() {
       <div style={{ borderTop: `1px solid ${border}`, transition: "border-color 0.3s" }}>
         <div style={{
           maxWidth: 1440, margin: "0 auto",
-          padding: "0 clamp(16px,2.5vw,32px)",
-          height: 48,
+          padding: "12px clamp(10px,2vw,32px)",
           display: "flex", alignItems: "center",
-          justifyContent: "space-between", gap: 16,
+          justifyContent: "space-between", gap: 12,
+          flexWrap: "wrap",
         }}>
-          <nav style={{ display: "flex", alignItems: "center", gap: "clamp(14px,2vw,28px)", flexWrap: "wrap" }}>
+          <nav style={{ display: "flex", alignItems: "center", gap: "clamp(10px,2vw,28px)", flexWrap: "wrap" }}>
             {[
-              { label: "Politique de confidentialité", href: "/privacy"  },
-              { label: "Conditions d'utilisation",     href: "/terms"    },
-              { label: "Cookies",                      href: "/cookies"  },
-              { label: "Contact",                      href: "/contact"  },
+              { label: "Confidentialité", href: "/privacy"  },
+              { label: "Conditions",     href: "/terms"    },
+              { label: "Cookies",       href: "/cookies"  },
+              { label: "Contact",        href: "/contact"  },
             ].map(l => (
               <a
                 key={l.href} href={l.href}
                 style={{
-                  fontSize: "clamp(9px,0.72vw,11px)", fontWeight: 700,
+                  fontSize: "clamp(8px,0.72vw,11px)", fontWeight: 700,
                   letterSpacing: "0.1em", textTransform: "uppercase",
                   color: legalLink, textDecoration: "none",
                   transition: "color 0.15s",
@@ -299,11 +301,11 @@ export default function Footer() {
             ))}
           </nav>
           <span style={{
-            fontSize: "clamp(9px,0.72vw,11px)",
+            fontSize: "clamp(8px,0.72vw,11px)",
             color: copy, letterSpacing: "0.03em", whiteSpace: "nowrap",
             transition: "color 0.3s",
           }}>
-            Copyright © 1994 – 2030 FIFA. Tous droits réservés.
+            © 1994 – 2030 FIFA. Tous droits réservés.
           </span>
         </div>
       </div>

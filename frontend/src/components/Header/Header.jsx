@@ -559,15 +559,18 @@ export default function Header({ onOpenAdminSidebar }) {
           .hdr-ham       { display: flex; }
         }
         @media (max-width: 600px) {
-          .hdr-bar { padding: 0 14px; }
+          .hdr-bar { padding: 0 12px; }
           :root { --hh: 54px; }
           .hdr-logo img { height: 32px; }
+          .hdr-ham { margin-right: 6px; }
         }
         @media (max-width: 380px) {
-          .hdr-bar { padding: 0 10px; }
+          .hdr-bar { padding: 0 8px; }
           :root { --hh: 50px; }
           .hdr-logo img { height: 28px; }
           .hdr-btn.xs-hide { display: none; }
+          .hdr-tickets { display: none !important; }
+          .hdr-season-wrap { display: none !important; }
         }
 
         ${!darkMode ? `

@@ -53,6 +53,8 @@ function FeaturedMatch({ match }) {
   const [hovered, hoverProps] = useHover();
   if (!match) return null;
 
+  const clampValue = (min, max) => `clamp(${min}px, ${(max/12.8).toFixed(2)}vw, ${max}px)`;
+
   const isLive = match.status === "live";
   const isDone = match.status === "finished";
   const dateStr = new Date(match.match_date + "T00:00:00")
@@ -64,21 +66,21 @@ function FeaturedMatch({ match }) {
       border: `1px solid ${isLive ? liveBorder : hovered ? borderHover : border}`,
       borderRadius: 4, overflow: "hidden",
       transition: "border-color 0.25s, background 0.3s",
-    }} {...hoverProps}>
+    }} {...hoverProps} className="featured-match-card">
 
       <div style={{
-        padding: "10px 16px",
+        padding: "8px 14px",
         background: isLive ? card : surface,
         borderBottom: `1px solid ${isLive ? border : borderSub}`,
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        gap: 8, flexWrap: "wrap",
+        gap: 6, flexWrap: "wrap",
         transition: "background 0.3s, border-color 0.3s",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {isLive
             ? <LiveBadge minute={match.minute} />
             : <span style={{
-                fontSize: 9, fontWeight: 900, letterSpacing: "0.18em",
+                fontSize: 8, fontWeight: 900, letterSpacing: "0.16em",
                 textTransform: "uppercase", color: textSecondary, fontFamily: FONT.body,
               }}>
                 {STAGE_LABEL[match.stage] || "Groupe"}{match.group_name ? ` · ${match.group_name}` : ""}
@@ -87,44 +89,44 @@ function FeaturedMatch({ match }) {
         </div>
         {!isLive && (
           <span style={{
-            display: "flex", alignItems: "center", gap: 5,
-            fontSize: 10, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
+            display: "flex", alignItems: "center", gap: 4,
+            fontSize: 9, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
           }}>
             <FiCalendar size={9} /> {dateStr}
           </span>
         )}
       </div>
 
-      <div style={{ padding: "24px 16px 20px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <Flag code={getCode(match.home_team)} alt={match.home_team} size={44} />
+      <div style={{ padding: "clamp(12px, 2.5vw, 24px) clamp(8px, 2vw, 16px)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", justifyContent: "center" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <Flag code={getCode(match.home_team)} alt={match.home_team} size="clamp(28px, 5vw, 48px)" />
             <span style={{
-              fontFamily: FONT.display, fontSize: "clamp(0.75rem,3.5vw,1.05rem)",
-              fontWeight: 900, letterSpacing: "0.06em",
+              fontFamily: FONT.display, fontSize: "clamp(0.7rem, 3vw, 1rem)",
+              fontWeight: 900, letterSpacing: "0.05em",
               color: textPrimary, textAlign: "center", textTransform: "uppercase",
             }}>{match.home_team}</span>
           </div>
 
           <div style={{
             flexShrink: 0, display: "flex", flexDirection: "column",
-            alignItems: "center", gap: 2, padding: "0 6px", minWidth: 70,
+            alignItems: "center", gap: 2, padding: "0 clamp(4px, 1.5vw, 10px)", minWidth: "clamp(40px, 10vw, 80px)",
           }}>
             {isDone || isLive ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: clampValue(2, 5) }}>
                 <span style={{
                   fontFamily: FONT.display, fontWeight: 900,
-                  fontSize: "clamp(1.8rem,7vw,3rem)", lineHeight: 1,
+                  fontSize: "clamp(1.1rem, 5vw, 2rem)", lineHeight: 1,
                   color: isLive ? liveGreen : textPrimary,
                   fontVariantNumeric: "tabular-nums",
                 }}>{match.home_score ?? 0}</span>
                 <span style={{
                   fontFamily: FONT.display, fontWeight: 900,
-                  fontSize: "clamp(1.2rem,4vw,2rem)", lineHeight: 1, color: textMuted,
+                  fontSize: "clamp(0.7rem, 2.5vw, 1.1rem)", lineHeight: 1, color: textMuted,
                 }}>–</span>
                 <span style={{
                   fontFamily: FONT.display, fontWeight: 900,
-                  fontSize: "clamp(1.8rem,7vw,3rem)", lineHeight: 1,
+                  fontSize: "clamp(1.1rem, 5vw, 2rem)", lineHeight: 1,
                   color: isLive ? liveGreen : textPrimary,
                   fontVariantNumeric: "tabular-nums",
                 }}>{match.away_score ?? 0}</span>
@@ -132,22 +134,22 @@ function FeaturedMatch({ match }) {
             ) : (
               <span style={{
                 fontFamily: FONT.display, fontWeight: 900,
-                color: textPrimary, fontSize: "clamp(1.4rem,6vw,2.4rem)", lineHeight: 1,
+                color: textPrimary, fontSize: "clamp(0.9rem, 5vw, 1.6rem)", lineHeight: 1,
               }}>{match.match_time?.slice(0, 5)}</span>
             )}
             <span style={{
               fontSize: 8, fontWeight: 900, letterSpacing: "0.14em",
               textTransform: "uppercase", fontFamily: FONT.body,
-              color: isLive ? liveGreen : textSecondary, marginTop: 4,
+              color: isLive ? liveGreen : textSecondary, marginTop: 3,
             }}>
               {isLive ? "En direct" : isDone ? "Terminé" : "Coup d'envoi"}
             </span>
           </div>
 
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <Flag code={getCode(match.away_team)} alt={match.away_team} size={44} />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+            <Flag code={getCode(match.away_team)} alt={match.away_team} size={clampValue(44, 60)} />
             <span style={{
-              fontFamily: FONT.display, fontSize: "clamp(0.75rem,3.5vw,1.05rem)",
+              fontFamily: FONT.display, fontSize: "clamp(0.85rem, 4vw, 1.25rem)",
               fontWeight: 900, letterSpacing: "0.06em",
               color: textPrimary, textAlign: "center", textTransform: "uppercase",
             }}>{match.away_team}</span>
@@ -155,31 +157,30 @@ function FeaturedMatch({ match }) {
         </div>
 
         <div style={{
-          marginTop: 18, paddingTop: 14,
+          marginTop: clampValue(16, 24), paddingTop: clampValue(12, 18),
           borderTop: `1px solid ${border}`,
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 8, flexWrap: "wrap",
+          gap: 12, flexWrap: "wrap",
           transition: "border-color 0.3s",
         }}>
           <span style={{
             display: "flex", alignItems: "center", gap: 5,
-            fontSize: 10, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
+            fontSize: 11, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
           }}>
-            <FiMapPin size={9} /> {match.venue}, {match.city}
+            <FiMapPin size={10} /> {match.venue}, {match.city}
           </span>
-          {/* Tickets button — always filled */}
           <a href="/tickets" style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             background: accent, color: accentContrast,
-            fontFamily: FONT.body, fontSize: 9, fontWeight: 900,
+            fontFamily: FONT.body, fontSize: 10, fontWeight: 900,
             letterSpacing: "0.14em", textTransform: "uppercase",
-            padding: "7px 14px", borderRadius: 100, textDecoration: "none",
+            padding: "8px 18px", borderRadius: 100, textDecoration: "none",
             transition: "background 0.25s",
           }}
             onMouseOver={e => e.currentTarget.style.background = accentHover}
             onMouseOut={e => e.currentTarget.style.background = accent}
           >
-            <FiShoppingCart size={9} /> Billets
+            <FiShoppingCart size={10} /> Billets
           </a>
         </div>
       </div>
@@ -412,25 +413,34 @@ export function MatchesSection({ matchFilter, setMatchFilter }) {
         }
         .ms-grid {
           display: grid;
-          grid-template-columns: 1fr 260px;
-          gap: 16px;
+          grid-template-columns: 1fr 240px;
+          gap: 14px;
           align-items: start;
         }
-        .ms-left  { display: flex; flex-direction: column; gap: 12px; }
-        .ms-right { position: sticky; top: 20px; }
-        .ms-filters { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+        .ms-left  { display: flex; flex-direction: column; gap: 10px; }
+        .ms-right { position: sticky; top: 16px; }
+        .ms-filters { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
         .ms-filters::-webkit-scrollbar { display: none; }
         @media (max-width: 720px) {
           .ms-grid { grid-template-columns: 1fr; }
-          .ms-right { position: static; }
+          .ms-right { position: static; margin-top: 12px; }
+          .featured-match-card { padding: 12px 14px; }
+        }
+        @media (max-width: 480px) {
+          .ms-filters { gap: 4px; margin-bottom: 12px; }
+          .ms-filters button { padding: 6px 12px; font-size: 8px; }
+          .match-row-m { padding: 8px 10px !important; }
+          .match-row-m .mr-date { display: none; }
+          .match-row-m .mr-team { font-size: 11px !important; }
+          .featured-match-card { padding: 10px 12px; }
         }
       `}</style>
 
       <section style={{
-        background: surface, padding: "clamp(24px,5vw,48px) 0",
+        background: surface, padding: "var(--section-pad-y) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(12px,4vw,24px)" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 var(--section-pad-x)" }}>
 
           <SectionHead eyebrow="Calendrier" title="Matchs" action="Tous les matchs" href="/matches" />
 

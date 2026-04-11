@@ -51,15 +51,22 @@ export function PromoSection() {
           border-radius: 4px;
           overflow: hidden;
         }
-        @media (max-width: 640px) { .pr-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { 
+          .pr-grid { grid-template-columns: 1fr; gap: 10px; } 
+        }
 
         .pr-card {
           position: relative;
           display: flex; flex-direction: column; justify-content: space-between;
-          min-height: clamp(240px, 32vw, 340px);
-          padding: clamp(24px,3vw,40px);
+          min-height: clamp(180px, 25vw, 300px);
+          padding: clamp(16px,2.5vw,32px);
           text-decoration: none; overflow: hidden;
           cursor: pointer;
+        }
+        @media (max-width: 480px) {
+          .pr-card { min-height: 200px; padding: 14px; }
+          .pr-title { font-size: clamp(1.2rem, 5vw, 1.8rem) !important; }
+          .pr-desc { font-size: 10px !important; max-width: 100% !important; }
         }
         .pr-card::before {
           content: ''; position: absolute; top: 0; left: 0;
@@ -77,7 +84,7 @@ export function PromoSection() {
         .pr-card:hover::after { width: 100%; }
 
         .pr-icon-box {
-          width: 30px; height: 30px; border-radius: 3px; flex-shrink: 0;
+          width: 26px; height: 26px; border-radius: 3px; flex-shrink: 0;
           background: rgba(255,255,255,0.07);
           display: flex; align-items: center; justify-content: center;
           transition: background 0.2s;
@@ -86,38 +93,38 @@ export function PromoSection() {
 
         .pr-title {
           font-weight: 900; color: #ffffff;
-          font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+          font-size: clamp(1.4rem, 2.8vw, 2.2rem);
           line-height: 0.95; letter-spacing: 0.02em;
-          white-space: pre-line; margin: 18px 0 10px;
+          white-space: pre-line; margin: 14px 0 8px;
           transition: letter-spacing 0.3s;
         }
         .pr-card:hover .pr-title { letter-spacing: 0.035em; }
 
         .pr-desc {
-          color: rgba(255,255,255,0.35); font-size: clamp(11px,1.1vw,13px);
-          line-height: 1.7; max-width: 300px; margin: 0;
+          color: rgba(255,255,255,0.35); font-size: clamp(10px,1vw,12px);
+          line-height: 1.6; max-width: 280px; margin: 0;
         }
 
         .pr-stats {
-          display: flex; align-items: stretch; gap: 16px;
-          margin-top: 20px; padding-top: 18px;
+          display: flex; align-items: stretch; gap: 12px;
+          margin-top: 16px; padding-top: 14px;
           border-top: 1px solid rgba(255,255,255,0.08);
         }
         .pr-stat-divider {
           width: 1px; background: rgba(255,255,255,0.1); align-self: stretch;
         }
         .pr-divider {
-          height: 1px; background: rgba(255,255,255,0.08); margin: 22px 0 18px;
+          height: 1px; background: rgba(255,255,255,0.08); margin: 16px 0 14px;
         }
-        .pr-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .pr-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 
         /* ── CTA button — always filled, never ghost ── */
         .pr-cta-btn {
-          display: inline-flex; align-items: center; gap: 8px;
+          display: inline-flex; align-items: center; gap: 6px;
           background: #ffffff; color: #0d0d0d;
-          font-family: ${FONT.body}; font-size: 10px; font-weight: 900;
-          letter-spacing: 0.14em; text-transform: uppercase;
-          padding: 9px 18px; border-radius: 100px; border: none;
+          font-family: ${FONT.body}; font-size: 9px; font-weight: 900;
+          letter-spacing: 0.12em; textTransform: uppercase;
+          padding: 8px 14px; border-radius: 100px; border: none;
           cursor: pointer; text-decoration: none;
           transition: background 0.25s, transform 0.2s;
         }
@@ -128,10 +135,10 @@ export function PromoSection() {
       `}</style>
 
       <section style={{
-        background: sectionBg, padding: "clamp(28px,5vw,48px) 0",
+        background: sectionBg, padding: "var(--section-pad-y) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px,3vw,24px)" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 var(--section-pad-x)" }}>
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 22, height: 1, background: eyebrowLine, transition: "background 0.3s" }} />
@@ -268,14 +275,14 @@ export function TournamentSection() {
       <style>{`
         .ts-wrap {
           display: grid;
-          grid-template-columns: 1fr 28px 1fr 28px 1fr;
+          grid-template-columns: 1fr 20px 1fr 20px 1fr;
           align-items: stretch;
           gap: 0;
         }
         @media (max-width: 720px) {
           .ts-wrap {
             grid-template-columns: 1fr;
-            gap: 2px;
+            gap: 12px;
           }
           .ts-connector { display: none; }
         }
@@ -283,7 +290,7 @@ export function TournamentSection() {
         .ts-card {
           border: 1px solid ${border};
           border-radius: 4px;
-          padding: clamp(20px,2.8vw,32px);
+          padding: clamp(16px,2.4vw,26px);
           position: relative;
           overflow: hidden;
           transition: border-color 0.25s, background 0.25s;
@@ -319,15 +326,15 @@ export function TournamentSection() {
 
         .ts-phase-num {
           font-family: ${FONT.display};
-          font-size: 10px; font-weight: 900;
-          letter-spacing: 0.3em; text-transform: uppercase;
-          margin-bottom: 16px;
+          font-size: 9px; fontWeight: 900;
+          letter-spacing: 0.25em; text-transform: uppercase;
+          margin-bottom: 12px;
         }
 
         .ts-big-num {
           font-family: ${FONT.display};
           font-weight: 900;
-          font-size: clamp(2.8rem, 5vw, 4.2rem);
+          font-size: clamp(2.2rem, 4vw, 3.6rem);
           line-height: 1;
           letter-spacing: -0.03em;
           font-variant-numeric: tabular-nums;
@@ -336,40 +343,40 @@ export function TournamentSection() {
 
         .ts-unit {
           font-family: ${FONT.body};
-          font-size: 9px; font-weight: 700;
-          letter-spacing: 0.18em; text-transform: uppercase;
-          margin-left: 6px; vertical-align: middle;
+          font-size: 8px; font-weight: 700;
+          letterSpacing: 0.15em; text-transform: uppercase;
+          margin-left: 4px; vertical-align: middle;
         }
 
         .ts-label {
           font-family: ${FONT.body};
-          font-size: 11px; font-weight: 800;
-          letter-spacing: 0.06em; text-transform: uppercase;
-          margin: 14px 0 4px;
+          font-size: 10px; font-weight: 800;
+          letterSpacing: 0.05em; text-transform: uppercase;
+          margin: 10px 0 4px;
           transition: color 0.25s;
         }
 
         .ts-detail {
           font-family: ${FONT.body};
-          font-size: 11px; line-height: 1.65;
+          font-size: 10px; line-height: 1.6;
           transition: color 0.25s;
           margin: 0;
         }
 
         .ts-rule {
-          margin-top: 12px; padding-top: 12px;
+          margin-top: 10px; padding-top: 10px;
           border-top: 1px solid ${border};
-          font-family: ${FONT.body}; font-size: 10px;
-          line-height: 1.6; transition: color 0.25s, border-color 0.25s;
+          font-family: ${FONT.body}; font-size: 9px;
+          line-height: 1.5; transition: color 0.25s, border-color 0.25s;
         }
         .ts-card--dark .ts-rule { border-top-color: rgba(255,255,255,0.08); }
 
         .ts-matches-badge {
-          display: inline-flex; align-items: center; gap: 5px;
-          padding: 4px 10px; border-radius: 100px;
-          font-family: ${FONT.body}; font-size: 9px; font-weight: 800;
-          letter-spacing: 0.1em; text-transform: uppercase;
-          margin-top: 10px;
+          display: inline-flex; align-items: center; gap: 4px;
+          padding: 3px 8px; border-radius: 100px;
+          font-family: ${FONT.body}; font-size: 8px; font-weight: 800;
+          letterSpacing: 0.1em; text-transform: uppercase;
+          margin-top: 8px;
         }
         .ts-matches-badge--light {
           background: ${darkMode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)"};
@@ -382,10 +389,10 @@ export function TournamentSection() {
       `}</style>
 
       <section style={{
-        background: bg, padding: "clamp(28px,5vw,48px) 0",
+        background: bg, padding: "var(--section-pad-y) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px,3vw,24px)" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 var(--section-pad-x)" }}>
           <SectionHead eyebrow="Format" title="Structure du Tournoi" href="/format" />
 
           <div className="ts-wrap">
@@ -512,34 +519,34 @@ export function FanZoneSection() {
   return (
     <>
       <style>{`
-        .fz-root { background: ${bg}; padding: clamp(36px,6vw,64px) 0; transition: background 0.3s; }
+        .fz-root { background: ${bg}; padding: var(--section-pad-y) 0; transition: background 0.3s; }
         .fz-inner {
           max-width: 1280px; margin: 0 auto;
-          padding: 0 clamp(16px,3vw,24px);
-          display: grid; grid-template-columns: 1fr 380px;
-          gap: clamp(32px,5vw,64px); align-items: center;
+          padding: 0 var(--section-pad-x);
+          display: grid; grid-template-columns: 1fr 340px;
+          gap: clamp(24px,4vw,48px); align-items: center;
         }
-        @media (max-width: 860px) { .fz-inner { grid-template-columns: 1fr; gap: 40px; } }
+        @media (max-width: 860px) { .fz-inner { grid-template-columns: 1fr; gap: 32px; } }
 
         .fz-headline {
           font-weight: 900; color: ${textPrimary};
-          font-size: clamp(2rem,5vw,3.8rem);
-          line-height: 0.92; letter-spacing: 0.03em;
-          text-transform: uppercase; margin-bottom: 14px;
+          font-size: clamp(1.6rem,4vw,3.2rem);
+          line-height: 0.92; letterSpacing: 0.03em;
+          text-transform: uppercase; margin-bottom: 12px;
           transition: color 0.3s;
         }
         .fz-body {
-          color: ${textMuted}; font-size: 13px;
-          line-height: 1.7; max-width: 360px; margin-bottom: 28px;
+          color: ${textMuted}; font-size: 12px;
+          line-height: 1.6; max-width: 320px; margin-bottom: 20px;
           transition: color 0.3s;
         }
         .fz-btns { display: flex; flex-wrap: wrap; gap: 8px; }
 
         /* All buttons fully filled — no ghost/empty */
         .fz-btn {
-          display: inline-flex; align-items: center; gap: 7px;
-          font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
-          padding: 11px 22px; border-radius: 100px; text-decoration: none;
+          display: inline-flex; align-items: center; gap: 6px;
+          font-size: 10px; fontWeight: 800; letterSpacing: 0.05em;
+          padding: 10px 18px; border-radius: 100px; text-decoration: none;
           transition: background 0.25s, transform 0.2s; cursor: pointer; border: none;
           white-space: nowrap;
         }
@@ -564,25 +571,29 @@ export function FanZoneSection() {
         .fz-card {
           background: ${cardBg};
           border: 1px solid ${cardBorder};
-          border-radius: 4px; padding: clamp(20px,3vw,28px);
+          border-radius: 4px; padding: clamp(18px,2.6vw,24px);
           transition: background 0.3s, border-color 0.3s;
         }
         .fz-card-title {
           font-weight: 800; color: ${textPrimary};
-          font-size: clamp(1.1rem,1.8vw,1.4rem);
-          letter-spacing: 0.04em; margin-bottom: 6px;
+          font-size: clamp(1rem,1.6vw,1.2rem);
+          letter-spacing: 0.04em; margin-bottom: 5px;
           transition: color 0.3s;
         }
         .fz-card-body {
-          color: ${textMuted}; font-size: 12px;
-          line-height: 1.65; margin-bottom: 18px;
+          color: ${textMuted}; font-size: 11px;
+          line-height: 1.6; margin-bottom: 14px;
           transition: color 0.3s;
         }
-        .fz-input-row { display: flex; gap: 8px; }
+        .fz-input-row { display: flex; gap: 6px; }
+        @media (max-width: 480px) {
+          .fz-input-row { flex-direction: column; }
+          .fz-submit { width: 100%; justify-content: center; }
+        }
         .fz-input {
           flex: 1; min-width: 0;
-          border-radius: 100px; padding: 11px 18px;
-          font-size: 12px; color: ${textPrimary}; outline: none; font-weight: 500;
+          border-radius: 100px; padding: 10px 14px;
+          fontSize: 12px; color: ${textPrimary}; outline: none; font-weight: 500;
           transition: border-color 0.3s, background 0.3s, color 0.3s;
         }
         .fz-input::placeholder { color: ${textVFaint}; }
@@ -590,17 +601,17 @@ export function FanZoneSection() {
         /* Submit always filled */
         .fz-submit {
           flex-shrink: 0; background: ${accent}; color: ${accentContrast};
-          border: none; border-radius: 100px; padding: 11px 20px; cursor: pointer;
-          font-size: 11px; font-weight: 900; letter-spacing: 0.1em;
+          border: none; border-radius: 100px; padding: 10px 16px; cursor: pointer;
+          font-size: 10px; fontWeight: 900; letter-spacing: 0.1em;
           transition: background 0.25s, transform 0.2s; white-space: nowrap;
         }
         .fz-submit:hover { background: ${accentHover}; transform: translateY(-1px); }
         .fz-submit:active { transform: translateY(0); }
 
-        .fz-legal { font-size: 9px; color: ${legalColor}; margin-top: 10px; line-height: 1.5; transition: color 0.3s; }
-        .fz-success { display: flex; align-items: center; gap: 8px; padding: 14px 0; }
-        .fz-success-dot { width: 8px; height: 8px; border-radius: 50%; background: ${successGreen}; flex-shrink: 0; }
-        .fz-success-txt { font-size: 12px; color: ${successGreen}; font-weight: 600; }
+        .fz-legal { font-size: 8px; color: ${legalColor}; margin-top: 8px; line-height: 1.5; transition: color 0.3s; }
+        .fz-success { display: flex; align-items: center; gap: 6px; padding: 12px 0; }
+        .fz-success-dot { width: 7px; height: 7px; borderRadius: 50%; background: ${successGreen}; flex-shrink: 0; }
+        .fz-success-txt { font-size: 11px; color: ${successGreen}; fontWeight: 600; }
       `}</style>
 
       <section className="fz-root">

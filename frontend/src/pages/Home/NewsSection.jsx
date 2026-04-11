@@ -176,14 +176,14 @@ export function StatsBar({ stats, loading }) {
         .sb-in .sb-cell:nth-child(4) { opacity:1; transform:none; transition-delay:0.24s; }
         .sb-num {
           font-family: ${FONT.display}; font-weight: 900; color: ${textPrimary};
-          font-size: clamp(1.4rem, 2.4vw, 2rem); line-height: 1; letter-spacing: -0.03em;
+          font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1; letter-spacing: -0.03em;
           font-variant-numeric: tabular-nums; transition: transform 0.3s ease, color 0.3s;
         }
         .sb-cell:hover .sb-num { transform: translateY(-1px); }
         .sb-label {
-          font-family: ${FONT.body}; font-size: clamp(7px, 0.58vw, 8px);
-          font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
-          color: ${textMuted}; margin-top: 5px; text-align: center;
+          font-family: ${FONT.body}; font-size: clamp(9px, 0.8vw, 11px);
+          font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+          color: ${textMuted}; margin-top: 6px; text-align: center;
           line-height: 1.4; transition: color 0.3s;
         }
         .sb-cell:hover .sb-label { color: ${textSecondary}; }
@@ -256,8 +256,8 @@ function FeaturedCard({ article }) {
           <Tag label={article.tag} dark />
           <h3 style={{
             fontFamily: FONT.display, fontWeight: 900, color: imageText,
-            fontSize: "clamp(1.2rem,2.2vw,1.7rem)",
-            lineHeight: 1.1, letterSpacing: "0.02em", margin: "10px 0 8px",
+            fontSize: "clamp(1.4rem, 3vw, 2rem)",
+            lineHeight: 1.1, letterSpacing: "0.02em", margin: "12px 0 10px",
             transform: hovered ? "translateY(-3px)" : "translateY(0)",
             transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), color 0.3s",
           }}>{article.title}</h3>
@@ -436,7 +436,7 @@ export function NewsSection() {
     <>
       <style>{`
         .ns-grid {
-          display: grid; grid-template-columns: 1fr 290px;
+          display: grid; grid-template-columns: 1fr 260px;
           border: 1px solid ${border}; border-radius: 4px; overflow: hidden;
           transition: border-color 0.3s;
         }
@@ -448,16 +448,24 @@ export function NewsSection() {
         @media (max-width: 860px) {
           .ns-grid { grid-template-columns: 1fr; }
           .ns-side { border-left: none; border-top: 1px solid ${border}; flex-direction: row; flex-wrap: wrap; }
-          .ns-side a { flex: 1 1 240px; }
+          .ns-side a { flex: 1 1 260px; }
         }
-        @media (max-width: 520px) { .ns-side a { flex: 1 1 100%; } }
+        @media (max-width: 540px) { 
+          .ns-side a { flex: 1 1 100%; } 
+          .sb-inner { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 400px) {
+          .sb-cell { padding: 12px 8px; }
+          .sb-num { font-size: clamp(1.3rem, 5vw, 2rem); }
+          .sb-label { font-size: 8px; letter-spacing: 0.12em; }
+        }
       `}</style>
 
       <section style={{
-        background: bg, padding: "clamp(28px,5vw,48px) 0",
+        background: bg, padding: "var(--section-pad-y) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px,3vw,24px)" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 var(--section-pad-x)" }}>
           <SectionHead eyebrow="Actualités" title="À La Une" action="Toutes les news" href="/news" icon={require("react-icons/fi").FiList} />
           <div className="ns-grid">
             <FeaturedCard article={NEWS_FEATURED} />
@@ -481,9 +489,9 @@ export function MoreNewsSection() {
   return (
     <>
       <style>{`
-        .mn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        @media (max-width: 860px) { .mn-grid { grid-template-columns: repeat(2,1fr); } }
-        @media (max-width: 500px) { .mn-grid { grid-template-columns: 1fr; } }
+        .mn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        @media (max-width: 860px) { .mn-grid { grid-template-columns: repeat(2,1fr); gap: 8px; } }
+        @media (max-width: 480px) { .mn-grid { grid-template-columns: 1fr; gap: 12px; } }
       `}</style>
 
       <section style={{

@@ -31,6 +31,16 @@ function convertEmojiToCode(emoji) {
 export function Flag({ code, alt = "", size = 28 }) {
   if (!code) return null;
 
+  // Responsive size calculation
+  const getResponsiveSize = () => {
+    if (typeof size === 'number') return size;
+    const match = size.toString().match(/clamp\(([^,]+),([^,]+),([^)]+)\)/);
+    if (match) return parseFloat(match[2]);
+    return parseFloat(size) || 28;
+  };
+  
+  const baseSize = getResponsiveSize();
+
   // If it's a full URL
   if (code.startsWith('http')) {
      return (
@@ -38,7 +48,14 @@ export function Flag({ code, alt = "", size = 28 }) {
          src={code} 
          alt={alt} 
          loading="lazy" 
-         style={{ width: size * 1.5, height: size, objectFit: "cover", borderRadius: 2 }} 
+         decoding="async"
+         style={{ 
+           width: "auto", height: baseSize,
+           maxWidth: baseSize * 1.5,
+           objectFit: "cover", 
+           borderRadius: 2,
+           display: "block"
+         }} 
        />
      );
   }
@@ -50,24 +67,33 @@ export function Flag({ code, alt = "", size = 28 }) {
   // If it's still non-ascii and not a converted emoji, just show text (fallback)
   if (/[^\x00-\x7F]/.test(finalCode)) {
     return (
-      <span style={{ fontSize: size, lineHeight: 1, display: "inline-block", verticalAlign: "middle" }}>
+      <span style={{ fontSize: baseSize, lineHeight: 1, display: "inline-block", verticalAlign: "middle" }}>
         {finalCode}
       </span>
     );
   }
 
-  // Standard flagcdn code
+  // Standard flagcdn code with responsive sizing
   return (
     <img
       src={`https://flagcdn.com/w80/${finalCode.toLowerCase()}.png`}
-      srcSet={`https://flagcdn.com/w160/${finalCode.toLowerCase()}.png 2x`}
+      srcSet={`
+        https://flagcdn.com/w40/${finalCode.toLowerCase()}.png 40w,
+        https://flagcdn.com/w80/${finalCode.toLowerCase()}.png 80w,
+        https://flagcdn.com/w160/${finalCode.toLowerCase()}.png 160w
+      `}
+      sizes="(max-width: 480px) 24px, (max-width: 768px) 32px, 48px"
       alt={alt}
       loading="lazy"
+      decoding="async"
       style={{
-        width: size * 1.5, height: size,
+        width: "auto", height: baseSize,
+        maxHeight: baseSize,
+        maxWidth: baseSize * 1.5,
         objectFit: "cover", flexShrink: 0,
         borderRadius: 2,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+        display: "block"
       }}
     />
   );
@@ -98,29 +124,42 @@ export function SectionHead({ eyebrow, title, action, href }) {
   const textSecondary = darkMode ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)";
 
   return (
-    <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24 }}>
-      <div>
-        <p style={{
-          fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase",
-          color: textSecondary, fontFamily: FONT.body, margin: "0 0 6px",
-          transition: "color 0.3s",
-        }}>{eyebrow}</p>
-        <h2 style={{
-          fontSize: 36, fontWeight: 900, letterSpacing: "0.04em", textTransform: "uppercase",
-          color: textPrimary, fontFamily: FONT.display, margin: 0, lineHeight: 1,
-          transition: "color 0.3s",
-        }}>{title}</h2>
+    <>
+      <style>{`
+        @media (max-width: 600px) {
+          .section-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .section-head h2 { font-size: 28px !important; }
+          .section-head a { font-size: 9px !important; }
+        }
+        @media (max-width: 400px) {
+          .section-head h2 { font-size: 24px !important; }
+          .section-head p { font-size: 9px !important; }
+        }
+      `}</style>
+      <div className="section-head" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 16 }}>
+        <div>
+          <p style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase",
+            color: textSecondary, fontFamily: FONT.body, margin: "0 0 6px",
+            transition: "color 0.3s",
+          }}>{eyebrow}</p>
+          <h2 style={{
+            fontSize: "clamp(28px, 4vw, 36)", fontWeight: 900, letterSpacing: "0.04em", textTransform: "uppercase",
+            color: textPrimary, fontFamily: FONT.display, margin: 0, lineHeight: 1,
+            transition: "color 0.3s",
+          }}>{title}</h2>
+        </div>
+        {action && (
+          <a href={href} style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase",
+            color: textSecondary, textDecoration: "none", fontFamily: FONT.body,
+            transition: "color 0.3s",
+          }}
+            onMouseOver={e => e.currentTarget.style.color = textPrimary}
+            onMouseOut={e => e.currentTarget.style.color = textSecondary}
+          >{action} →</a>
+        )}
       </div>
-      {action && (
-        <a href={href} style={{
-          fontSize: 10, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase",
-          color: textSecondary, textDecoration: "none", fontFamily: FONT.body,
-          transition: "color 0.3s",
-        }}
-          onMouseOver={e => e.currentTarget.style.color = textPrimary}
-          onMouseOut={e => e.currentTarget.style.color = textSecondary}
-        >{action} →</a>
-      )}
-    </div>
+    </>
   );
 }

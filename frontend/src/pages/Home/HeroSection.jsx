@@ -214,23 +214,23 @@ export function HeroSection() {
         .hero-wrap {
           position: relative; z-index: 10;
           width: 100%; max-width: 1380px; margin: 0 auto;
-          padding: clamp(40px,6vh,80px) clamp(16px,3vw,40px);
+          padding: clamp(32px, 8vh, 100px) clamp(16px, 4vw, 40px);
           display: grid;
           grid-template-columns: 1fr auto;
-          gap: clamp(20px,3vw,48px);
+          gap: clamp(24px, 5vw, 64px);
           align-items: center;
         }
 
         .hero-ey {
           display: flex; align-items: center; gap: 10px;
-          margin-bottom: clamp(10px,1.5vh,18px);
+          margin-bottom: clamp(12px, 2vh, 20px);
           width: 100%;
         }
         .hero-ey-line { width: 32px; height: 1px; background: ${lineBg}; flex-shrink: 0; transition: background 0.3s; }
         .hero-ey-txt {
           color: ${textMuted};
           font-family: 'Barlow', sans-serif;
-          font-size: clamp(8px,1vw,10px); font-weight: 800;
+          font-size: clamp(9px, 1.2vw, 11px); font-weight: 800;
           letter-spacing: .4em; text-transform: uppercase;
           transition: color 0.3s;
         }
@@ -240,7 +240,7 @@ export function HeroSection() {
   font-weight: 900; line-height: 0.9;
   text-transform: uppercase; letter-spacing: -.02em; margin: 0;
   display: block; width: 100%; overflow: visible;
-  font-size: clamp(164px, 10vw, 140px);
+  font-size: clamp(80px, 12vw, 160px);
 }
         .hero-h1:last-child { padding-bottom: 0.06em; }
 
@@ -258,10 +258,10 @@ export function HeroSection() {
         .hero-sub {
           color: ${textSub};
           font-family: 'Barlow', sans-serif;
-          font-size: clamp(12px,1.4vw,15px);
-          font-weight: 400; line-height: 1.8;
-          margin: clamp(14px,2vh,22px) 0 clamp(24px,3.5vh,36px);
-          max-width: 30ch; width: 100%;
+          font-size: clamp(14px, 1.6vw, 18px);
+          font-weight: 400; line-height: 1.6;
+          margin: clamp(16px,3vh,24px) 0 clamp(32px,4vh,48px);
+          max-width: 45ch; width: 100%;
           transition: color 0.3s;
         }
 
@@ -404,15 +404,16 @@ export function HeroSection() {
         }
         .mc-btn:hover { background: ${accentHover}; }
 
-@media (max-width: 1024px) {
-          .hero-wrap { grid-template-columns: 1fr auto; gap: 24px; }
-          .match-card { width: clamp(160px, 16vw, 200px); }
+        @media (max-width: 1024px) {
+          .hero-wrap { grid-template-columns: 1fr auto; gap: 20px; }
+          .match-card { width: clamp(140px, 14vw, 180px); }
+          .hero-h1 { font-size: clamp(70px, 11vw, 130px); }
         }
 
         @media (max-width: 860px) {
           .hero-wrap {
             grid-template-columns: 1fr;
-            padding: clamp(48px,7vh,80px) clamp(20px,4vw,36px);
+            padding: clamp(40px, 6vh, 60px) clamp(16px, 3vw, 28px);
           }
           .hero-right { display: none; }
           .hero-ov-l {
@@ -421,33 +422,32 @@ export function HeroSection() {
               rgba(${oR},.7)  50%,
               rgba(${oR},.3)  100%);
           }
-          .hero-h1  { font-size: clamp(66px, 14vw, 130px); }
-          .hero-sub { max-width: 42ch; }
-          .hero-cta { flex-direction: row; flex-wrap: wrap; gap: 12px; }
-          .btn-buy  { flex: 1 1 auto; min-width: 160px; justify-content: center; }
-          .btn-watch{ flex: 1 1 auto; min-width: 160px; justify-content: center; }
+          .hero-h1  { font-size: clamp(48px, 12vw, 100px); }
+          .hero-sub { max-width: 42ch; font-size: clamp(13px, 1.5vw, 16px); }
+          .hero-cta { flex-direction: row; flex-wrap: wrap; gap: 10px; }
+          .btn-buy  { flex: 1 1 auto; min-width: 140px; justify-content: center; }
+          .btn-watch{ flex: 1 1 auto; min-width: 140px; justify-content: center; }
           .btn-watch-label { display: inline !important; }
         }
 
         @media (max-width: 600px) {
           .hero-root { min-height: 100svh; }
-          .hero-wrap { padding: 40px 20px 52px; }
-          .hero-h1   { font-size: clamp(76px, 56vw, 93px); }
-          .hero-sub  { font-size: 13px; max-width: 100%; line-height: 1.7; }
-          .hero-ey-txt { font-size: 8px; letter-spacing: .2em; }
-          .hero-cta { flex-direction: column; align-items: stretch; gap: 10px; width: 100%; }
-          .btn-buy  { width: 100%; justify-content: center; box-sizing: border-box; padding: 14px 20px; font-size: 13px; }
-          .btn-watch{ width: 100%; justify-content: center; box-sizing: border-box; padding: 13px 20px; }
-          .btn-watch-label { display: inline !important; font-size: 13px; color: ${textHeroStrong}; }
+          .hero-wrap { padding: 40px 12px 50px; }
+          .hero-h1   { font-size: clamp(40px, 13vw, 72px); }
+          .hero-sub  { font-size: 13px; max-width: 100%; line-height: 1.5; margin: 12px 0 16px; }
+          .hero-ey-txt { font-size: 9px; letter-spacing: .15em; }
+          .hero-cta { flex-direction: column; align-items: stretch; gap: 8px; width: 100%; }
+          .btn-buy  { width: 100%; justify-content: center; box-sizing: border-box; padding: 12px 16px; font-size: 12px; }
+          .btn-watch{ width: 100%; justify-content: center; box-sizing: border-box; padding: 12px 16px; }
+          .btn-watch-label { display: inline !important; font-size: 12px; }
           .btn-watch-circle { display: flex; }
         }
 
         @media (max-width: 380px) {
-          .hero-h1  { font-size: clamp(28px, 13vw, 52px); }
-          .btn-buy  { font-size: 12px; padding: 12px 16px; }
-          .btn-watch{ padding: 12px 16px; }
-          .btn-buy-txt-long  { display: inline; }
-          .btn-buy-txt-short { display: none; }
+          .hero-h1  { font-size: clamp(32px, 11vw, 54px); }
+          .hero-sub { font-size: 12px; }
+          .btn-buy  { font-size: 11px; padding: 11px 12px; }
+          .btn-watch{ padding: 11px 12px; font-size: 11px; }
         }
       `}</style>
 

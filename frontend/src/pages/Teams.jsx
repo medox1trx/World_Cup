@@ -26,6 +26,8 @@ export default function Teams() {
   const [mounted, setMounted] = useState(false);
   const [search, setSearch] = useState("");
   
+  const clampValue = (min, max) => `clamp(${min}px, ${(max/12.8).toFixed(2)}vw, ${max}px)`;
+  
   useEffect(() => { setMounted(true); }, []);
 
   const filteredTeams = TEAMS.filter(t => 
@@ -43,14 +45,46 @@ export default function Teams() {
       transition: "opacity 0.4s",
       paddingBottom: 100
     }}>
-      <section style={{ padding: "80px 32px", maxWidth: 1380, margin: "0 auto" }}>
+      <style>{`
+        .teams-hero { padding: clamp(32px, 6vh, 100px) var(--section-pad-x); max-width: 1380px; margin: 0 auto; }
+        .search-container { position: relative; maxWidth: 600px; margin: 0 auto; }
+        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: clamp(12px, 2vw, 20px); }
+        .team-card {
+          background: #ffffff; borderRadius: 16px; overflow: hidden; border: 1px solid #eee;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.3s;
+        }
+        .team-card-img {
+          width: 100%;
+          height: clamp(120px, 18vh, 180px);
+          object-fit: cover;
+          object-position: center top;
+          display: block;
+          background: #f5f5f5;
+        }
+        .team-card-badge {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+        }
+        @media (max-width: 600px) {
+          .team-card-body { padding: 14px !important; }
+          .team-card-title { font-size: 18px !important; }
+          .teams-hero { padding: 16px 10px !important; }
+          .teams-hero h1 { font-size: clamp(2rem, 8vw, 4rem) !important; }
+          .search-container input { padding: 10px 14px 10px 36px !important; font-size: 13px !important; }
+          .team-card-img { height: 140px !important; }
+          .team-card-badge { top: 8px; right: 8px; }
+        }
+      `}</style>
+
+      <section className="teams-hero">
         
-        <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <span style={{ color: "#c8102e", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 12, display: "block", marginBottom: 16 }}>FIFA World Cup 2030</span>
-          <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(3rem,8vw,6rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, marginBottom: 32 }}>Nations</h1>
+        <div style={{ textAlign: "center", marginBottom: clampValue(32, 56) }}>
+          <span style={{ color: "#c8102e", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10, display: "block", marginBottom: 10 }}>FIFA World Cup 2030</span>
+          <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(2.2rem, 8vw, 5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, marginBottom: 20 }}>Nations</h1>
           
-          <div style={{ position: "relative", maxWidth: 600, margin: "0 auto" }}>
-            <FiSearch style={{ position: "absolute", left: 24, top: "50%", transform: "translateY(-50%)", color: "#aaa" }} size={20} />
+          <div className="search-container">
+            <FiSearch style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#aaa" }} size={14} />
             <input 
               type="text" 
               placeholder="Rechercher une nation, un groupe..." 
@@ -60,9 +94,9 @@ export default function Teams() {
                 background: "#f8f8f8",
                 border: "1px solid #eee",
                 borderRadius: 100,
-                padding: "18px 24px 18px 60px",
+                padding: "12px 18px 12px 42px",
                 color: "#0d0d0d",
-                fontSize: 16,
+                fontSize: 13,
                 width: "100%",
                 outline: "none",
                 fontFamily: FONT.body,
@@ -72,42 +106,48 @@ export default function Teams() {
           </div>
         </div>
         
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 32 }}>
+        <div className="teams-grid">
           {filteredTeams.map((t, i) => (
-            <div key={i} style={{
-              background: "#ffffff",
-              borderRadius: 24,
-              overflow: "hidden",
-              border: "1px solid #eee",
-              boxShadow: "0 4px 15px rgba(0,0,0,0.02)",
-              transition: "0.3s"
-            }}>
-              <div style={{ height: 200, position: "relative", overflow: "hidden" }}>
-                <img src={t.img} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <div style={{ position: "absolute", top: 16, right: 16 }}>
-                   <Flag code={t.code} size={32} />
+            <div key={i} className="team-card">
+              <div style={{ position: "relative", overflow: "hidden" }}>
+                <img 
+                  src={t.img} 
+                  alt={t.name} 
+                  className="team-card-img"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div style={{ display: 'none', position: 'absolute', inset: 0, background: '#f0f0f0', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 32, fontWeight: 900, color: '#ddd', textTransform: 'uppercase' }}>{t.name.charAt(0)}</span>
+                </div>
+                <div className="team-card-badge">
+                   <Flag code={t.code} size={20} />
                 </div>
               </div>
               
-              <div style={{ padding: 32 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+              <div className="team-card-body" style={{ padding: "clamp(14px, 2.5vw, 24px)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                   <div>
-                    <h3 style={{ fontFamily: FONT.display, fontSize: 32, fontWeight: 900, textTransform: "uppercase", margin: 0, lineHeight: 1 }}>{t.name}</h3>
-                    <span style={{ color: "#c8102e", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.group}</span>
+                    <h3 className="team-card-title" style={{ fontFamily: FONT.display, fontSize: "clamp(18px, 3.5vw, 28px)", fontWeight: 900, textTransform: "uppercase", margin: 0, lineHeight: 1 }}>{t.name}</h3>
+                    <span style={{ color: "#c8102e", fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.group}</span>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: 24, fontWeight: 900, color: "#0d0d0d" }}>#{t.rank}</span>
-                    <span style={{ display: "block", fontSize: 9, fontWeight: 800, color: "#aaa", textTransform: "uppercase" }}>FIFA Rank</span>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0d0d0d" }}>#{t.rank}</span>
+                    <span style={{ display: "block", fontSize: 7, fontWeight: 800, color: "#aaa", textTransform: "uppercase" }}>FIFA Rank</span>
                   </div>
                 </div>
                 
-                <div style={{ background: "#fcfcfc", border: "1px solid #f5f5f5", borderRadius: 16, padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-                   <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#eee", display: "flex", alignItems: "center", justifyCenter: "center" }}>
-                      <FiStar color="#c8102e" />
+                <div style={{ background: "#fcfcfc", border: "1px solid #f5f5f5", borderRadius: 12, padding: "10px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+                   <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#eee", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <FiStar color="#c8102e" size={12} />
                    </div>
                    <div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#0d0d0d", display: "block" }}>{t.player}</span>
-                      <span style={{ fontSize: 10, color: "#aaa", fontWeight: 600 }}>Joueur clé</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#0d0d0d", display: "block" }}>{t.player}</span>
+                      <span style={{ fontSize: 8, color: "#aaa", fontWeight: 600 }}>Joueur clé</span>
                    </div>
                 </div>
               </div>
