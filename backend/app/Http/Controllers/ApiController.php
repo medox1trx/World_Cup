@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Models\FootballMatch;
 use App\Models\Highlight;
+use App\Models\Referee;
 use App\Models\Stat;
 use App\Models\TeamStanding;
 use App\Models\Ticket;
@@ -373,5 +374,62 @@ class ApiController extends Controller
             });
 
         return response()->json($results);
+    }
+
+    // ── REFEREES (Admin & Public) ─────────────────────────────
+    public function indexReferees(): JsonResponse
+    {
+        return response()->json(Referee::orderBy('last_name')->get());
+    }
+
+    public function showReferee(Referee $referee): JsonResponse
+    {
+        return response()->json($referee);
+    }
+
+    public function storeReferee(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'first_name'         => 'required|string|max:100',
+            'last_name'          => 'required|string|max:100',
+            'nationality'        => 'required|string|max:100',
+            'nationality_code'   => 'nullable|string|max:5',
+            'role'               => 'sometimes|in:main,assistant,var',
+            'age'                => 'nullable|integer|min:20|max:70',
+            'experience_years'   => 'nullable|integer|min:0',
+            'matches_officiated' => 'nullable|integer|min:0',
+            'photo_url'          => 'nullable|string',
+            'fifa_badge'         => 'sometimes|in:international,elite',
+            'notes'              => 'nullable|string',
+        ]);
+
+        $referee = Referee::create($validated);
+        return response()->json($referee, 201);
+    }
+
+    public function updateReferee(Request $request, Referee $referee): JsonResponse
+    {
+        $validated = $request->validate([
+            'first_name'         => 'sometimes|string|max:100',
+            'last_name'          => 'sometimes|string|max:100',
+            'nationality'        => 'sometimes|string|max:100',
+            'nationality_code'   => 'nullable|string|max:5',
+            'role'               => 'sometimes|in:main,assistant,var',
+            'age'                => 'nullable|integer|min:20|max:70',
+            'experience_years'   => 'nullable|integer|min:0',
+            'matches_officiated' => 'nullable|integer|min:0',
+            'photo_url'          => 'nullable|string',
+            'fifa_badge'         => 'sometimes|in:international,elite',
+            'notes'              => 'nullable|string',
+        ]);
+
+        $referee->update($validated);
+        return response()->json($referee);
+    }
+
+    public function destroyReferee(Referee $referee): JsonResponse
+    {
+        $referee->delete();
+        return response()->json(['message' => 'Referee deleted']);
     }
 }
