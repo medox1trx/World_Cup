@@ -8,6 +8,7 @@ import { SeasonProvider } from "./context/SeasonContext";
 import { AdminRoute, ProtectedRoute } from "./components/AdminRoute";
 import AdminSidebar from "./components/AdminSidebar";
 import { useState } from "react";
+import { Toaster } from "react-hot-toast";
 
 import Home           from "./pages/Home/Home";
 import Matches        from "./pages/Matches";
@@ -17,6 +18,8 @@ import Highlights     from "./pages/Highlights";
 import News           from "./pages/News";
 import Qualifications from "./pages/Qualifications";
 import Cities         from "./pages/Cities";
+import CityDetail     from "./pages/CityDetail";
+import BookingPage    from "./pages/BookingPage";
 import Tickets        from "./pages/Tickets";
 import Hospitality    from "./pages/Hospitality";
 import Fans           from "./pages/Fans";
@@ -48,6 +51,7 @@ function App() {
       <ThemeProvider>
         <SeasonProvider>
           <AuthProvider>
+            <Toaster position="top-right" reverseOrder={false} />
             {/* ── FIXED: CountdownBanner + Header (102px total) ── */}
             <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 2000 }}>
               <CountdownBanner />
@@ -69,6 +73,8 @@ function App() {
                 <Route path="/news"           element={<News />}           />
                 <Route path="/qualifications" element={<Qualifications />} />
                 <Route path="/cities"         element={<Cities />}         />
+                <Route path="/cities/:slug"   element={<CityDetail />} />
+                <Route path="/cities/:slug/book/:id" element={<BookingPage />} />
                 <Route path="/tickets"        element={<Tickets />}        />
                 <Route path="/hospitality"    element={<Hospitality />}    />
                 <Route path="/fans"           element={<Fans />}           />

@@ -55,4 +55,15 @@ export const logout       = ()     => api.post("/auth/logout");
 export const getAuthUser  = ()     => api.get("/auth/user");
 export const updateProfile = (data) => api.put("/auth/profile", data);
 
+// ── Cities & Accommodations ──────────────────────────────────
+export const getCities = () => api.get("/cities");
+export const getCity = (slug) => api.get(`/cities/${slug}`);
+export const getAccommodation = (id) => api.get(`/accommodations/${id}`);
+export const getAccommodations = (slug, params = {}) => api.get(`/cities/${slug}/accommodations`, { params });
+
+// ── Reservations (Protected) ────────────────────────────────────
+export const storeReservation = (data) => api.post("/reservations", data);
+export const getUserReservations = () => api.get("/reservations/user");
+export const deleteReservation = (id) => api.delete(`/reservations/${id}`);
+
 export default api;

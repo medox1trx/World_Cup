@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Accommodation;
+use App\Models\City;
 use App\Models\Comment;
-use App\Models\FanZone;
 use App\Models\FootballMatch;
 use App\Models\Highlight;
-use App\Models\Hospitality;
+use App\Models\Reservation;
 use App\Models\Stat;
 use App\Models\TeamStanding;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class ApiController extends Controller
 {
@@ -380,149 +378,4 @@ class ApiController extends Controller
         return response()->json($results);
     }
 
-    // ── FAN ZONES ────────────────────────────────────────────────
-    public function indexFanZones(): JsonResponse
-    {
-        $fanZones = FanZone::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
-
-        $grouped = $fanZones->groupBy('group_label')->map(function ($items, $group) {
-            return [
-                'label' => $group,
-                'cities' => $items->map(function ($fz) {
-                    return [
-                        'key' => \Str::slug($fz->city_name),
-                        'name' => $fz->city_name,
-                        'country' => $fz->country,
-                        'code' => $fz->country_code,
-                        'stadium' => $fz->stadium_name,
-                        'cap' => $fz->capacity,
-                        'matches' => $fz->matches_count,
-                        'zone' => $fz->zone_name,
-                        'desc' => $fz->description,
-                        'img' => $fz->image_url,
-                        'is_centenary' => $fz->is_centenary,
-                    ];
-                })->values(),
-            ];
-        })->values();
-
-        return response()->json($grouped);
-    }
-
-    public function storeFanZone(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'city_name' => 'required|string|max:100',
-            'country' => 'required|string|max:100',
-            'country_code' => 'required|string|max:10',
-            'stadium_name' => 'required|string|max:150',
-            'capacity' => 'required|string|max:50',
-            'matches_count' => 'integer|min:0',
-            'zone_name' => 'required|string|max:150',
-            'description' => 'required|string',
-            'image_url' => 'nullable|string',
-            'opening_hours' => 'nullable|string',
-            'is_centenary' => 'boolean',
-            'group_label' => 'nullable|string',
-            'sort_order' => 'integer|min:0',
-        ]);
-
-        $fanZone = FanZone::create($validated);
-        return response()->json($fanZone, 201);
-    }
-
-    public function updateFanZone(Request $request, FanZone $fanZone): JsonResponse
-    {
-        $validated = $request->validate([
-            'city_name' => 'sometimes|string|max:100',
-            'country' => 'sometimes|string|max:100',
-            'country_code' => 'sometimes|string|max:10',
-            'stadium_name' => 'sometimes|string|max:150',
-            'capacity' => 'sometimes|string|max:50',
-            'matches_count' => 'sometimes|integer|min:0',
-            'zone_name' => 'sometimes|string|max:150',
-            'description' => 'sometimes|string',
-            'image_url' => 'nullable|string',
-            'opening_hours' => 'nullable|string',
-            'is_centenary' => 'sometimes|boolean',
-            'group_label' => 'nullable|string',
-            'sort_order' => 'sometimes|integer|min:0',
-            'is_active' => 'sometimes|boolean',
-        ]);
-
-        $fanZone->update($validated);
-        return response()->json($fanZone);
-    }
-
-    public function destroyFanZone(FanZone $fanZone): JsonResponse
-    {
-        $fanZone->delete();
-        return response()->json(['message' => 'Fan Zone deleted']);
-    }
-
-    // ── HOSPITALITIES ────────────────────────────────────────────
-    public function indexHospitalities(): JsonResponse
-    {
-        $hospitalities = Hospitality::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get()
-            ->map(function ($h) {
-                return [
-                    'tier' => $h->tier,
-                    'price' => $h->price,
-                    'badge' => $h->badge,
-                    'featured' => $h->is_featured,
-                    'perks' => $h->perks ?? [],
-                    'cta' => $h->cta_text,
-                    'img' => $h->image_url,
-                ];
-            });
-
-        return response()->json($hospitalities);
-    }
-
-    public function storeHospitality(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'tier' => 'required|string|max:50',
-            'price' => 'required|string|max:50',
-            'badge' => 'nullable|string|max:50',
-            'is_featured' => 'boolean',
-            'description' => 'nullable|string',
-            'perks' => 'nullable|array',
-            'cta_text' => 'required|string|max:100',
-            'image_url' => 'nullable|string',
-            'sort_order' => 'integer|min:0',
-        ]);
-
-        $hospitality = Hospitality::create($validated);
-        return response()->json($hospitality, 201);
-    }
-
-    public function updateHospitality(Request $request, Hospitality $hospitality): JsonResponse
-    {
-        $validated = $request->validate([
-            'tier' => 'sometimes|string|max:50',
-            'price' => 'sometimes|string|max:50',
-            'badge' => 'nullable|string|max:50',
-            'is_featured' => 'sometimes|boolean',
-            'description' => 'nullable|string',
-            'perks' => 'nullable|array',
-            'cta_text' => 'sometimes|string|max:100',
-            'image_url' => 'nullable|string',
-            'sort_order' => 'sometimes|integer|min:0',
-            'is_active' => 'sometimes|boolean',
-        ]);
-
-        $hospitality->update($validated);
-        return response()->json($hospitality);
-    }
-
-    public function destroyHospitality(Hospitality $hospitality): JsonResponse
-    {
-        $hospitality->delete();
-        return response()->json(['message' => 'Hospitality deleted']);
-    }
 }

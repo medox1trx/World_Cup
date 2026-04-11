@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/api";
@@ -73,6 +73,9 @@ export default function Login() {
   const { darkMode } = useTheme();
   const { login }    = useAuth();
   const navigate     = useNavigate();
+  const location     = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const bg            = darkMode ? "#0d0d0d"                  : "#ffffff";
   const card          = darkMode ? "#1c1c1c"                  : "#ffffff";
@@ -126,8 +129,7 @@ export default function Login() {
     try {
       const res = await loginUser({ email, password: pass });
       login(res.user);
-      showToast("success", "Connexion réussie !");
-      setTimeout(() => navigate("/"), 1200);
+      navigate(from, { replace: true });
     } catch (err) {
       const serverErrors = err.errors || {};
       const mappedErrors = {};
@@ -250,11 +252,7 @@ export default function Login() {
         @keyframes toastIn { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
 
-      {toast && (
-        <div className={`toast ${toast.type}`}>
-          {toast.type === "success" ? "✓" : "✕"} {toast.message}
-        </div>
-      )}
+      {/* Status handled by react-hot-toast */}
 
       <div className="login-wrap">
         <div className="card">
