@@ -51,6 +51,12 @@ Route::prefix('v1')->group(function () {
     // Tickets (Public)
     Route::get('/tickets', [ApiController::class, 'indexTickets']);
 
+    // Fan Zones (Public)
+    Route::get('/fan-zones', [ApiController::class, 'indexFanZones']);
+
+    // Hospitalities (Public)
+    Route::get('/hospitalities', [ApiController::class, 'indexHospitalities']);
+
     // Admin routes (protected)
     Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'user']);
@@ -70,5 +76,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/matches',       [ApiController::class, 'storeMatch']);
         Route::put('/matches/{id}',   [ApiController::class, 'updateMatch']);
         Route::delete('/matches/{id}',[ApiController::class, 'destroyMatch']);
+
+        // Admin Fan Zones Management
+        Route::post('/fan-zones',        [ApiController::class, 'storeFanZone']);
+        Route::put('/fan-zones/{fanZone}', [ApiController::class, 'updateFanZone']);
+        Route::delete('/fan-zones/{fanZone}', [ApiController::class, 'destroyFanZone']);
+
+        // Admin Hospitalities Management
+        Route::post('/hospitalities',        [ApiController::class, 'storeHospitality']);
+        Route::put('/hospitalities/{hospitality}', [ApiController::class, 'updateHospitality']);
+        Route::delete('/hospitalities/{hospitality}', [ApiController::class, 'destroyHospitality']);
     });
 });

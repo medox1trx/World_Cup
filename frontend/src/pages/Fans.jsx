@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import {
   FiMapPin, FiClock, FiWifi, FiShield, FiStar,
   FiArrowRight, FiGlobe, FiMonitor, FiMusic,
@@ -6,6 +7,7 @@ import {
   FiChevronRight, FiMail, FiCheck, FiPhone, FiMenu, FiX,
 } from "react-icons/fi";
 
+const API_BASE_URL = "http://localhost:8000/api/v1";
 const D = "'Barlow Condensed', sans-serif";
 const B = "'Barlow', sans-serif";
 
@@ -40,31 +42,6 @@ const BAND_IMGS = [
   ["https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=800&q=80&fit=crop",  "Terrain Officiel" ],
   ["https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800&q=80&fit=crop", "Atmosphère Unique"],
 ];
-
-/* ─── Data ──────────────────────────────────────────────────── */
-const GROUPS = [
-  {
-    label: "Europe · Afrique",
-    cities: [
-      { key:"rabat",       name:"Rabat",        country:"Maroc",     code:"ma", stadium:"Grand Stade Hassan II", cap:"115 000", matches:9, zone:"Zone Diplomatique",      desc:"Le plus grand stade du monde. Rabat s'impose comme la vitrine africaine et maghrébine de ce tournoi historique.", img: CITY_IMGS.rabat       },
-      { key:"madrid",      name:"Madrid",       country:"Espagne",   code:"es", stadium:"Santiago Bernabéu",     cap:"81 044",  matches:8, zone:"Plaza de Colón",         desc:"La capitale ibérique et son mythique Bernabéu accueillent les plus grands chocs et demi-finales du tournoi.",   img: CITY_IMGS.madrid      },
-      { key:"barcelone",   name:"Barcelone",    country:"Espagne",   code:"es", stadium:"Spotify Camp Nou",      cap:"99 354",  matches:7, zone:"Passeig de Gràcia",      desc:"Le Camp Nou entièrement rénové devient l'une des plus belles arènes de la compétition. Architecture et foot réunis.", img: CITY_IMGS.barcelone   },
-      { key:"lisbonne",    name:"Lisbonne",     country:"Portugal",  code:"pt", stadium:"Estádio da Luz",        cap:"65 647",  matches:7, zone:"Parque das Nações",      desc:"Au bord du Tage, Lisbonne mêle passion du Fado et ferveur footballistique dans une atmosphère unique.",          img: CITY_IMGS.lisbonne    },
-      { key:"porto",       name:"Porto",        country:"Portugal",  code:"pt", stadium:"Estádio do Dragão",     cap:"50 033",  matches:5, zone:"Avenida dos Aliados",    desc:"La cité du vin et du football passionné accueille cinq matchs de groupes dans l'emblématique Estádio do Dragão.", img: CITY_IMGS.porto       },
-      { key:"seville",     name:"Séville",      country:"Espagne",   code:"es", stadium:"Estadio La Cartuja",    cap:"60 000",  matches:6, zone:"Alameda de Hércules",    desc:"Séville, cœur flamenca de l'Andalousie, apporte chaleur humaine et culture dans le plus beau des tournois.",    img: CITY_IMGS.seville     },
-    ],
-  },
-  {
-    label: "Amérique du Sud · Centenaire",
-    cities: [
-      { key:"buenosaires", name:"Buenos Aires", country:"Argentine", code:"ar", stadium:"Estadio Monumental",   cap:"84 567",  matches:1, zone:"Puerto Madero",          desc:"Match centenaire FIFA 2030. Le temple du foot argentin ouvre ses portes pour un rendez-vous unique dans l'histoire.",   img: CITY_IMGS.buenosaires },
-      { key:"montevideo",  name:"Montevideo",   country:"Uruguay",   code:"uy", stadium:"Estadio Centenario",   cap:"60 235",  matches:1, zone:"Rambla de Montevideo",   desc:"Là où tout a commencé. Le Centenario, berceau de la première Coupe du Monde 1930, célèbre 100 ans de football.",      img: CITY_IMGS.montevideo  },
-      { key:"asuncion",    name:"Asunción",     country:"Paraguay",  code:"py", stadium:"Def. del Chaco",       cap:"42 354",  matches:1, zone:"Costanera de Asunción",  desc:"Troisième nation de la célébration centenaire, Asunción ferme ce triptyque historique sud-américain avec fierté.",   img: CITY_IMGS.asuncion    },
-    ],
-  },
-];
-
-const ALL_CITIES = GROUPS.flatMap(g => g.cities);
 
 const ACTIVITIES = [
   { Icon:FiZap,         tag:"Gaming",      title:"FIFA Gaming Arena",    desc:"Tournois quotidiens EA Sports FIFA. Classements live, prix officiels et grand final en soirée.",             img: ACT_IMGS.gaming    },
@@ -165,6 +142,25 @@ export default function FanZone() {
   const [subscribed,setSubscribed]  = useState(false);
   const [hovAct,    setHovAct]      = useState(null);
   const [imgFade,   setImgFade]     = useState(true);
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFanZones = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/fan-zones`);
+        setGroups(res.data);
+        if (res.data.length > 0 && res.data[0].cities && res.data[0].cities.length > 0) {
+          setActiveIdx(0);
+        }
+      } catch (err) {
+        console.error("Failed to fetch fan zones:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFanZones();
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 40);
@@ -176,7 +172,8 @@ export default function FanZone() {
     setTimeout(() => { setActiveIdx(idx); setImgFade(true); }, 180);
   };
 
-  const city = ALL_CITIES[activeIdx];
+  const allCities = groups.flatMap(g => g.cities || []);
+  const city = allCities[activeIdx] || { name: '', country: '', code: '', stadium: '', cap: '', matches: 0, zone: '', desc: '', img: '' };
   const isCent = city.matches === 1;
 
   return (
@@ -448,31 +445,35 @@ export default function FanZone() {
           <div className="city-wrap">
             {/* ── LIST ── */}
             <div style={{ background:"#0d0d0d", border:"1px solid rgba(255,255,255,.08)", borderRadius:10, overflow:"hidden" }}>
-              {GROUPS.map((g,gi) => (
-                <div key={gi}>
-                  <div className="clabel">{g.label}</div>
-                  {g.cities.map((c) => {
-                    const idx = ALL_CITIES.indexOf(c);
-                    const on  = activeIdx===idx;
-                    return (
-                      <div key={c.key} className={`cr${on?" on":""}`} onClick={() => selectCity(idx)}>
-                        <img src={`https://flagcdn.com/w80/${c.code}.png`} alt={c.country}
-                          style={{ width:34, height:23, objectFit:"cover", borderRadius:2, flexShrink:0, opacity:on?1:.5, transition:"opacity .2s" }} />
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
-                            <p style={{ fontFamily:D, fontSize:16, fontWeight:900, color:on?"white":"rgba(255,255,255,.52)", letterSpacing:".04em", textTransform:"uppercase", lineHeight:1, transition:"color .2s" }}>{c.name}</p>
-                            {c.matches===1 && <span style={{ fontSize:7, fontFamily:B, fontWeight:800, letterSpacing:".1em", color:"rgb(234,179,8)", textTransform:"uppercase", background:"rgba(234,179,8,.1)", padding:"2px 6px", borderRadius:2 }}>Centenaire</span>}
+              {loading ? (
+                <div style={{ padding: 40, textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>Chargement...</div>
+              ) : (
+                groups.map((g,gi) => (
+                  <div key={gi}>
+                    <div className="clabel">{g.label}</div>
+                    {g.cities.map((c) => {
+                      const idx = allCities.findIndex(city => city.key === c.key);
+                      const on  = activeIdx===idx;
+                      return (
+                        <div key={c.key} className={`cr${on?" on":""}`} onClick={() => selectCity(idx)}>
+                          <img src={`https://flagcdn.com/w80/${c.code}.png`} alt={c.country}
+                            style={{ width:34, height:23, objectFit:"cover", borderRadius:2, flexShrink:0, opacity:on?1:.5, transition:"opacity .2s" }} />
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
+                              <p style={{ fontFamily:D, fontSize:16, fontWeight:900, color:on?"white":"rgba(255,255,255,.52)", letterSpacing:".04em", textTransform:"uppercase", lineHeight:1, transition:"color .2s" }}>{c.name}</p>
+                              {c.is_centenary && <span style={{ fontSize:7, fontFamily:B, fontWeight:800, letterSpacing:".1em", color:"rgb(234,179,8)", textTransform:"uppercase", background:"rgba(234,179,8,.1)", padding:"2px 6px", borderRadius:2 }}>Centenaire</span>}
+                            </div>
+                            <p style={{ fontFamily:B, fontSize:11, color:"rgba(255,255,255,.25)", marginTop:2 }}>{c.country}</p>
                           </div>
-                          <p style={{ fontFamily:B, fontSize:11, color:"rgba(255,255,255,.25)", marginTop:2 }}>{c.country}</p>
+                          <span style={{ fontFamily:B, fontSize:11, fontWeight:700, color:on?"white":"rgba(255,255,255,.18)", flexShrink:0, transition:"color .2s" }}>
+                            {c.matches} match{c.matches>1?"s":""}
+                          </span>
                         </div>
-                        <span style={{ fontFamily:B, fontSize:11, fontWeight:700, color:on?"white":"rgba(255,255,255,.18)", flexShrink:0, transition:"color .2s" }}>
-                          {c.matches} match{c.matches>1?"s":""}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+                      );
+                    })}
+                  </div>
+                ))
+              )}
             </div>
 
             {/* ── DETAIL PANEL ── */}

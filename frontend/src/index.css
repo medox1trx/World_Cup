@@ -13,13 +13,13 @@
 :root {
   --container-max: 1440px;
   --section-pad-y: 48px;
-  --section-pad-x: 32px;
+  --section-pad-x: 24px;
   --header-height: 64px;
 }
 
 html { 
   scroll-behavior: smooth; 
-  font-size: 16px;
+  font-size: 100%;
 }
 
 body {
@@ -30,16 +30,18 @@ body {
   color: #0a0a0a;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 #root {
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
 }
 
 main {
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   overflow-x: hidden;
 }
 
@@ -60,25 +62,7 @@ a {
 img {
   max-width: 100%;
   height: auto;
-}
-
-/* Prevent horizontal scroll */
-@media (max-width: 1440px) {
-  html {
-    font-size: 15px;
-  }
-}
-
-@media (max-width: 1024px) {
-  html {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 768px) {
-  html {
-    font-size: 14px;
-  }
+  display: block;
 }
 
 /* Scrollbar */

@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FiCheck, FiShield, FiGlobe, FiPhone,
   FiStar, FiArrowRight, FiChevronDown,
 } from "react-icons/fi";
+
+const API_BASE_URL = "http://localhost:8000/api/v1";
 
 // ─── Mixkit CDN video (no CORS) ───────────────────────────────
 const HERO_VIDEO = "https://assets.mixkit.co/videos/17398/17398-720.mp4";
@@ -11,12 +14,11 @@ const HERO_VIDEO = "https://assets.mixkit.co/videos/17398/17398-720.mp4";
 const IMG = {
   hero:      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1400&q=85&fit=crop",
   dining:    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80&fit=crop",
-  lounge:    "https://traces-berberes.com/wp-content/uploads/2024/09/Best-5-places-to-visit-when-you-come-to-Morocco-1200x540.png",
+  lounge:    "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=700&q=80&fit=crop",
   suite:     "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=700&q=80&fit=crop",
-  champagne: "https://next.io/wp-content/uploads/2023/12/iGaming-Idol.jpg",
+  champagne: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=700&q=80&fit=crop",
   gourmet:   "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=700&q=80&fit=crop",
   jet:       "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=700&q=80&fit=crop",
-  champagne2: "https://tse1.mm.bing.net/th/id/OIP.O5SXQOJX1-1OdEU8zfSdFAHaEK?rs=1&pid=ImgDetMain&o=7&rm=3",
 };
 
 const FONT_D = "'Barlow Condensed', sans-serif";
@@ -127,7 +129,26 @@ function FaqItem({ q, a }) {
 // ─── Main ─────────────────────────────────────────────────────
 export default function Hospitality() {
   const [mounted, setMounted] = useState(false);
+  const [packages, setPackages] = useState(PACKAGES);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => { const t = setTimeout(() => setMounted(true), 40); return () => clearTimeout(t); }, []);
+
+  useEffect(() => {
+    const fetchHospitalities = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/hospitalities`);
+        if (res.data && res.data.length > 0) {
+          setPackages(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch hospitalities:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHospitalities();
+  }, []);
 
   return (
     <div style={{ fontFamily: FONT_B, background: "#0d0d0d", color: "white", opacity: mounted ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -331,7 +352,10 @@ export default function Hospitality() {
           </div>
 
           <div className="g3">
-            {PACKAGES.map((pkg, i) => (
+            {loading ? (
+              <div style={{ gridColumn: '1 / -1', padding: 40, textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>Chargement des packages...</div>
+            ) : (
+              packages.map((pkg, i) => (
               <div key={i} className="pkg" style={{
                 background: pkg.featured ? "#1a1a1a" : "#141414",
                 border: `1px solid ${pkg.featured ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`,
@@ -396,7 +420,8 @@ export default function Hospitality() {
                   </a>
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
           <p style={{ textAlign: "center", fontSize: 11, marginTop: 20, color: "rgba(255,255,255,0.25)", fontFamily: FONT_B }}>
             * Prix indicatifs hors taxes. Contactez notre équipe pour un devis personnalisé.
