@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\AccommodationController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +50,23 @@ Route::prefix('v1')->group(function () {
     Route::post('/highlights/{highlight}/like',     [ApiController::class, 'toggleHighlightLike']);
     Route::get('/highlights/{highlight}/comments',  [ApiController::class, 'indexHighlightComments']);
     Route::post('/highlights/{highlight}/comments', [ApiController::class, 'storeHighlightComment']);
+
+    // Cities (Public)
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('/cities',                                [CityController::class, 'index']);
+        Route::get('/cities/{slug}',                         [CityController::class, 'show']);
+        Route::get('/cities/{slug}/accommodations',          [AccommodationController::class, 'index']);
+    });
+
+    // Reservations (Protected)
+    Route::middleware('auth:web')->group(function () {
+        Route::post('/reservations',                         [ReservationController::class, 'store']);
+        Route::get('/reservations/user',                     [ReservationController::class, 'userReservations']);
+        Route::delete('/reservations/{id}',                  [ReservationController::class, 'destroy']);
+    });
+
+    // Accommodation Details
+    Route::get('/accommodations/{id}', [AccommodationController::class, 'show']);
 
     // Tickets (Public)
     Route::get('/tickets', [ApiController::class, 'indexTickets']);

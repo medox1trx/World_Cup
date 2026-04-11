@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Accommodation;
+use App\Models\City;
 use App\Models\Comment;
 use App\Models\FootballMatch;
 use App\Models\Highlight;
+use App\Models\Reservation;
 use App\Models\Stat;
 use App\Models\TeamStanding;
 use App\Models\Ticket;
@@ -374,4 +377,5 @@ class ApiController extends Controller
 
         return response()->json($results);
     }
+
 }

@@ -9,6 +9,8 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useSeason } from "../../context/SeasonContext";
+import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 
 // ─── Navigation structure ─────────────────────────────────────
 const NAV = [
@@ -49,13 +51,14 @@ const LANGS = ["FR", "EN", "ES", "AR", "PT", "DE"];
 
 export default function Header({ onOpenAdminSidebar }) {
 
+  const { t, i18n } = useTranslation();
   const [menuOpen,   setMenuOpen]   = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [langOpen,   setLangOpen]   = useState(false);
   const [openDrop,   setOpenDrop]   = useState(null);
   const [mobileOpen, setMobileOpen] = useState(null);
   const [query,      setQuery]      = useState("");
-  const [lang,       setLang]       = useState("FR");
+  const [lang,       setLang]       = useState((i18n.language || "en").toUpperCase());
   const [scrolled,   setScrolled]   = useState(false);
   const [userOpen,   setUserOpen]   = useState(false);
   const [seasonOpen, setSeasonOpen] = useState(false);
@@ -743,7 +746,11 @@ export default function Header({ onOpenAdminSidebar }) {
                 {LANGS.map(l => (
                   <button key={l}
                     className={`hdr-lang-opt${lang === l ? " sel" : ""}`}
-                    onClick={() => { setLang(l); setLangOpen(false); }}>
+                    onClick={() => { 
+                      setLang(l); 
+                      i18n.changeLanguage(l.toLowerCase());
+                      setLangOpen(false); 
+                    }}>
                     {l}
                   </button>
                 ))}
@@ -770,7 +777,7 @@ export default function Header({ onOpenAdminSidebar }) {
                 {season && (
                   <button className="hdr-season-clear"
                     onClick={() => { clearSeason(); setSeasonOpen(false); }}>
-                    ✕ Réinitialiser
+                    <X size={10} /> {t('reset') || "Réinitialiser"}
                   </button>
                 )}
               </div>
@@ -800,7 +807,10 @@ export default function Header({ onOpenAdminSidebar }) {
 
                   <div className="hdr-user-divider" />
                   <button className="hdr-user-item" onClick={() => { navigate("/profile"); setUserOpen(false); }}>
-                    <FiUser size={14} /> Mon Profil
+                    <FiCalendar size={14} /> My Bookings
+                  </button>
+                  <button className="hdr-user-item" onClick={() => { navigate("/profile"); setUserOpen(false); }}>
+                    <FiUser size={14} /> {t('profile_settings') || "Mon Profil"}
                   </button>
                   <button className="hdr-user-item" onClick={handleLogout}>
                     <FiLogOut size={14} /> Se déconnecter
@@ -868,11 +878,18 @@ export default function Header({ onOpenAdminSidebar }) {
 
           {/* Profile mobile link */}
           {user && (
-            <Link to="/profile" className="hdr-msub-link" style={{ paddingLeft: 20, fontWeight: 700 }}>
-              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <FiUser size={14} /> Mon Profil
-              </span>
-            </Link>
+            <>
+              <Link to="/profile" className="hdr-msub-link" style={{ paddingLeft: 20, fontWeight: 700 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <FiCalendar size={14} /> My Bookings
+                </span>
+              </Link>
+              <Link to="/profile" className="hdr-msub-link" style={{ paddingLeft: 20, fontWeight: 700 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <FiUser size={14} /> Mon Profil
+                </span>
+              </Link>
+            </>
           )}
 
           {/* Season selector mobile */}

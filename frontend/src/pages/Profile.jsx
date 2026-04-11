@@ -1,252 +1,249 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { updateProfile } from "../services/api";
+import { getUserReservations, deleteReservation, updateProfile } from "../services/api";
+import { 
+  User, 
+  Mail, 
+  Calendar, 
+  MapPin, 
+  Trash2, 
+  ChevronRight, 
+  LogOut, 
+  CheckCircle, 
+  AlertCircle,
+  Clock
+} from "lucide-react";
+import toast from "react-hot-toast";
 
 const FD = "'Barlow Condensed', sans-serif";
 const FB = "'Barlow', sans-serif";
 
-function Field({ label, error, children, textSecondary }) {
+function ProfileField({ label, value, onChange, disabled, error }) {
+  const { darkMode } = useTheme();
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: error ? 8 : 16 }}>
-      <label style={{
-        fontSize: 9, letterSpacing: ".22em", color: textSecondary,
-        fontFamily: FB, textTransform: "uppercase", transition: "color 0.3s"
+    <div style={{ marginBottom: 20 }}>
+      <label style={{ 
+        display: "block", 
+        fontSize: 10, 
+        fontWeight: 800, 
+        textTransform: "uppercase", 
+        letterSpacing: "0.1em",
+        color: darkMode ? "#888" : "#666",
+        marginBottom: 8
       }}>{label}</label>
-      {children}
-      {error && (
-        <span style={{
-          fontSize: 10, color: "#f87171", fontFamily: FB,
-          letterSpacing: ".04em", marginBottom: 8
-        }}>{error}</span>
-      )}
+      <input 
+        type="text" 
+        value={value} 
+        onChange={onChange} 
+        disabled={disabled}
+        style={{
+          width: "100%",
+          padding: "12px 16px",
+          borderRadius: 8,
+          background: darkMode ? "#1a1a1a" : "#f5f5f5",
+          border: `1px solid ${error ? "#ef4444" : (darkMode ? "#333" : "#eee")}`,
+          color: "inherit",
+          fontFamily: FB,
+          fontSize: 14,
+          outline: "none"
+        }}
+      />
+      {error && <p style={{ color: "#ef4444", fontSize: 11, marginTop: 4 }}>{error}</p>}
     </div>
   );
 }
 
-export default function Profile() {
+export default function Dashboard() {
+  const { t } = useTranslation();
   const { darkMode } = useTheme();
-  const { user, updateUser } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
 
-  const bg = darkMode ? "#0d0d0d" : "#ffffff";
-  const card = darkMode ? "#1c1c1c" : "#ffffff";
-  const border = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
-  const textPrimary = darkMode ? "#ffffff" : "#0d0d0d";
-  const textSecondary = darkMode ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)";
-  const textMuted = darkMode ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.32)";
-  const hover = darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
-  const inputBg = darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)";
+  const [activeTab, setActiveTab] = useState("bookings");
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Profile state
+  const [profileName, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profileLoading, setProfileLoading] = useState(false);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState(null);
-  const [toast, setToast] = useState(null);
+  const fetchBookings = useCallback(async () => {
+    try {
+      const res = await getUserReservations();
+      setReservations(res.data);
+    } catch (err) {
+      toast.error("Failed to load your reservations");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) {
       navigate("/login");
       return;
     }
-    setName(user.name || "");
-    setEmail(user.email || "");
-  }, [user, navigate]);
+    setProfileName(user.name || "");
+    setProfileEmail(user.email || "");
+    fetchBookings();
+  }, [user, navigate, fetchBookings]);
 
-  const showToast = (type, message) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 3000);
+  const handleCancel = async (id) => {
+    if (!window.confirm("Are you sure you want to cancel this reservation?")) return;
+    
+    const tid = toast.loading("Cancelling...");
+    try {
+      await deleteReservation(id);
+      toast.success("Reservation cancelled", { id: tid });
+      setReservations(prev => prev.filter(r => r.id !== id));
+    } catch (err) {
+      toast.error(err.message || "Failed to cancel", { id: tid });
+    }
   };
 
-  const handleSubmit = async () => {
-    const err = {};
-    if (!name.trim()) err.name = "Le nom est obligatoire";
-    if (!email.includes("@")) err.email = "Adresse e-mail invalide";
-    setErrors(err);
-    if (Object.keys(err).length) return;
-
-    setLoading(true);
-    setServerError(null);
-
+  const handleProfileUpdate = async () => {
+    setProfileLoading(true);
     try {
-      const payload = {};
-      if (name !== user.name) payload.name = name;
-      if (email !== user.email) payload.email = email;
-
-      if (Object.keys(payload).length === 0) {
-        showToast("success", "Aucune modification détectée.");
-        setLoading(false);
-        return;
-      }
-
-      const res = await updateProfile(payload);
+      const res = await updateProfile({ name: profileName, email: profileEmail });
       updateUser(res.user);
-      showToast("success", res.message || "Profil mis à jour !");
+      toast.success("Profile updated successfully");
     } catch (err) {
-      const serverErrors = err.errors || {};
-      const mappedErrors = {};
-      if (serverErrors.name) mappedErrors.name = serverErrors.name[0];
-      if (serverErrors.email) mappedErrors.email = serverErrors.email[0];
-      if (!Object.keys(mappedErrors).length) {
-        setServerError(err.message || "Erreur lors de la mise à jour");
-      } else {
-        setErrors(mappedErrors);
-      }
+      toast.error(err.message || "Update failed");
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
     }
   };
 
   if (!user) return null;
 
   return (
-    <>
+    <div style={{ 
+      background: darkMode ? "#0a0a0a" : "#fafafa", 
+      color: darkMode ? "#fff" : "#000",
+      minHeight: "100vh",
+      paddingBottom: 100
+    }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing: border-box; }
-        body { background: ${bg}; margin: 0; transition: background 0.3s; }
-        .profile-wrap {
-          min-height: calc(100vh - 102px); display: flex; align-items: flex-start; justify-content: center;
-          padding: 48px 24px;
-          background: radial-gradient(ellipse 600px 400px at 70% 30%, ${darkMode ? "rgba(255,255,255,.025)" : "rgba(0,0,0,.025)"} 0%, transparent 70%), ${bg};
-          transition: background 0.3s;
+        .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: grid; grid-template-columns: 280px 1fr; gap: 40px; }
+        @media (max-width: 900px) { .dashboard-container { grid-template-columns: 1fr; } }
+        .sidebar { background: ${darkMode ? "#141414" : "#fff"}; border-radius: 20px; padding: 32px 16px; border: 1px solid ${darkMode?"#222" : "#eee"}; align-self: start; }
+        .nav-link { 
+          display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; 
+          cursor: pointer; transition: all 0.2s; font-family: ${FD}; text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; font-size: 13px;
+          margin-bottom: 4px;
         }
-        .profile-card {
-          width: 440px; background: ${card}; padding: 44px 40px 40px;
-          border-radius: 16px; border: 1px solid ${border};
-          animation: fadeUp .4s ease both; transition: background 0.3s, border-color 0.3s;
-        }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-        .brand { margin-bottom: 32px; }
-        .brand-title { font-family: ${FD}; font-size: 22px; font-weight: 800; letter-spacing: .06em; color: ${textPrimary}; margin: 0 0 4px; transition: color 0.3s; }
-        .brand-sub { font-family: ${FB}; font-size: 12px; color: ${textSecondary}; margin: 0; letter-spacing: .02em; transition: color 0.3s; }
-        .profile-avatar {
-          width: 64px; height: 64px; border-radius: 50%;
-          background: linear-gradient(135deg, #c8102e, #e8244a);
-          display: flex; align-items: center; justify-content: center;
-          font-family: ${FD}; font-size: 24px; font-weight: 900; color: white;
-          margin-bottom: 24px; letter-spacing: 0.04em;
-        }
-        .profile-field-input {
-          width: 100%; padding: 12px 14px; background: ${inputBg};
-          border: 1px solid ${border}; border-radius: 8px; color: ${textPrimary};
-          font-family: ${FB}; font-size: 13px; transition: border-color 0.3s, background 0.3s, color 0.3s; outline: none;
-        }
-        .profile-field-input::placeholder { color: ${textMuted}; }
-        .profile-field-input:focus { border-color: ${darkMode ? "rgba(255,255,255,.3)" : "rgba(0,0,0,.3)"}; background: ${hover}; }
-        .profile-field-input.has-error { border-color: rgba(248,113,113,.5); }
-        .profile-field-input:disabled {
-          opacity: 0.5; cursor: not-allowed;
-        }
-        .profile-role-badge {
-          display: inline-flex; align-items: center; gap: 6px;
-          padding: 6px 12px; border-radius: 6px;
-          font-family: ${FD}; font-size: 11px; font-weight: 800;
-          letter-spacing: 0.14em; text-transform: uppercase;
-          margin-bottom: 24px;
-        }
-        .profile-role-badge.admin { background: rgba(234,179,8,0.15); color: #facc15; }
-        .profile-role-badge.user { background: ${inputBg}; color: ${textSecondary}; }
-        .submit-btn {
-          width: 100%; padding: 14px; border-radius: 100px; border: none;
-          background: ${textPrimary}; font-family: ${FD};
-          letter-spacing: .18em; font-size: 12px; font-weight: 800;
-          cursor: pointer; color: ${bg};
-          transition: opacity 0.3s, transform 0.1s, background 0.3s, color 0.3s;
-          position: relative; overflow: hidden; margin-top: 8px;
-        }
-        .submit-btn:hover:not(:disabled) { opacity: .92; }
-        .submit-btn:active:not(:disabled) { transform: scale(.99); }
-        .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
-        .server-error {
-          background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
-          border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;
-          font-family: ${FB}; font-size: 12px; color: #f87171;
-        }
-        .spinner {
-          display: inline-block; width: 14px; height: 14px;
-          border: 2px solid ${darkMode ? "rgba(255,255,255,.3)" : "rgba(0,0,0,.3)"};
-          border-top-color: ${textPrimary}; border-radius: 50%;
-          animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .toast {
-          position: fixed; top: 20px; right: 20px; z-index: 99999;
-          padding: 12px 20px; border-radius: 8px; font-family: ${FB};
-          font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
-          animation: toastIn .3s ease both; box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-          display: flex; align-items: center; gap: 8px;
-        }
-        .toast.success { background: #16a34a; color: white; }
-        .toast.error { background: #dc2626; color: white; }
-        @keyframes toastIn { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
-        .back-link {
-          display: inline-flex; align-items: center; gap: 6px;
-          background: none; border: none; cursor: pointer;
-          font-family: ${FB}; font-size: 12px; color: ${textSecondary};
-          margin-bottom: 20px; padding: 0; transition: color 0.2s;
-          text-decoration: none; letter-spacing: 0.02em;
-        }
-        .back-link:hover { color: ${textPrimary}; }
+        .nav-link.active { background: #c8102e; color: white; }
+        .nav-link:not(.active):hover { background: ${darkMode ? "#222" : "#f0f0f0"}; }
+        .logout-btn { color: #ef4444; margin-top: 20px; }
+        .content-card { background: ${darkMode ? "#141414" : "#fff"}; border-radius: 24px; padding: 40px; border: 1px solid ${darkMode?"#222" : "#eee"}; min-height: 500px; }
+        .booking-card { display: flex; align-items: center; gap: 20px; padding: 20px; border-radius: 16px; border: 1px solid ${darkMode ? "#222" : "#eee"}; margin-bottom: 16px; transition: transform 0.2s; }
+        .booking-card:hover { transform: translateX(8px); border-color: #c8102e; }
+        .booking-img { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; }
+        .status-tag { padding: 4px 10px; borderRadius: 100px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; }
+        .status-tag.confirmed { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
       `}</style>
 
-      {toast && (
-        <div className={`toast ${toast.type}`}>
-          {toast.type === "success" ? "✓" : "✕"} {toast.message}
+      <div className="dashboard-container">
+        {/* Sidebar */}
+        <div className="sidebar">
+          <div style={{ padding: "0 16px 32px" }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#c8102e", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 18, color: "white", marginBottom: 12 }}>
+              {user.name.charAt(0)}
+            </div>
+            <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900 }}>{user.name}</h3>
+            <p style={{ margin: 0, fontSize: 13, color: darkMode ? "#888" : "#666" }}>{user.email}</p>
+          </div>
+
+          <div className="nav-link active" onClick={() => setActiveTab("bookings")} style={{ background: activeTab === "bookings" ? "#c8102e" : "transparent", color: activeTab === "bookings" ? "white" : "inherit" }}>
+            <Calendar size={18} /> My Bookings
+          </div>
+          <div className="nav-link" onClick={() => setActiveTab("profile")} style={{ background: activeTab === "profile" ? "#c8102e" : "transparent", color: activeTab === "profile" ? "white" : "inherit" }}>
+            <User size={18} /> My Profile
+          </div>
+          
+          <div className="nav-link logout-btn" onClick={logout}>
+            <LogOut size={18} /> {t('logout') || "Logout"}
+          </div>
         </div>
-      )}
 
-      <div className="profile-wrap">
-        <div className="profile-card">
-          <button className="back-link" onClick={() => navigate("/")}>
-            ← Retour à l'accueil
-          </button>
-
-          <div className="profile-avatar">
-            {user.name ? user.name.charAt(0).toUpperCase() : "U"}
-          </div>
-
-          <div className="brand">
-            <p className="brand-title">MON PROFIL</p>
-            <p className="brand-sub">Gérez vos informations personnelles</p>
-          </div>
-
-          <div className={`profile-role-badge ${user.role}`}>
-            {user.role === "admin" ? "★ Administrateur" : "● Utilisateur"}
-          </div>
-
-          {serverError && <div className="server-error">{serverError}</div>}
-
-          <Field label="Nom complet" error={errors.name} textSecondary={textSecondary}>
-            <input
-              className={`profile-field-input${errors.name ? " has-error" : ""}`}
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Votre nom"
-              type="text"
-            />
-          </Field>
-
-          <Field label="Adresse e-mail" error={errors.email} textSecondary={textSecondary}>
-            <input
-              className={`profile-field-input${errors.email ? " has-error" : ""}`}
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="email@exemple.com"
-              type="email"
-            />
-          </Field>
-
-          <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
-            {loading
-              ? <><span className="spinner" />Enregistrement…</>
-              : "ENREGISTRER"
-            }
-          </button>
+        {/* Content */}
+        <div className="content-card">
+          {activeTab === "bookings" ? (
+            <div>
+              <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 8 }}>My Reservations</h2>
+              <p style={{ color: darkMode ? "#888" : "#666", marginBottom: 32 }}>Manage your stays for FIFA World Cup 2026™</p>
+              
+              {loading ? (
+                <p>Loading bookings...</p>
+              ) : reservations.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "60px 0" }}>
+                  <AlertCircle size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
+                   <p style={{ color: darkMode ? "#888" : "#666" }}>No reservations found. Ready for your next journey?</p>
+                   <Link to="/cities" style={{ display: "inline-block", marginTop: 16, color: "#c8102e", fontWeight: 800, textDecoration: "none" }}>Browse Cities <ChevronRight size={14} style={{ verticalAlign: "middle" }} /></Link>
+                </div>
+              ) : (
+                reservations.map(res => (
+                  <div key={res.id} className="booking-card">
+                    <img src={res.accommodation?.image_url} alt={res.accommodation?.name} className="booking-img" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom: 4 }}>
+                         <span className="status-tag confirmed">Confirmed</span>
+                         <span style={{ fontSize: 12, color: darkMode ? "#666" : "#999" }}>#{res.id}</span>
+                      </div>
+                      <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>{res.accommodation?.name}</h4>
+                      <div style={{ display: "flex", gap: 16, marginTop: 8, fontSize: 12, color: darkMode ? "#888" : "#666" }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: 4 }}><MapPin size={14} /> {res.accommodation?.city?.name}</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Clock size={14} /> {res.check_in} – {res.check_out}</span>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <span style={{ display: "block", fontSize: 18, fontWeight: 900, color: "#c8102e" }}>${res.total_price}</span>
+                      <button 
+                        onClick={() => handleCancel(res.id)}
+                        style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: 12, padding: "8px 0", fontWeight: 700, display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
+                        <Trash2 size={14} /> Cancel
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <div>
+              <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 8 }}>Profile Settings</h2>
+              <p style={{ color: darkMode ? "#888" : "#666", marginBottom: 32 }}>Update your personal information</p>
+              
+              <div style={{ maxWidth: 500 }}>
+                <ProfileField label="Full Name" value={profileName} onChange={e => setProfileName(e.target.value)} />
+                <ProfileField label="Email Address" value={profileEmail} onChange={e => setProfileEmail(e.target.value)} />
+                
+                <button 
+                  onClick={handleProfileUpdate}
+                  disabled={profileLoading} 
+                  style={{ 
+                    marginTop: 20, 
+                    padding: "14px 32px", 
+                    borderRadius: 100, 
+                    border: "none", 
+                    background: "#c8102e", 
+                    color: "white", 
+                    fontWeight: 800, 
+                    fontFamily: FD, 
+                    letterSpacing: "0.1em",
+                    cursor: "pointer",
+                    opacity: profileLoading ? 0.7 : 1
+                  }}>
+                  {profileLoading ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
