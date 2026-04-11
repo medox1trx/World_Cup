@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\Comment;
 use App\Models\FootballMatch;
 use App\Models\Highlight;
+use App\Models\Referee;
 use App\Models\Reservation;
 use App\Models\Stat;
 use App\Models\TeamStanding;
@@ -377,5 +378,4 @@ class ApiController extends Controller
 
         return response()->json($results);
     }
-
 }

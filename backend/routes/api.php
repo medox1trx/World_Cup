@@ -71,6 +71,10 @@ Route::prefix('v1')->group(function () {
     // Tickets (Public)
     Route::get('/tickets', [ApiController::class, 'indexTickets']);
 
+    // Referees (Public)
+    Route::get('/referees', [ApiController::class, 'indexReferees']);
+    Route::get('/referees/{referee}', [ApiController::class, 'showReferee']);
+
     // Fan Zones (Public)
     Route::get('/fan-zones', [ApiController::class, 'indexFanZones']);
 
@@ -91,6 +95,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/tickets', [ApiController::class, 'storeTicket']);
         Route::put('/tickets/{ticket}', [ApiController::class, 'updateTicket']);
         Route::delete('/tickets/{ticket}', [ApiController::class, 'destroyTicket']);
+
+        // Admin Referees Management
+        Route::post('/referees',           [ApiController::class, 'storeReferee']);
+        Route::put('/referees/{referee}',  [ApiController::class, 'updateReferee']);
+        Route::delete('/referees/{referee}', [ApiController::class, 'destroyReferee']);
 
         // Admin Matches Management
         Route::post('/matches',       [ApiController::class, 'storeMatch']);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart } from 'react-icons/fi';
+import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiShield } from 'react-icons/fi';
 import { useTheme } from '../context/ThemeContext';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
@@ -271,6 +271,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           <Link to="/admin/tickets" className={`sidebar-link ${isActive('/admin/tickets') ? 'active' : ''}`} onClick={onClose}>
             <FiFileText />
             <span>Billetterie & Ventes</span>
+          </Link>
+
+          <Link to="/admin/referees" className={`sidebar-link ${isActive('/admin/referees') ? 'active' : ''}`} onClick={onClose}>
+            <FiShield />
+            <span>Arbitres</span>
           </Link>
 
           <div className="sidebar-group-label">Analytique</div>

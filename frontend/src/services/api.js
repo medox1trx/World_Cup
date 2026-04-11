@@ -48,6 +48,12 @@ export const createTicket = (data) => api.post("/admin/tickets", data);
 export const updateTicket = (id, data) => api.put(`/admin/tickets/${id}`, data);
 export const deleteTicket = (id) => api.delete(`/admin/tickets/${id}`);
 
+// ── Referees ─────────────────────────────────────────────────
+export const getReferees = () => api.get("/referees");
+export const createReferee = (data) => api.post("/admin/referees", data);
+export const updateReferee = (id, data) => api.put(`/admin/referees/${id}`, data);
+export const deleteReferee = (id) => api.delete(`/admin/referees/${id}`);
+
 // ── Search ───────────────────────────────────────────────────
 export const search = (q) => api.get("/search", { params: { q } });
 
