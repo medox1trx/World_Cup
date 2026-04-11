@@ -6,6 +6,9 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider }  from "./context/AuthContext";
 import { SeasonProvider } from "./context/SeasonContext";
 import { AdminRoute, ProtectedRoute } from "./components/AdminRoute";
+import AdminSidebar from "./components/AdminSidebar";
+import { useState } from "react";
+
 import Home           from "./pages/Home/Home";
 import Matches        from "./pages/Matches";
 import Standings      from "./pages/Standings";
@@ -37,7 +40,10 @@ import AdminMatches   from "./pages/admin/AdminMatches";
 */
 
 function App() {
+  const [adminSidebarOpen, setAdminSidebarOpen] = useState(false);
+
   return (
+
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ThemeProvider>
         <SeasonProvider>
@@ -45,8 +51,11 @@ function App() {
             {/* ── FIXED: CountdownBanner + Header (102px total) ── */}
             <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 2000 }}>
               <CountdownBanner />
-              <Header />
+              <Header onOpenAdminSidebar={() => setAdminSidebarOpen(true)} />
             </header>
+
+            <AdminSidebar isOpen={adminSidebarOpen} onClose={() => setAdminSidebarOpen(false)} />
+
 
             {/* ── PAGE CONTENT ── */}
             <main style={{ minHeight: "calc(100vh - 102px)", paddingTop: 102 }}>

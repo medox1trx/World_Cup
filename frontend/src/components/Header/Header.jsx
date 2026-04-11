@@ -47,7 +47,8 @@ const NAV = [
 
 const LANGS = ["FR", "EN", "ES", "AR", "PT", "DE"];
 
-export default function Header() {
+export default function Header({ onOpenAdminSidebar }) {
+
   const [menuOpen,   setMenuOpen]   = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [langOpen,   setLangOpen]   = useState(false);
@@ -698,39 +699,19 @@ export default function Header() {
               );
             })}
 
-            {/* Admin nav links — visible only to admins */}
+            {/* Admin space link — opens sidebar */}
             {isAdmin && (
-              <>
-                <div className="hdr-item">
-                  <Link to="/admin/highlights"
-                    className={`hdr-link admin-link${isActive("/admin/highlights") ? " act" : ""}`}>
-                    Vidéos
-                    <span className="hdr-badge admin-badge">ADMIN</span>
-                  </Link>
-                </div>
-                <div className="hdr-item">
-                  <Link to="/admin/matches"
-                    className={`hdr-link admin-link${isActive("/admin/matches") ? " act" : ""}`}>
-                    Calendrier
-                    <span className="hdr-badge admin-badge">ADMIN</span>
-                  </Link>
-                </div>
-                <div className="hdr-item">
-                  <Link to="/admin/teams"
-                    className={`hdr-link admin-link${isActive("/admin/teams") ? " act" : ""}`}>
-                    Équipes
-                    <span className="hdr-badge admin-badge">ADMIN</span>
-                  </Link>
-                </div>
-                <div className="hdr-item">
-                  <Link to="/admin/tickets"
-                    className={`hdr-link admin-link${isActive("/admin/tickets") ? " act" : ""}`}>
-                    Billets
-                    <span className="hdr-badge admin-badge">ADMIN</span>
-                  </Link>
-                </div>
-              </>
+              <div className="hdr-item">
+                <button 
+                  className={`hdr-link admin-link${location.pathname.startsWith('/admin') ? " act" : ""}`}
+                  onClick={onOpenAdminSidebar}
+                >
+                  Admin Space
+                  <span className="hdr-badge admin-badge">ADMIN</span>
+                </button>
+              </div>
             )}
+
           </nav>
 
           <div className="hdr-right">
@@ -929,17 +910,16 @@ export default function Header() {
 
           {/* Admin mobile links */}
           {isAdmin && (
-            <>
-              <Link to="/admin/highlights" className="hdr-msub-link" style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800 }}>
-                <span>Vidéos (Admin)</span>
-                <span className="hdr-msub-badge" style={{ background: "rgba(239,68,68,0.2)", color: "#fca5a5" }}>ADMIN</span>
-              </Link>
-              <Link to="/admin/teams" className="hdr-msub-link" style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800 }}>
-                <span>Équipes (Admin)</span>
-                <span className="hdr-msub-badge" style={{ background: "rgba(239,68,68,0.2)", color: "#fca5a5" }}>ADMIN</span>
-              </Link>
-            </>
+            <button 
+              className="hdr-msub-link" 
+              style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800, background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+              onClick={() => { setMenuOpen(false); onOpenAdminSidebar(); }}
+            >
+              <span>Admin Space</span>
+              <span className="hdr-msub-badge" style={{ background: "rgba(239,68,68,0.2)", color: "#fca5a5" }}>ADMIN</span>
+            </button>
           )}
+
 
           <div className="hdr-mfooter">
             <button className="hdr-btn"

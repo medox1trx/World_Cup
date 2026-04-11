@@ -6,6 +6,44 @@ import { getMatches, createMatch, updateMatch, deleteMatch } from "../../service
 const FD = "'Barlow Condensed', sans-serif";
 const FB = "'Barlow', sans-serif";
 
+const WORLD_CUP_TEAMS = [
+  { code: "", name: "Sélectionner un pays" },
+  { code: "dz", name: "Algérie 🇩🇿" },
+  { code: "de", name: "Allemagne 🇩🇪" },
+  { code: "gb", name: "Angleterre 🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+  { code: "sa", name: "Arabie Saoudite 🇸🇦" },
+  { code: "ar", name: "Argentine 🇦🇷" },
+  { code: "au", name: "Australie 🇦🇺" },
+  { code: "be", name: "Belgique 🇧🇪" },
+  { code: "br", name: "Brésil 🇧🇷" },
+  { code: "cm", name: "Cameroun 🇨🇲" },
+  { code: "ca", name: "Canada 🇨🇦" },
+  { code: "co", name: "Colombie 🇨🇴" },
+  { code: "kr", name: "Corée du Sud 🇰🇷" },
+  { code: "hr", name: "Croatie 🇭🇷" },
+  { code: "dk", name: "Danemark 🇩🇰" },
+  { code: "eg", name: "Égypte 🇪🇬" },
+  { code: "ec", name: "Équateur 🇪🇨" },
+  { code: "es", name: "Espagne 🇪🇸" },
+  { code: "fr", name: "France 🇫🇷" },
+  { code: "ir", name: "Iran 🇮🇷" },
+  { code: "it", name: "Italie 🇮🇹" },
+  { code: "jp", name: "Japon 🇯🇵" },
+  { code: "ma", name: "Maroc 🇲🇦" },
+  { code: "mx", name: "Mexique 🇲🇽" },
+  { code: "ng", name: "Nigeria 🇳🇬" },
+  { code: "nl", name: "Pays-Bas 🇳🇱" },
+  { code: "pl", name: "Pologne 🇵🇱" },
+  { code: "pt", name: "Portugal 🇵🇹" },
+  { code: "qa", name: "Qatar 🇶🇦" },
+  { code: "sn", name: "Sénégal 🇸🇳" },
+  { code: "rs", name: "Serbie 🇷🇸" },
+  { code: "ch", name: "Suisse 🇨🇭" },
+  { code: "tn", name: "Tunisie 🇹🇳" },
+  { code: "uy", name: "Uruguay 🇺🇾" },
+  { code: "us", name: "USA 🇺🇸" },
+];
+
 export default function AdminMatches() {
   const { darkMode } = useTheme();
   const [matches, setMatches] = useState([]);
@@ -291,12 +329,20 @@ export default function AdminMatches() {
 
               <div className="form-grid">
                 <div className="form-group">
-                  <label className="form-label">Drapeau Domicile (Emoji ou URL)</label>
-                  <input className="form-input" value={formData.home_flag} onChange={e => setFormData({...formData, home_flag: e.target.value})} placeholder="Ex: 🇲🇦" />
+                  <label className="form-label">Drapeau Domicile</label>
+                  <select className="form-input" value={formData.home_flag} onChange={e => setFormData({...formData, home_flag: e.target.value})}>
+                    {WORLD_CUP_TEAMS.map(t => (
+                      <option key={`home-${t.code}`} value={t.code}>{t.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Drapeau Extérieur (Emoji ou URL)</label>
-                  <input className="form-input" value={formData.away_flag} onChange={e => setFormData({...formData, away_flag: e.target.value})} placeholder="Ex: 🇫🇷" />
+                  <label className="form-label">Drapeau Extérieur</label>
+                  <select className="form-input" value={formData.away_flag} onChange={e => setFormData({...formData, away_flag: e.target.value})}>
+                    {WORLD_CUP_TEAMS.map(t => (
+                      <option key={`away-${t.code}`} value={t.code}>{t.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

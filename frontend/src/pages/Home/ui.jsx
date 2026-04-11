@@ -15,6 +15,19 @@ export function GlobalFonts() {
 }
 
 // ─── FLAG ─────────────────────────────────────────────────────
+// Helper to convert country flag emojis to 2-letter ISO codes
+function convertEmojiToCode(emoji) {
+  if (!emoji || emoji.length < 4) return null; // Emojis are multiple bytes
+  const codePts = [...emoji].map(c => c.codePointAt(0));
+  if (codePts.length === 2 && 
+      codePts[0] >= 0x1F1E6 && codePts[0] <= 0x1F1FF && 
+      codePts[1] >= 0x1F1E6 && codePts[1] <= 0x1F1FF) {
+    return String.fromCharCode(codePts[0] - 0x1F1E6 + 97) + 
+           String.fromCharCode(codePts[1] - 0x1F1E6 + 97);
+  }
+  return null;
+}
+
 export function Flag({ code, alt = "", size = 28 }) {
   if (!code) return null;
 
@@ -30,11 +43,15 @@ export function Flag({ code, alt = "", size = 28 }) {
      );
   }
 
-  // If it looks like an emoji (non-ascii)
-  if (/[^\x00-\x7F]/.test(code)) {
+  // Check if it's an emoji flag
+  const emojiCode = convertEmojiToCode(code);
+  let finalCode = emojiCode ? emojiCode : code;
+
+  // If it's still non-ascii and not a converted emoji, just show text (fallback)
+  if (/[^\x00-\x7F]/.test(finalCode)) {
     return (
       <span style={{ fontSize: size, lineHeight: 1, display: "inline-block", verticalAlign: "middle" }}>
-        {code}
+        {finalCode}
       </span>
     );
   }
@@ -42,14 +59,15 @@ export function Flag({ code, alt = "", size = 28 }) {
   // Standard flagcdn code
   return (
     <img
-      src={`https://flagcdn.com/w80/${code.toLowerCase()}.png`}
-      srcSet={`https://flagcdn.com/w160/${code.toLowerCase()}.png 2x`}
+      src={`https://flagcdn.com/w80/${finalCode.toLowerCase()}.png`}
+      srcSet={`https://flagcdn.com/w160/${finalCode.toLowerCase()}.png 2x`}
       alt={alt}
       loading="lazy"
       style={{
         width: size * 1.5, height: size,
         objectFit: "cover", flexShrink: 0,
         borderRadius: 2,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
       }}
     />
   );
