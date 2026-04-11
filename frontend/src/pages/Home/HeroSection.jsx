@@ -188,15 +188,19 @@ export function HeroSection() {
         .hero-ov-b {
           position: absolute; inset: 0; pointer-events: none;
           background: linear-gradient(to top,
-            ${heroBg} 0%, rgba(${oR},.82) 38%,
-            rgba(${oR},.3) 68%, rgba(${oR},.55) 100%);
-          transition: background 0.3s;
+            rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 38%,
+            rgba(0,0,0,0.2) 68%, rgba(0,0,0,0.35) 100%);
+        }
+        .hero-root::after {
+          content: '';
+          position: absolute; inset: 0;
+          background: rgba(0,0,0,0.15);
+          pointer-events: none;
         }
         .hero-ov-l {
           position: absolute; inset: 0; pointer-events: none;
           background: linear-gradient(to right,
-            rgba(${oR},.96) 0%, rgba(${oR},.55) 52%, transparent 100%);
-          transition: background 0.3s;
+            rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.45) 52%, transparent 100%);
         }
 
         .hero-dots {

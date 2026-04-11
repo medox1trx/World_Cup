@@ -19,6 +19,9 @@ api.interceptors.response.use(
 // ── Stats ────────────────────────────────────────────────────
 export const getStats = () => api.get("/stats");
 
+// ── News ─────────────────────────────────────────────────────
+export const getNews = (params = {}) => api.get("/news", { params });
+
 // ── Matches ──────────────────────────────────────────────────
 export const getMatches = (params = {}) => api.get("/matches", { params });
 export const getMatch   = (id)          => api.get(`/matches/${id}`);

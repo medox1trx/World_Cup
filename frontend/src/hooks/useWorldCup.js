@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getStats, getMatches } from "../services/api";
+import { getStats, getMatches, getNews } from "../services/api";
 
 // ── Generic fetch hook ───────────────────────────────────────
 export function useFetch(fetchFn, params = {}, deps = []) {
@@ -34,4 +34,9 @@ export function useStats() {
 // ── Matches hook ─────────────────────────────────────────────
 export function useMatches(params = {}) {
   return useFetch(getMatches, params, [JSON.stringify(params)]);
+}
+
+// ── News hook ────────────────────────────────────────────────
+export function useNews(params = {}) {
+  return useFetch(getNews, params, [JSON.stringify(params)]);
 }

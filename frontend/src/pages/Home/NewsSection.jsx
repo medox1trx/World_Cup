@@ -3,6 +3,7 @@ import { FiCalendar, FiArrowRight, FiArrowUpRight, FiClock, FiImage } from "reac
 import { FONT, NEWS_FEATURED, NEWS_SIDE, NEWS_MORE } from "./constants";
 import { SectionHead } from "./ui";
 import { useTheme } from "../../context/ThemeContext";
+import { useNews } from "../../hooks/useWorldCup";
 
 // ─── Shared hover hook ────────────────────────────────────────
 function useHover() {
@@ -377,15 +378,16 @@ function NewsCard({ article }) {
       transition: "border-color 0.3s, box-shadow 0.3s, background 0.3s",
       boxShadow: hovered ? `0 6px 24px ${shadow}` : "none",
     }} {...hoverProps}>
-      <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden", background: surface, transition: "background 0.3s" }}>
-        <ArticleImg
-          src={src}
-          style={{
-            opacity: hovered ? 0.85 : 0.72,
-            transform: hovered ? "scale(1.05)" : "scale(1)",
-            transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.4s",
-          }}
-        />
+       <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden", background: surface, transition: "background 0.3s" }}>
+         <ArticleImg
+           src={src}
+           style={{
+             opacity: hovered ? 0.85 : 0.72,
+             transform: hovered ? "scale(1.05)" : "scale(1)",
+             transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.4s",
+           }}
+         />
+         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', pointerEvents: 'none' }} />
         <div style={{ position: "absolute", bottom: 10, left: 10 }}>
           <Tag label={article.tag} dark={!!src} />
         </div>
@@ -428,6 +430,7 @@ function NewsCard({ article }) {
 // ─── NEWS SECTION ─────────────────────────────────────────────
 export function NewsSection() {
   const { darkMode } = useTheme();
+  const { data: news, loading } = useNews({ q: "FIFA World Cup 2026", pageSize: 5 });
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
   const card         = darkMode ? "#1c1c1c"                  : "#ffffff";
   const border       = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
@@ -468,12 +471,34 @@ export function NewsSection() {
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 var(--section-pad-x)" }}>
           <SectionHead eyebrow="Actualités" title="À La Une" action="Toutes les news" href="/news" icon={require("react-icons/fi").FiList} />
           <div className="ns-grid">
-            <FeaturedCard article={NEWS_FEATURED} />
-            <div className="ns-side">
-              {NEWS_SIDE.map((n, i) => (
-                <SideArticle key={i} article={n} last={i === NEWS_SIDE.length - 1} />
-              ))}
-            </div>
+            {loading ? (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 260px" }}>
+                <div style={{ minHeight: 400, background: card }} />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {[0,1,2,3].map(i => <div key={i} style={{ flex: 1, borderLeft: `1px solid ${border}`, borderTop: i > 0 ? `1px solid ${border}` : "none" }} />)}
+                </div>
+              </div>
+            ) : (
+              <>
+                <FeaturedCard article={{
+                  img: news?.articles?.[0]?.urlToImage,
+                  title: news?.articles?.[0]?.title,
+                  desc: news?.articles?.[0]?.description,
+                  date: new Date(news?.articles?.[0]?.publishedAt).toLocaleDateString('fr-FR'),
+                  tag: news?.articles?.[0]?.source?.name || "Actualité"
+                }} />
+                <div className="ns-side">
+                  {news?.articles?.slice(1, 5).map((n, i) => (
+                    <SideArticle key={i} article={{
+                      img: n.urlToImage,
+                      title: n.title,
+                      date: new Date(n.publishedAt).toLocaleDateString('fr-FR'),
+                      tag: n.source?.name || "Actualité"
+                    }} last={i === 3} />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -484,6 +509,7 @@ export function NewsSection() {
 // ─── MORE NEWS ────────────────────────────────────────────────
 export function MoreNewsSection() {
   const { darkMode } = useTheme();
+  const { data: news, loading } = useNews({ q: "FIFA World Cup 2026", pageSize: 9 });
   const surface = darkMode ? "#171717" : "#f5f5f5";
 
   return (
@@ -501,9 +527,20 @@ export function MoreNewsSection() {
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px,3vw,24px)" }}>
           <SectionHead eyebrow="Plus d'actualités" title="Dernières Nouvelles" action="Toutes" href="/news" icon={require("react-icons/fi").FiList} />
           <div className="mn-grid">
-            {NEWS_MORE.map((n, i) => (
-              <NewsCard key={i} article={n} />
-            ))}
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} style={{ height: 240, borderRadius: 4, background: darkMode ? "#1c1c1c" : "#ffffff" }} />
+              ))
+            ) : (
+              news?.articles?.slice(0, 3).map((n, i) => (
+                <NewsCard key={i} article={{
+                  img: n.urlToImage,
+                  title: n.title,
+                  date: new Date(n.publishedAt).toLocaleDateString('fr-FR'),
+                  tag: n.source?.name || "Actualité"
+                }} />
+              ))
+            )}
           </div>
         </div>
       </section>
