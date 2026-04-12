@@ -17,7 +17,6 @@ import Teams from "./pages/Teams";
 import Highlights from "./pages/Highlights";
 import News from "./pages/News";
 import Qualifications from "./pages/Qualifications";
-<<<<<<< Updated upstream
 import Cities from "./pages/Cities";
 import CityDetail from "./pages/CityDetail";
 import BookingPage from "./pages/BookingPage";
@@ -34,23 +33,9 @@ import AdminTickets from "./pages/admin/AdminTickets";
 import AdminMatches from "./pages/admin/AdminMatches";
 import AdminReferees from "./pages/admin/AdminReferees";
 import AdminNews from "./pages/admin/AdminNews";
-=======
-import Cities         from "./pages/Cities";
-import CityDetail     from "./pages/CityDetail";
-import BookingPage    from "./pages/BookingPage";
-import Tickets        from "./pages/Tickets";
-import Hospitality    from "./pages/Hospitality";
-import Fans           from "./pages/Fans";
-import Tournaments    from "./pages/Tournaments";
-import Login          from "./pages/Login";
-import Register       from "./pages/Register";
-import Profile        from "./pages/Profile";
-import AdminHighlights  from "./pages/admin/AdminHighlights";
-import AdminTeams     from "./pages/admin/AdminTeams";
-import AdminTickets   from "./pages/admin/AdminTickets";
-import AdminMatches   from "./pages/admin/AdminMatches";
-import AdminFanZones  from "./pages/admin/AdminFanZones";
->>>>>>> Stashed changes
+import AdminFanZones from "./pages/admin/AdminFanZones";
+import AdminTicker from "./pages/admin/AdminTicker";
+import AdminHospitality from "./pages/admin/AdminHospitality";
 
 /*
   HEIGHT BUDGET (sticky bars above page content):
@@ -62,28 +47,17 @@ import AdminFanZones  from "./pages/admin/AdminFanZones";
   └──────────────────────────────┘
 */
 
-/* Wrapper that scales down non-home pages slightly */
-function ScaledContent({ children }) {
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-  return (
-    <div style={isHome ? undefined : { zoom: 0.9 }}>
-      {children}
-    </div>
-  );
-}
-
 function App() {
   const [adminSidebarOpen, setAdminSidebarOpen] = useState(false);
 
   return (
-
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ThemeProvider>
         <SeasonProvider>
           <AuthProvider>
             <Toaster position="top-right" reverseOrder={false} />
-            {/* ── FIXED: CountdownBanner + Header (102px total) ── */}
+            
+            {/* Header stays full width but content inside can be centered */}
             <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 2000 }}>
               <CountdownBanner />
               <Header onOpenAdminSidebar={() => setAdminSidebarOpen(true)} />
@@ -91,10 +65,8 @@ function App() {
 
             <AdminSidebar isOpen={adminSidebarOpen} onClose={() => setAdminSidebarOpen(false)} />
 
-
-            {/* ── PAGE CONTENT ── */}
+            {/* Main content: full bleed backgrounds, centered inner content */}
             <main style={{ minHeight: "calc(100vh - 102px)", paddingTop: 102 }}>
-              <ScaledContent>
                 <Routes>
                   {/* Public routes */}
                   <Route path="/" element={<Home />} />
@@ -117,7 +89,6 @@ function App() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-<<<<<<< Updated upstream
                   {/* Admin routes (protected) */}
                   <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
                   <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
@@ -125,17 +96,10 @@ function App() {
                   <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
                   <Route path="/admin/matches" element={<AdminRoute><AdminMatches /></AdminRoute>} />
                   <Route path="/admin/referees" element={<AdminRoute><AdminReferees /></AdminRoute>} />
+                  <Route path="/admin/fanzones" element={<AdminRoute><AdminFanZones /></AdminRoute>} />
+                  <Route path="/admin/ticker" element={<AdminRoute><AdminTicker /></AdminRoute>} />
+                  <Route path="/admin/hospitality" element={<AdminRoute><AdminHospitality /></AdminRoute>} />
                 </Routes>
-              </ScaledContent>
-=======
-                {/* Admin routes (protected) */}
-                <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
-                <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
-                <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
-                <Route path="/admin/matches" element={<AdminRoute><AdminMatches /></AdminRoute>} />
-                <Route path="/admin/fanzones" element={<AdminRoute><AdminFanZones /></AdminRoute>} />
-              </Routes>
->>>>>>> Stashed changes
             </main>
 
             {/* ── FOOTER ── */}

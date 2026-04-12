@@ -182,7 +182,7 @@ export default function News() {
                       {item.source?.name || item.tag || "FIFA 2030"}
                     </span>
                     <span style={{ display: "flex", alignItems: "center", gap: 5, color: tSubText, fontSize: 11, fontWeight: 600 }}>
-                      <FiCalendar size={12} /> {formatDate(item.publishedAt || item.date)}
+                      <FiCalendar size={14} /> {formatDate(item.publishedAt || item.date)}
                     </span>
                   </div>
                   <h3 style={{ fontFamily: FONT_D, fontSize: 24, fontWeight: 800, lineHeight: 1.1, textTransform: "uppercase", letterSpacing: "0.02em", margin: "0 0 12px" }}>
@@ -192,7 +192,7 @@ export default function News() {
                     {item.description || item.desc}
                   </p>
                   <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 6, color: tText, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    Lire l'article <FiArrowRight size={12} />
+                    Lire l'article <FiArrowRight size={14} />
                   </div>
                 </div>
               </a>

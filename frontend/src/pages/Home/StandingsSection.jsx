@@ -41,7 +41,7 @@ function GroupTable({ group }) {
           onMouseOver={e => e.currentTarget.style.color = "#ffffff"}
           onMouseOut={e => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
         >
-          Détails <FiChevronRight size={10}/>
+          Détails <FiChevronRight size={13}/>
         </a>
       </div>
 
@@ -124,7 +124,7 @@ export function StandingsSection() {
         background: bg, padding: "clamp(28px,5vw,48px) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(12px,4vw,24px)" }}>
+        <div className="layout-container">
           <SectionHead eyebrow="Classements" title="Groupes" action="Tous les groupes" href="/standings"/>
 
           <div className="standings-grid">
@@ -143,7 +143,7 @@ export function StandingsSection() {
             onMouseOver={e => { e.currentTarget.style.background = accentHover; e.currentTarget.style.transform = "translateY(-1px)"; }}
             onMouseOut={e => { e.currentTarget.style.background = accent; e.currentTarget.style.transform = "translateY(0)"; }}
           >
-            <FiGrid size={12}/> Voir tous les groupes
+            <FiGrid size={15}/> Voir tous les groupes
           </a>
         </div>
       </section>
@@ -187,7 +187,7 @@ export function CitiesSection() {
         background: bg, padding: "clamp(28px,5vw,48px) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(12px,4vw,24px)" }}>
+        <div className="layout-container">
           <SectionHead eyebrow="Pays Hôtes" title="Pays Organisateurs" action="Explorer" href="/cities"/>
 
           <div className="cities-grid">
@@ -213,7 +213,7 @@ export function CitiesSection() {
                     color: "rgba(255,255,255,0.55)", fontSize: "clamp(9px,2vw,11px)",
                     fontWeight: 600, marginTop: 5, marginBottom: 0, fontFamily: FONT.body,
                   }}>
-                    <FiGlobe size={9}/> {c.country}
+                    <FiGlobe size={13}/> {c.country}
                   </p>
                 </div>
               </a>

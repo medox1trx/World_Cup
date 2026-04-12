@@ -18,22 +18,22 @@ function useHover() {
 
 function Tag({ label, dark = false }) {
   const { darkMode } = useTheme();
-  const accent         = darkMode ? "#ffffff"               : "#0d0d0d";
-  const accentContrast = darkMode ? "#0d0d0d"               : "#ffffff";
-  /* dark = "on image overlay (always dark surface)" → always bright pill */
-  const tagBg    = dark ? accent : (darkMode ? "rgba(255,255,255,0.12)" : accent);
-  const tagColor = dark ? accentContrast : accentContrast;
+  // On dark overlays, we use white. Otherwise we use the theme's primary color.
+  const tagColor = dark ? "#ffffff" : (darkMode ? "#ffffff" : "#0d0d0d");
 
   return (
     <span style={{
-      display: "inline-block", padding: "3px 9px",
-      fontSize: 8, fontWeight: 900, letterSpacing: "0.24em",
+      display: "inline-flex", alignItems: "center", gap: 6,
+      fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
       textTransform: "uppercase", fontFamily: FONT.body,
-      background: tagBg,
       color: tagColor,
-      borderRadius: 2, lineHeight: 1.6, whiteSpace: "nowrap",
-      transition: "background 0.3s, color 0.3s",
-    }}>{label}</span>
+      lineHeight: 1, whiteSpace: "nowrap",
+      transition: "color 0.3s",
+      opacity: 0.9,
+    }}>
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: tagColor, flexShrink: 0 }} />
+      {label}
+    </span>
   );
 }
 
@@ -58,7 +58,7 @@ function ArticleImg({ src, style, onLoad, transition = false, isEntering = false
         backgroundSize: "10px 10px",
         transition: "background 0.3s",
       }}>
-        <FiImage size={18} color={iconFaint} />
+        <FiImage size={24} color={iconFaint} />
       </div>
     );
   }
@@ -328,7 +328,7 @@ function FeaturedCard({ article, transition = false, isEntering = false }) {
               color: imageTextFaint, fontFamily: FONT.body, fontSize: 10,
               transition: "color 0.3s",
             }}>
-              <FiClock size={9} /> {article.date}
+              <FiClock size={12} /> {article.date}
             </span>
             <span style={{
               display: "flex", alignItems: "center", gap: 4, color: accent, fontFamily: FONT.body,
@@ -407,7 +407,7 @@ function SideArticle({ article, last, className = "", active = false, onClick, t
           fontFamily: FONT.body, marginTop: 2,
           transition: "color 0.3s",
         }}>
-          <FiClock size={8} /> {article.date}
+          <FiClock size={12} /> {article.date}
         </span>
       </div>
     </a>
@@ -474,7 +474,7 @@ function NewsCard({ article }) {
             display: "flex", alignItems: "center", gap: 4, fontSize: 9, color: textSecondary,
             fontFamily: FONT.body, transition: "color 0.3s",
           }}>
-            <FiClock size={8} /> {article.date}
+            <FiClock size={12} /> {article.date}
           </span>
           <div style={{
             width: 22, height: 22, borderRadius: "50%",
@@ -635,7 +635,7 @@ export function NewsSection() {
         background: bg, padding: "var(--section-pad-y) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 var(--section-pad-x)" }}>
+        <div className="layout-container">
           <SectionHead eyebrow="Actualités" title="À La Une" action="Toutes les news" href="/news" icon={require("react-icons/fi").FiList} />
           <div className="ns-grid">
             {loading ? (
@@ -703,7 +703,7 @@ export function MoreNewsSection() {
         background: surface, padding: "clamp(28px,5vw,48px) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px,3vw,24px)" }}>
+        <div className="layout-container">
           <SectionHead eyebrow="Plus d'actualités" title="Dernières Nouvelles" action="Toutes" href="/news" icon={require("react-icons/fi").FiList} />
           <div className="mn-grid">
             {loading || newsArticles.length === 0 ? (

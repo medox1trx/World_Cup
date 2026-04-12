@@ -1,197 +1,187 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FiShoppingCart, FiArrowRight, FiPlay, FiCalendar } from "react-icons/fi";
 import { FONT, TICKER_ITEMS } from "./constants";
 import { useTheme } from "../../context/ThemeContext";
-import { useMatches } from "../../hooks/useWorldCup";
+import { getTicker } from "../../services/api";
 
 const YT_VIDEO_ID = "RDtdVQgB9ME";
-
-function getCountryCode(teamName) {
-  if (!teamName) return 'xx';
-  const map = {
-    morocco: 'ma', france: 'fr', brazil: 'br', argentina: 'ar', germany: 'de',
-    spain: 'es', england: 'gb', portugal: 'pt', italy: 'it', netherlands: 'nl',
-    belgium: 'be', usa: 'us', canada: 'ca', mexico: 'mx', japan: 'jp',
-    south_korea: 'kr', australia: 'au', saudi_arabia: 'sa', qatar: 'qa', uae: 'ae',
-  };
-  const key = teamName.toLowerCase().replace(/[^a-z]/g, '');
-  return map[key] || teamName.substring(0, 2).toLowerCase();
-}
-
-function getTeamCode(teamName) {
-  if (!teamName) return 'TBD';
-  const codes = {
-    morocco: 'MAR', france: 'FRA', brazil: 'BRA', argentina: 'ARG', germany: 'GER',
-    spain: 'ESP', england: 'ENG', portugal: 'POR', italy: 'ITA', netherlands: 'NED',
-    belgium: 'BEL', usa: 'USA', canada: 'CAN', mexico: 'MEX', japan: 'JPN',
-    south_korea: 'KOR', australia: 'AUS', saudi_arabia: 'KSA', qatar: 'QAT', uae: 'UAE',
-  };
-  const key = teamName.toLowerCase();
-  return codes[key] || teamName.substring(0, 3).toUpperCase();
-}
-
-function getFlagUrl(flag) {
-  if (!flag) return 'https://flagcdn.com/w80/xx.png';
-  if (flag.startsWith('http')) return flag;
-  if (flag.startsWith('🇺')) return 'https://flagcdn.com/w80/us.png';
-  if (flag.startsWith('🇲')) return 'https://flagcdn.com/w80/ma.png';
-  if (flag.startsWith('🇫')) return 'https://flagcdn.com/w80/fr.png';
-  if (flag.startsWith('🇧')) return 'https://flagcdn.com/w80/br.png';
-  if (flag.startsWith('🇦')) return 'https://flagcdn.com/w80/ar.png';
-  if (flag.startsWith('🇩')) return 'https://flagcdn.com/w80/de.png';
-  if (flag.startsWith('🇪')) return 'https://flagcdn.com/w80/es.png';
-  if (flag.startsWith('🇬')) return 'https://flagcdn.com/w80/gb.png';
-  if (flag.startsWith('🇵')) return 'https://flagcdn.com/w80/pt.png';
-  if (flag.startsWith('🇮')) return 'https://flagcdn.com/w80/it.png';
-  if (flag.startsWith('🇳')) return 'https://flagcdn.com/w80/nl.png';
-  if (flag.startsWith('🇧')) return 'https://flagcdn.com/w80/be.png';
-  if (flag.startsWith('🇨')) return 'https://flagcdn.com/w80/ca.png';
-  if (flag.startsWith('🇲')) return 'https://flagcdn.com/w80/mx.png';
-  if (flag.startsWith('🇯')) return 'https://flagcdn.com/w80/jp.png';
-  if (flag.startsWith('🇰')) return 'https://flagcdn.com/w80/kr.png';
-  if (flag.startsWith('🇦')) return 'https://flagcdn.com/w80/au.png';
-  if (flag.startsWith('🇸')) return 'https://flagcdn.com/w80/sa.png';
-  if (flag.startsWith('🇶')) return 'https://flagcdn.com/w80/qa.png';
-  if (flag.startsWith('🇦')) return 'https://flagcdn.com/w80/ae.png';
-  return 'https://flagcdn.com/w80/xx.png';
-}
-
-function formatMatchDate(dateStr, timeStr) {
-  if (!dateStr) return 'Date à venir';
-  const months = ['jan', 'fév', 'mar', 'avr', 'mai', 'jun', 'jul', 'aoû', 'sep', 'oct', 'nov', 'déc'];
-  const date = new Date(dateStr);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const time = timeStr ? timeStr.substring(0, 5) : '';
-  return time ? `${day} ${month} · ${time}` : `${day} ${month}`;
-}
 
 // ─── NEWS TICKER ───────────────────────────────────────────────
 export function NewsTicker() {
   const { darkMode } = useTheme();
 
-  const bg            = darkMode ? "#0a0a0a"                  : "#f5f5f5";
-  const borderColor   = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
-  const badgeBg       = darkMode ? "#ffffff"                   : "#0d0d0d";
-  const badgeText     = darkMode ? "#0a0a0a"                   : "#ffffff";
-  const divider       = darkMode ? "rgba(255,255,255,0.12)"    : "rgba(0,0,0,0.08)";
-  const textSecondary = darkMode ? "rgba(255,255,255,0.5)"     : "rgba(0,0,0,0.5)";
-  const dotActive     = darkMode ? "#ffffff"                    : "#0d0d0d";
-  const dotInactive   = darkMode ? "rgba(255,255,255,0.2)"     : "rgba(0,0,0,0.15)";
-  const brandRed      = "#c8102e";
+  const bg            = darkMode ? "#0a0a0a" : "#f5f5f5";
+  const borderColor   = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const badgeBg       = darkMode ? "#ffffff" : "#0d0d0d";
+  const badgeText     = darkMode ? "#0a0a0a" : "#ffffff";
+  const divider       = darkMode ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)";
+  const dotActive     = darkMode ? "#ffffff" : "#0d0d0d";
+  const dotInactive   = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)";
 
-  const [idx,  setIdx]  = useState(0);
-  const [fade, setFade] = useState(true);
+  const [items, setItems] = useState([]);
+  const [idx,   setIdx]   = useState(0);
+  const [fade,  setFade]  = useState(true);
+  const timerRef = useRef(null);
 
+  /* ── Fetch from API, fall back to constants ── */
   useEffect(() => {
-    const id = setInterval(() => {
-      setFade(false);
-      setTimeout(() => { setIdx(i => (i + 1) % TICKER_ITEMS.length); setFade(true); }, 280);
-    }, 5000);
-    return () => clearInterval(id);
+    getTicker()
+      .then((data) => {
+        const arr = Array.isArray(data) ? data : [];
+        setItems(arr.length > 0 ? arr : TICKER_ITEMS.map((t, i) => ({ id: i, text: t, label: "En Direct", label_color: "#c8102e" })));
+      })
+      .catch(() => {
+        setItems(TICKER_ITEMS.map((t, i) => ({ id: i, text: t, label: "En Direct", label_color: "#c8102e" })));
+      });
   }, []);
 
+  /* ── Auto-rotate ── */
+  useEffect(() => {
+    if (items.length < 2) return;
+    timerRef.current = setInterval(() => {
+      setFade(false);
+      setTimeout(() => { setIdx(i => (i + 1) % items.length); setFade(true); }, 280);
+    }, 5000);
+    return () => clearInterval(timerRef.current);
+  }, [items]);
+
+  const goTo = (i) => {
+    clearInterval(timerRef.current);
+    setFade(false);
+    setTimeout(() => { setIdx(i); setFade(true); }, 200);
+  };
+
+  const current = items[idx] ?? null;
+  const badgeLabel = current?.label ?? "En Direct";
+  const dotColor   = current?.label_color ?? "#c8102e";
+
   return (
-    <>
+    <div style={{
+      background: bg,
+      borderBottom: `1px solid ${borderColor}`,
+      transition: "background 0.3s, border-color 0.3s",
+    }}>
       <div style={{
-        background: bg, borderBottom: `1px solid ${borderColor}`,
-        transition: "background 0.3s, border-color 0.3s",
+        maxWidth: 1380, margin: "0 auto", padding: "0 40px",
+        display: "flex", alignItems: "center", height: 48, gap: 16,
       }}>
+        {/* Badge */}
         <div style={{
-          maxWidth: 1380, margin: "0 auto", padding: "0 16px",
-          display: "flex", alignItems: "center", height: 44, gap: 14,
+          flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
+          transition: "background 0.3s",
         }}>
-          <div style={{
-            flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
-            background: badgeBg, padding: "4px 10px", borderRadius: 2,
-            transition: "background 0.3s",
-          }}>
-            <span style={{
-              width: 6, height: 6, borderRadius: "50%", background: brandRed,
-              flexShrink: 0, animation: "tdot 1.4s ease-in-out infinite",
-            }} />
-            <span style={{
-              color: badgeText, fontSize: "9px", fontWeight: 900,
-              letterSpacing: "0.2em", textTransform: "uppercase",
-              fontFamily: FONT.body, whiteSpace: "nowrap",
-              transition: "color 0.3s",
-            }}>En Direct</span>
-          </div>
-
-          <div style={{
-            width: 1, height: 16, background: divider, flexShrink: 0,
-            transition: "background 0.3s",
+          <span style={{
+            width: 6, height: 6, borderRadius: "50%", background: dotColor,
+            flexShrink: 0, animation: "tdot 1.4s ease-in-out infinite",
+            transition: "background 0.4s",
           }} />
+          <span style={{
+            color: dotColor, fontSize: 11, fontWeight: 700,
+            letterSpacing: "0.15em", textTransform: "uppercase",
+            fontFamily: FONT.body, whiteSpace: "nowrap",
+            transition: "color 0.3s",
+          }}>{badgeLabel}</span>
+        </div>
 
-          <p style={{
-            flex: 1, color: textSecondary, fontSize: "12px",
+        {/* Divider */}
+        <div style={{ width: 1, height: 18, background: divider, flexShrink: 0, transition: "background 0.3s" }} />
+
+        {/* Text */}
+        {current?.url ? (
+          <a href={current.url} target="_blank" rel="noopener noreferrer" style={{
+            flex: 1, color: textSecondary, fontSize: 13,
             fontFamily: FONT.body, overflow: "hidden", whiteSpace: "nowrap",
-            textOverflow: "ellipsis", opacity: fade ? 1 : 0, transition: "opacity 0.28s, color 0.3s",
-            minWidth: 0, lineHeight: 1.4, margin: 0,
+            textOverflow: "ellipsis", opacity: fade ? 1 : 0,
+            transition: "opacity 0.28s, color 0.3s",
+            minWidth: 0, textDecoration: "none", fontWeight: 500,
           }}>
-            {TICKER_ITEMS[idx]}
+            {current.text}
+          </a>
+        ) : (
+          <p style={{
+            flex: 1, color: textSecondary, fontSize: 13,
+            fontFamily: FONT.body, overflow: "hidden", whiteSpace: "nowrap",
+            textOverflow: "ellipsis", opacity: fade ? 1 : 0,
+            transition: "opacity 0.28s, color 0.3s",
+            minWidth: 0, margin: 0, fontWeight: 500,
+          }}>
+            {current?.text ?? ""}
           </p>
+        )}
 
-          <div style={{ display: "none", gap: 4, flexShrink: 0 }}>
-            {TICKER_ITEMS.map((_, i) => (
-              <button key={i}
-                onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 200); }}
-                style={{
-                  width: i === idx ? 14 : 5, height: 5, borderRadius: 3,
-                  border: "none", cursor: "pointer", padding: 0,
-                  background: i === idx ? dotActive : dotInactive,
-                  transition: "all 0.3s",
-                }}
-              />
+        {/* Dots */}
+        {items.length > 1 && (
+          <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+            {items.map((_, i) => (
+              <button key={i} onClick={() => goTo(i)} style={{
+                width: i === idx ? 14 : 5, height: 5, borderRadius: 3,
+                border: "none", cursor: "pointer", padding: 0,
+                background: i === idx ? dotActive : dotInactive,
+                transition: "all 0.3s",
+              }} />
             ))}
           </div>
-        </div>
+        )}
       </div>
+
       <style>{`@keyframes tdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}`}</style>
-    </>
+    </div>
   );
 }
 
 // ─── HERO ──────────────────────────────────────────────────────
 export function HeroSection() {
   const { darkMode } = useTheme();
-  const { data: matches, loading: matchesLoading } = useMatches({ status: 'upcoming', limit: 20 });
-  
-  const nextMatch = matches?.find(m => m.status === 'upcoming') || matches?.[0] || null;
 
   /* ── colour tokens ── */
-  const heroBg          = darkMode ? "#0a0a0a"                   : "#f5f5f5";
-  const oR              = darkMode ? "10,10,10"                  : "245,245,245";
-  const textPrimary     = darkMode ? "#ffffff"                   : "#0d0d0d";
-  const textSub         = darkMode ? "rgba(255,255,255,0.38)"   : "rgba(0,0,0,0.35)";
-  const textMuted       = darkMode ? "rgba(255,255,255,0.4)"    : "rgba(0,0,0,0.35)";
-  const textFaint       = darkMode ? "rgba(255,255,255,0.28)"   : "rgba(0,0,0,0.22)";
-  const textVFaint      = darkMode ? "rgba(255,255,255,0.18)"   : "rgba(0,0,0,0.15)";
-  const strokeColor     = darkMode ? "rgba(255,255,255,0.55)"   : "rgba(0,0,0,0.45)";
-  const borderBase      = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
-  const borderSub       = darkMode ? "rgba(255,255,255,0.1)"    : "rgba(0,0,0,0.1)";
-  const borderMed       = darkMode ? "rgba(255,255,255,0.18)"   : "rgba(0,0,0,0.18)";
-  const borderStrong    = darkMode ? "rgba(255,255,255,0.35)"   : "rgba(0,0,0,0.3)";
-  const borderBright    = darkMode ? "rgba(255,255,255,0.8)"    : "rgba(0,0,0,0.7)";
-  const hover           = darkMode ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.04)";
-  const hoverStrong     = darkMode ? "rgba(255,255,255,0.14)"   : "rgba(0,0,0,0.1)";
-  const subtleBg        = darkMode ? "rgba(255,255,255,0.04)"   : "rgba(0,0,0,0.03)";
-  const subtleHover     = darkMode ? "rgba(255,255,255,0.09)"   : "rgba(0,0,0,0.06)";
-  const accent          = darkMode ? "#ffffff"                   : "#0d0d0d";
-  const accentContrast  = darkMode ? "#0a0a0a"                  : "#ffffff";
-  const accentHover     = darkMode ? "#efefef"                   : "#333333";
-  const cardBg          = darkMode ? "rgba(10,10,10,0.78)"      : "rgba(255,255,255,0.85)";
-  const shadow          = darkMode ? "rgba(0,0,0,0.4)"          : "rgba(0,0,0,0.15)";
-  const shadowStrong    = darkMode ? "rgba(0,0,0,0.55)"         : "rgba(0,0,0,0.25)";
-  const dotBg           = darkMode ? "rgba(255,255,255,0.3)"    : "rgba(0,0,0,0.2)";
-  const dotActive       = darkMode ? "#ffffff"                   : "#0d0d0d";
-  const lineBg          = darkMode ? "rgba(255,255,255,0.28)"   : "rgba(0,0,0,0.2)";
-  const shimmerColor    = darkMode ? "rgba(255,255,255,0.55)"   : "rgba(255,255,255,0.55)";
-  const textHeroStrong  = darkMode ? "rgba(255,255,255,0.85)"   : "rgba(0,0,0,0.75)";
-  const textHeroSec     = darkMode ? "rgba(255,255,255,0.6)"    : "rgba(0,0,0,0.5)";
-  const liveGreen       = "#22c55e";
+  const heroBg = darkMode ? "#0a0a0a" : "#f5f5f5";
+  const oR = darkMode ? "10,10,10" : "245,245,245";
+  const textPrimary = darkMode ? "#ffffff" : "#0d0d0d";
+  const textSub = darkMode ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.35)";
+  const textMuted = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)";
+  const textFaint = darkMode ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.22)";
+  const textVFaint = darkMode ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.15)";
+  /* ── Hero text always stays white — hero always has dark bg overlay ── */
+  const heroTextPrimary = "#ffffff";
+  const heroTextSub     = "rgba(255,255,255,0.42)";
+  const heroTextMuted   = "rgba(255,255,255,0.45)";
+  const heroTextFaint   = "rgba(255,255,255,0.3)";
+  const heroTextVFaint  = "rgba(255,255,255,0.22)";
+  const heroStroke      = "rgba(255,255,255,0.55)";
+  const heroLineBg      = "rgba(255,255,255,0.28)";
+  /* ── Match card uses theme-aware values ── */
+  const strokeColor = heroStroke;
+  const borderBase   = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const borderSub    = "rgba(255,255,255,0.12)";
+  const borderMed    = "rgba(255,255,255,0.22)";
+  const borderStrong = "rgba(255,255,255,0.38)";
+  const borderBright = "rgba(255,255,255,0.82)";
+  const hover        = "rgba(255,255,255,0.07)";
+  const hoverStrong  = "rgba(255,255,255,0.16)";
+  const subtleBg     = "rgba(255,255,255,0.06)";
+  const subtleHover  = "rgba(255,255,255,0.11)";
+  const accent       = darkMode ? "#ffffff" : "#ffffff";
+  const accentContrast = darkMode ? "#0a0a0a" : "#0d0d0d";
+  const accentHover  = "#efefef";
+  const cardBg       = darkMode ? "rgba(10,10,10,0.78)" : "rgba(255,255,255,0.85)";
+  const shadow       = darkMode ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.2)";
+  const shadowStrong = darkMode ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.3)";
+  const dotBg        = "rgba(255,255,255,0.3)";
+  const dotActive    = "#ffffff";
+  const lineBg       = heroLineBg;
+  const shimmerColor = "rgba(255,255,255,0.55)";
+  /* mc-code / mc-btn text uses card-aware theme */
+  const mcTextPrimary   = darkMode ? "#ffffff" : "#0d0d0d";
+  const mcTextMuted     = darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)";
+  const mcTextFaint     = darkMode ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.28)";
+  const mcTextVFaint    = darkMode ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.18)";
+  const mcAccent        = darkMode ? "#ffffff" : "#0d0d0d";
+  const mcAccentContrast = darkMode ? "#0a0a0a" : "#ffffff";
+  const mcAccentHover   = darkMode ? "#efefef" : "#333333";
+  const liveGreen = "#22c55e";
 
-  const [vis,     setVis]     = useState(false);
+  const [vis, setVis] = useState(false);
   const [ytReady, setYtReady] = useState(false);
 
   useEffect(() => {
@@ -208,21 +198,21 @@ export function HeroSection() {
           clearTimeout(fallback);
           setYtReady(true);
         }
-      } catch (_) {}
+      } catch (_) { }
     };
     window.addEventListener("message", handler);
     return () => { clearTimeout(fallback); window.removeEventListener("message", handler); };
   }, []);
 
   const s = (d) => ({
-    opacity:   vis ? 1 : 0,
+    opacity: vis ? 1 : 0,
     transform: vis ? "translateY(0)" : "translateY(18px)",
     transition: `opacity .6s ease ${d}s, transform .6s ease ${d}s`,
   });
 
   return (
     <>
-<style>{`
+      <style>{`
         @keyframes bgz  { from{transform:scale(1);}   to{transform:scale(1.05);}  }
         @keyframes shim { from{left:-80%;}            to{left:130%;}              }
         @keyframes lpul { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.45);}
@@ -295,9 +285,9 @@ export function HeroSection() {
           margin-bottom: clamp(12px, 2vh, 20px);
           width: 100%;
         }
-        .hero-ey-line { width: 32px; height: 1px; background: ${lineBg}; flex-shrink: 0; transition: background 0.3s; }
+        .hero-ey-line { width: 32px; height: 1px; background: ${heroLineBg}; flex-shrink: 0; transition: background 0.3s; }
         .hero-ey-txt {
-          color: ${textMuted};
+          color: ${heroTextMuted};
           font-family: 'Barlow', sans-serif;
           font-size: clamp(9px, 1.2vw, 11px); font-weight: 800;
           letter-spacing: .4em; text-transform: uppercase;
@@ -317,15 +307,15 @@ export function HeroSection() {
         .h1-monde { font-size: clamp(64px, 10vw, 140px); }
         .h1-uni   { font-size: clamp(64px, 10vw, 140px); }
 
-.h1-w { color: ${textPrimary}; transition: color 0.3s; }
+.h1-w { color: ${heroTextPrimary}; transition: color 0.3s; }
 .h1-o {
   color: transparent;
-  -webkit-text-stroke: clamp(1px, 0.13vw, 2px) ${strokeColor};
+  -webkit-text-stroke: clamp(1px, 0.13vw, 2px) ${heroStroke};
   transition: -webkit-text-stroke-color 0.3s;
 }
 
         .hero-sub {
-          color: ${textSub};
+          color: ${heroTextSub};
           font-family: 'Barlow', sans-serif;
           font-size: clamp(14px, 1.6vw, 18px);
           font-weight: 400; line-height: 1.6;
@@ -350,48 +340,48 @@ export function HeroSection() {
           padding: clamp(11px,1.4vh,14px) clamp(20px,2.2vw,28px);
           border-radius: 100px; text-decoration: none;
           box-shadow: 0 4px 20px ${shadow};
-          transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease, background 0.3s, color 0.3s;
+          transition: transform .2s ease, box-shadow .2s ease, background .3s, color 0.3s;
           white-space: nowrap;
         }
         .btn-buy:hover {
           background: ${accentHover};
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 14px 35px ${shadowStrong};
+          transform: translateY(-2px);
+          box-shadow: 0 10px 30px ${shadowStrong};
         }
-        .btn-buy:active { transform: translateY(-1px) scale(1); }
+        .btn-buy:active { transform: translateY(0); }
         .btn-buy .shimmer {
           position: absolute; top: 0; left: -80%; width: 50%; height: 100%;
           background: linear-gradient(90deg, transparent, ${shimmerColor}, transparent);
           pointer-events: none;
         }
         .btn-buy:hover .shimmer { animation: shim .5s ease forwards; }
-        .btn-buy .arr { transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .btn-buy:hover .arr { transform: translateX(4px); }
+        .btn-buy .arr { transition: transform .2s; }
+        .btn-buy:hover .arr { transform: translateX(3px); }
 
         .btn-watch {
           display: inline-flex; align-items: center; gap: 9px;
           text-decoration: none;
-          background: ${darkMode ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"};
+          background: rgba(255,255,255,0.12);
           border: none;
           border-radius: 100px;
           padding: clamp(11px,1.4vh,14px) clamp(16px,2vw,22px);
-          transition: background 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+          transition: background .25s, transform .2s;
           white-space: nowrap;
         }
         .btn-watch:hover {
-          background: ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.14)"};
-          transform: translateY(-3px) scale(1.02);
+          background: rgba(255,255,255,0.22);
+          transform: translateY(-2px);
         }
-        .btn-watch:active { transform: translateY(-1px) scale(1); }
+        .btn-watch:active { transform: translateY(0); }
         .btn-watch-circle {
           width: clamp(22px,2.2vw,26px); height: clamp(22px,2.2vw,26px);
-          border-radius: 50%; background: ${darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"};
+          border-radius: 50%; background: rgba(255,255,255,0.16);
           display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; transition: background 0.3s ease;
+          flex-shrink: 0; transition: background .25s;
         }
-        .btn-watch:hover .btn-watch-circle { background: ${darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.18)"}; }
+        .btn-watch:hover .btn-watch-circle { background: rgba(255,255,255,0.26); }
         .btn-watch-label {
-          color: ${textPrimary}; font-family: 'Barlow', sans-serif;
+          color: #ffffff; font-family: 'Barlow', sans-serif;
           font-size: clamp(11px,1.1vw,13px); font-weight: 700; letter-spacing: .04em;
           transition: color .3s;
         }
@@ -399,20 +389,20 @@ export function HeroSection() {
         .hero-live {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 8px 14px; border-radius: 100px;
-          border: 1px solid ${borderSub};
-          background: ${subtleBg};
+          border: 1px solid rgba(255,255,255,0.15);
+          background: rgba(255,255,255,0.07);
           backdrop-filter: blur(8px);
           text-decoration: none; transition: all .3s;
           width: fit-content;
         }
-        .hero-live:hover { background: ${subtleHover}; border-color: ${borderMed}; }
+        .hero-live:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.25); }
         .live-dot {
           width: 7px; height: 7px; border-radius: 50%;
           background: ${liveGreen}; flex-shrink: 0;
           animation: lpul 1.8s ease-in-out infinite;
         }
         .live-txt {
-          color: ${textMuted}; font-family: 'Barlow', sans-serif;
+          color: rgba(255,255,255,0.5); font-family: 'Barlow', sans-serif;
           font-size: clamp(10px,1vw,11px); font-weight: 500; letter-spacing: .05em;
           white-space: nowrap; transition: color 0.3s;
         }
@@ -426,16 +416,11 @@ export function HeroSection() {
           -webkit-backdrop-filter: blur(24px);
           width: clamp(180px,18vw,240px);
           flex-shrink: 0;
-          transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
-        }
-        .match-card:hover {
-          transform: translateY(-4px) scale(1.02);
-          box-shadow: 0 16px 40px ${shadowStrong};
-          border-color: ${borderMed};
+          transition: background 0.3s, border-color 0.3s;
         }
         .mc-head { display: flex; align-items: center; gap: 6px; margin-bottom: clamp(12px,1.5vh,18px); }
         .mc-head-txt {
-          color: ${textMuted}; font-family: 'Barlow', sans-serif;
+          color: ${mcTextMuted}; font-family: 'Barlow', sans-serif;
           font-size: clamp(8px,.9vw,9px); font-weight: 800;
           letter-spacing: .2em; text-transform: uppercase;
           transition: color 0.3s;
@@ -445,48 +430,38 @@ export function HeroSection() {
           align-items: center; gap: 6px;
           margin-bottom: clamp(12px,1.5vh,18px);
         }
-        .mc-team { display: flex; flex-direction: column; align-items: center; gap: 5px; transition: transform 0.3s ease; }
-        .mc-team:hover { transform: scale(1.08); }
+        .mc-team { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .mc-flag {
           width: clamp(32px,3.5vw,44px); height: clamp(22px,2.3vw,30px);
           object-fit: cover; border-radius: 3px; display: block;
           box-shadow: 0 2px 8px ${shadow};
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .mc-team:hover .mc-flag {
-          transform: scale(1.1);
-          box-shadow: 0 6px 16px ${shadowStrong};
         }
         .mc-code {
-          color: ${textPrimary}; font-family: 'Barlow Condensed', sans-serif;
+          color: ${mcTextPrimary}; font-family: 'Barlow Condensed', sans-serif;
           font-size: clamp(11px,1.1vw,14px); font-weight: 800; letter-spacing: .08em;
           transition: color 0.3s;
         }
         .mc-vs { text-align: center; }
         .mc-vs-t {
-          display: block; color: ${textVFaint}; font-family: 'Barlow', sans-serif;
+          display: block; color: ${mcTextVFaint}; font-family: 'Barlow', sans-serif;
           font-size: clamp(10px,1vw,12px); font-weight: 600;
           transition: color 0.3s;
         }
         .mc-time {
-          display: block; color: ${textFaint}; font-family: 'Barlow', sans-serif;
+          display: block; color: ${mcTextFaint}; font-family: 'Barlow', sans-serif;
           font-size: clamp(9px,.9vw,10px); margin-top: 3px;
           transition: color 0.3s;
         }
         .mc-btn {
           display: flex; align-items: center; justify-content: center; gap: 6px;
-          background: ${accent}; color: ${accentContrast}; font-family: 'Barlow', sans-serif;
+          background: ${mcAccent}; color: ${mcAccentContrast}; font-family: 'Barlow', sans-serif;
           font-size: clamp(9px,.95vw,11px); font-weight: 800;
           letter-spacing: .12em; text-transform: uppercase;
           padding: clamp(8px,1vh,11px) 14px;
           border-radius: 100px; text-decoration: none;
-          transition: background 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+          transition: background .3s, color 0.3s;
         }
-        .mc-btn:hover { 
-          background: ${accentHover}; 
-          transform: translateY(-2px) scale(1.02);
-          box-shadow: 0 6px 16px ${shadow};
-        }
+        .mc-btn:hover { background: ${mcAccentHover}; }
 
         @media (max-width: 1024px) {
           .hero-wrap { grid-template-columns: 1fr auto; gap: 20px; }
@@ -502,9 +477,9 @@ export function HeroSection() {
           .hero-right { display: none; }
           .hero-ov-l {
             background: linear-gradient(to right,
-              rgba(${oR},.95) 0%,
-              rgba(${oR},.7)  50%,
-              rgba(${oR},.3)  100%);
+              rgba(0,0,0,0.92) 0%,
+              rgba(0,0,0,0.65) 50%,
+              rgba(0,0,0,0.25) 100%);
           }
           .hero-h1  { font-size: clamp(48px, 12vw, 100px); }
           .hero-sub { max-width: 42ch; font-size: clamp(13px, 1.5vw, 16px); }
@@ -573,10 +548,10 @@ export function HeroSection() {
 
             {/* Words — each fills its own full width */}
             <div style={{ width: "100%", overflow: "visible" }}>
-  <h1 className="hero-h1 h1-w" style={s(0.12)}>
-    LE <span className="h1-o">MONDE</span> UNI.
-  </h1>
-</div>
+              <h1 className="hero-h1 h1-w" style={s(0.12)}>
+                LE <span className="h1-o">MONDE</span> UNI.
+              </h1>
+            </div>
 
             <p className="hero-sub" style={s(0.38)}>
               11 juin – 19 juillet 2030<br />
@@ -587,14 +562,14 @@ export function HeroSection() {
             <div className="hero-cta" style={s(0.48)}>
               <a href="/tickets" className="btn-buy">
                 <span className="shimmer" />
-                <FiShoppingCart size={15} />
+                <FiShoppingCart size={20} />
                 <span className="btn-buy-txt-long">Acheter des billets</span>
                 <span className="btn-buy-txt-short" style={{ display: "none" }}>Billets</span>
-                <FiArrowRight size={13} className="arr" />
+                <FiArrowRight size={16} className="arr" />
               </a>
               <a href="/highlights" className="btn-watch">
                 <div className="btn-watch-circle">
-                  <FiPlay size={12} color={textPrimary} style={{ marginLeft: 2 }} />
+                  <FiPlay size={18} color="#ffffff" style={{ marginLeft: 3 }} />
                 </div>
                 <span className="btn-watch-label">Voir les temps forts</span>
               </a>
@@ -604,62 +579,30 @@ export function HeroSection() {
 
           {/* ── RIGHT: Match card ── */}
           <div className="hero-right" style={s(0.62)}>
-            {matchesLoading ? (
-              <div className="match-card">
-                <div className="mc-head">
-                  <span className="mc-head-txt">Prochain match</span>
+            <div className="match-card">
+              <div className="mc-head">
+                <span className="live-dot" />
+                <span className="mc-head-txt">Prochain match</span>
+              </div>
+              <div className="mc-teams">
+                <div className="mc-team">
+                  <img className="mc-flag" src="https://flagcdn.com/w80/fr.png" alt="France" />
+                  <span className="mc-code">FRA</span>
                 </div>
-                <div className="mc-teams" style={{ justifyContent: 'center', minHeight: 100 }}>
-                  <span style={{ color: textMuted, fontSize: 12 }}>Chargement...</span>
+                <div className="mc-vs">
+                  <span className="mc-vs-t">VS</span>
+                  <span className="mc-time">11 juin · 18h00</span>
+                </div>
+                <div className="mc-team">
+                  <img className="mc-flag" src="https://flagcdn.com/w80/br.png" alt="Brésil" />
+                  <span className="mc-code">BRÉ</span>
                 </div>
               </div>
-            ) : nextMatch ? (
-              <div className="match-card">
-                <div className="mc-head">
-                  <span className="live-dot" />
-                  <span className="mc-head-txt">Prochain match</span>
-                </div>
-                <div className="mc-teams">
-                  <div className="mc-team">
-                    <img 
-                      className="mc-flag" 
-                      src={getFlagUrl(nextMatch.home_flag)} 
-                      alt={nextMatch.home_team} 
-                    />
-                    <span className="mc-code">{getTeamCode(nextMatch.home_team)}</span>
-                  </div>
-                  <div className="mc-vs">
-                    <span className="mc-vs-t">VS</span>
-                    <span className="mc-time">{formatMatchDate(nextMatch.match_date, nextMatch.match_time)}</span>
-                  </div>
-                  <div className="mc-team">
-                    <img 
-                      className="mc-flag" 
-                      src={getFlagUrl(nextMatch.away_flag)} 
-                      alt={nextMatch.away_team} 
-                    />
-                    <span className="mc-code">{getTeamCode(nextMatch.away_team)}</span>
-                  </div>
-                </div>
-                <a href="/matches" className="mc-btn">
-                  <FiCalendar size={11} />
-                  <span>Voir le match</span>
-                </a>
-              </div>
-            ) : (
-              <div className="match-card">
-                <div className="mc-head">
-                  <span className="mc-head-txt">Prochain match</span>
-                </div>
-                <div className="mc-teams">
-                  <span style={{ color: textMuted, fontSize: 12 }}>Aucun match à venir</span>
-                </div>
-                <a href="/matches" className="mc-btn">
-                  <FiCalendar size={11} />
-                  <span>Voir le calendrier</span>
-                </a>
-              </div>
-            )}
+              <a href="/matches" className="mc-btn">
+                <FiCalendar size={16} />
+                <span>Voir le match</span>
+              </a>
+            </div>
           </div>
 
         </div>

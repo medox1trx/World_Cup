@@ -160,14 +160,16 @@ export default function AdminNews() {
         .btn-icon.delete:hover { background: #ef4444; color: white; border-color: #ef4444; }
 
         .modal-overlay {
-          position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-          display: flex; align-items: center; justify-content: center; z-index: 1000;
+          position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+          display: flex; align-items: center; justify-content: center; z-index: 5000;
           padding: 20px;
         }
         .modal-content {
-          background: ${bg}; width: 100%; max-width: 600px; border-radius: 32px;
-          padding: 40px; border: 1px solid ${border}; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-          max-height: 90vh; overflow-y: auto;
+          background: ${bg}; width: 100%; max-width: 850px; border-radius: 24px;
+          padding: clamp(20px, 4vw, 32px); border: 1px solid ${border}; 
+          box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          max-height: 95vh; overflow-y: auto;
+          position: relative;
         }
         .form-group { margin-bottom: 20px; }
         .form-label { 
@@ -223,18 +225,18 @@ export default function AdminNews() {
                       </div>
                     </td>
                     <td>
-                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, opacity: 0.7 }}>
-                         <FiTag size={12} /> {n.tag}
+                       <span style={{ fontSize: 13, color: textSecondary, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                         {n.tag}
                        </span>
                     </td>
                     <td>
-                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, opacity: 0.7 }}>
-                         <FiGlobe size={12} /> {n.source?.name}
+                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, opacity: 0.85 }}>
+                         <FiGlobe size={14} /> {n.source?.name}
                        </span>
                     </td>
                     <td>
-                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, opacity: 0.7 }}>
-                         <FiCalendar size={12} /> {new Date(n.publishedAt).toLocaleDateString()}
+                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, opacity: 0.85 }}>
+                         <FiCalendar size={14} /> {new Date(n.publishedAt).toLocaleDateString()}
                        </span>
                     </td>
                     <td>

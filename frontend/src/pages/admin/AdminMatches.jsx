@@ -217,13 +217,16 @@ export default function AdminMatches() {
         }
         .btn-icon:hover { background: ${accent}; color: ${accentContrast}; }
         .modal-overlay {
-          position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-          display: flex; align-items: center; justify-content: center; z-index: 1000;
+          position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+          display: flex; align-items: center; justify-content: center; z-index: 5000;
           padding: 20px;
         }
         .modal-content {
-          background: ${bg}; width: 100%; max-width: 600px; border-radius: 32px;
-          padding: 40px; border: 1px solid ${border}; max-height: 90vh; overflow-y: auto;
+          background: ${bg}; width: 100%; max-width: 850px; border-radius: 24px;
+          padding: clamp(20px, 4vw, 32px); border: 1px solid ${border}; 
+          box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          max-height: 95vh; overflow-y: auto;
+          position: relative;
         }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 20px; }

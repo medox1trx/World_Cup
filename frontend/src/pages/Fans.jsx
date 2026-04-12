@@ -210,7 +210,13 @@ export default function FanZone() {
         }
         .ac:hover { transform:translateY(-6px); border-color:rgba(255,255,255,.22); box-shadow:0 20px 48px rgba(0,0,0,.5); }
 
-        /* city row */
+        .tag-pill {
+          display: inline-flex; align-items: center; gap: 6px;
+          color: rgba(255,255,255,0.7);
+          font-family: ${B}; font-size: 11px; font-weight: 600;
+          text-transform: uppercase; letter-spacing: 0.12em;
+        }
+
         .cr {
           display:flex; align-items:center; gap:14px; padding:13px 18px;
           cursor:pointer; border-bottom:1px solid rgba(255,255,255,.06);
@@ -227,19 +233,13 @@ export default function FanZone() {
           border-bottom:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02);
         }
 
-        .tag-pill {
-          display:inline-flex; align-items:center; gap:5px;
-          font-family:'Barlow',sans-serif; font-size:9px; font-weight:800;
-          letter-spacing:.15em; text-transform:uppercase;
-          background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
-          padding:4px 10px; border-radius:2px; color:rgba(255,255,255,.8);
-        }
         .cent-badge {
-          display:inline-flex; align-items:center;
-          background:rgba(234,179,8,.12); border:1px solid rgba(234,179,8,.3);
-          color:rgb(234,179,8); font-family:'Barlow',sans-serif; font-size:8px;
-          font-weight:800; letter-spacing:.15em; text-transform:uppercase;
-          padding:3px 8px; border-radius:2px;
+          display:inline-flex; align-items:center; gap: 6px;
+          color:rgb(234,179,8); font-family:'Barlow',sans-serif; font-size:10px;
+          font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+        }
+        .cent-badge::before {
+          content: ''; width: 5px; height: 5px; border-radius: 50%; background: rgb(234,179,8);
         }
 
         /* stat row */
@@ -408,7 +408,7 @@ export default function FanZone() {
                     <img src={a.img} alt={a.title} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform .55s ease", transform:hov?"scale(1.07)":"scale(1)" }} />
                     <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(20,20,20,.95) 0%,rgba(20,20,20,.15) 55%,transparent 100%)" }} />
                     <div style={{ position:"absolute", top:14, left:14 }}>
-                      <span className="tag-pill"><Icon size={9} style={{flexShrink:0}} />{a.tag}</span>
+                      <span className="tag-pill"><Icon size={12} style={{flexShrink:0}} />{a.tag}</span>
                     </div>
                     <div style={{ position:"absolute", bottom:14, left:16, width:34, height:34, borderRadius:"50%", background:"rgba(255,255,255,.1)", border:"1px solid rgba(255,255,255,.2)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                       <Icon size={15} color="white" />

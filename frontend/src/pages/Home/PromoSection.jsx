@@ -88,7 +88,7 @@ export function PromoSection() {
         }
         .pr-card:hover::after { width: 100%; }
         .pr-icon-box {
-          width: 26px; height: 26px; border-radius: 3px; flex-shrink: 0;
+          width: 34px; height: 34px; border-radius: 4px; flex-shrink: 0;
           background: rgba(255,255,255,0.07);
           display: flex; align-items: center; justify-content: center;
           transition: background 0.2s;
@@ -133,7 +133,7 @@ export function PromoSection() {
         background: sectionBg, padding: "var(--section-pad-y) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 var(--section-pad-x)" }}>
+        <div className="layout-container">
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 22, height: 1, background: eyebrowLine, transition: "background 0.3s" }} />
@@ -148,7 +148,7 @@ export function PromoSection() {
             <a href="/tickets" className="pr-card" style={{ background: cardBg, transition: "background 0.3s" }}>
               <div style={{ position: "relative", zIndex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div className="pr-icon-box"><FiShoppingCart size={13} color="#ffffff" /></div>
+                  <div className="pr-icon-box"><FiShoppingCart size={18} color="#ffffff" /></div>
                   <span style={{
                     fontFamily: FONT.body, fontSize: 8, fontWeight: 900,
                     letterSpacing: "0.26em", textTransform: "uppercase", color: textFaint,
@@ -170,7 +170,7 @@ export function PromoSection() {
                 <div className="pr-divider" />
                 <div className="pr-footer">
                   <a href="/tickets" className="pr-cta-btn">
-                    Acheter maintenant <FiArrowRight size={11} className="arr" />
+                    Acheter maintenant <FiArrowRight size={14} className="arr" />
                   </a>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export function PromoSection() {
             <a href="/hospitality" className="pr-card" style={{ background: cardBg, transition: "background 0.3s" }}>
               <div style={{ position: "relative", zIndex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div className="pr-icon-box"><FiStar size={13} color="#ffffff" /></div>
+                  <div className="pr-icon-box"><FiStar size={18} color="#ffffff" /></div>
                   <span style={{
                     fontFamily: FONT.body, fontSize: 8, fontWeight: 900,
                     letterSpacing: "0.26em", textTransform: "uppercase", color: textFaint,
@@ -201,7 +201,7 @@ export function PromoSection() {
                 <div className="pr-divider" />
                 <div className="pr-footer">
                   <a href="/hospitality" className="pr-cta-btn">
-                    Découvrir les packages <FiArrowRight size={11} className="arr" />
+                    Découvrir les packages <FiArrowRight size={14} className="arr" />
                   </a>
                 </div>
               </div>
@@ -496,7 +496,7 @@ export function TournamentSection() {
         background: bg, padding: "clamp(28px,5vw,48px) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(12px,4vw,24px)" }}>
+        <div className="layout-container">
 
           <SectionHead
             eyebrow="Phase Éliminatoire · FIFA 2026"
@@ -605,8 +605,8 @@ export function FanZoneSection() {
   const accent = darkMode ? "#ffffff" : "#0d0d0d";
   const accentContrast = darkMode ? "#0d0d0d" : "#ffffff";
   const accentHover = darkMode ? "#e8e8e8" : "#333333";
-  const inputBorder = darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.12)";
-  const inputBorderFocus = darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.3)";
+  const inputBorder = darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)";
+  const inputBorderFocus = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)";
   const inputBg = darkMode ? "rgba(255,255,255,0.05)" : "#ffffff";
   const legalColor = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)";
   const successGreen = "#22c55e";
@@ -707,7 +707,7 @@ export function FanZoneSection() {
       `}</style>
 
       <section className="fz-root">
-        <div className="fz-inner">
+        <div className="fz-inner layout-container">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
               <FiUsers size={12} color={textFaint} />
@@ -729,7 +729,7 @@ export function FanZoneSection() {
                   className={`fz-btn ${filled ? "fz-btn-filled" : "fz-btn-secondary"}`}
                   style={{ fontFamily: FONT.body }}
                 >
-                  <Icon size={12} /> {label}
+                  <Icon size={16} /> {label}
                 </a>
               ))}
             </div>

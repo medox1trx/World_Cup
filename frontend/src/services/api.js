@@ -85,4 +85,17 @@ export const storeReservation = (data) => api.post("/reservations", data);
 export const getUserReservations = () => api.get("/reservations/user");
 export const deleteReservation = (id) => api.delete(`/reservations/${id}`);
 
+// ── Ticker ───────────────────────────────────────────────────
+export const getTicker = () => api.get("/ticker");
+export const adminGetTicker = () => api.get("/admin/ticker");
+export const createTickerItem = (data) => api.post("/admin/ticker", data);
+export const updateTickerItem = (id, data) => api.put(`/admin/ticker/${id}`, data);
+export const deleteTickerItem = (id) => api.delete(`/admin/ticker/${id}`);
+
+// ── Hospitalities ───────────────────────────────────────────
+export const getHospitalities = () => api.get("/hospitalities");
+export const createHospitality = (data) => api.post("/admin/hospitalities", data);
+export const updateHospitality = (id, data) => api.put(`/admin/hospitalities/${id}`, data);
+export const deleteHospitality = (id) => api.delete(`/admin/hospitalities/${id}`);
+
 export default api;

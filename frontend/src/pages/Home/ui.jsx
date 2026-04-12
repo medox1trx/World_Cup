@@ -144,7 +144,7 @@ export function SectionHead({ eyebrow, title, action, href }) {
             transition: "color 0.3s",
           }}>{eyebrow}</p>
           <h2 style={{
-            fontSize: "clamp(28px, 4vw, 36)", fontWeight: 900, letterSpacing: "0.04em", textTransform: "uppercase",
+            fontSize: "clamp(28px, 4vw, 36px)", fontWeight: 900, letterSpacing: "0.04em", textTransform: "uppercase",
             color: textPrimary, fontFamily: FONT.display, margin: 0, lineHeight: 1,
             transition: "color 0.3s",
           }}>{title}</h2>

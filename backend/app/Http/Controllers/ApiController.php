@@ -8,6 +8,7 @@ use App\Models\Comment;
 use App\Models\FanZone;
 use App\Models\FootballMatch;
 use App\Models\Highlight;
+use App\Models\Hospitality;
 use App\Models\Referee;
 use App\Models\Reservation;
 use App\Models\Stat;
@@ -446,8 +447,6 @@ class ApiController extends Controller
 
         return response()->json($results);
     }
-<<<<<<< Updated upstream
-=======
 
     // ── FAN ZONES (Public) ─────────────────────────────────────
     public function indexFanZones(): JsonResponse
@@ -573,5 +572,110 @@ class ApiController extends Controller
         return response()->json($grouped);
     }
 
->>>>>>> Stashed changes
+    // ── REFEREES (Public & Admin) ──────────────────────────────
+    public function indexReferees(): JsonResponse
+    {
+        return response()->json(Referee::all());
+    }
+
+    public function showReferee(Referee $referee): JsonResponse
+    {
+        return response()->json($referee);
+    }
+
+    public function storeReferee(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'first_name'         => 'required|string|max:100',
+            'last_name'          => 'required|string|max:100',
+            'nationality'        => 'required|string|max:100',
+            'nationality_code'   => 'required|string|max:10',
+            'role'               => 'required|string',
+            'age'                => 'required|integer|min:18',
+            'experience_years'   => 'required|integer|min:0',
+            'matches_officiated' => 'required|integer|min:0',
+            'photo_url'          => 'nullable|string',
+            'fifa_badge'         => 'boolean',
+            'notes'              => 'nullable|string',
+        ]);
+
+        $referee = Referee::create($validated);
+        return response()->json($referee, 201);
+    }
+
+    public function updateReferee(Request $request, Referee $referee): JsonResponse
+    {
+        $validated = $request->validate([
+            'first_name'         => 'sometimes|string|max:100',
+            'last_name'          => 'sometimes|string|max:100',
+            'nationality'        => 'sometimes|string|max:100',
+            'nationality_code'   => 'sometimes|string|max:10',
+            'role'               => 'sometimes|string',
+            'age'                => 'sometimes|integer|min:18',
+            'experience_years'   => 'sometimes|integer|min:0',
+            'matches_officiated' => 'sometimes|integer|min:0',
+            'photo_url'          => 'nullable|string',
+            'fifa_badge'         => 'boolean',
+            'notes'              => 'nullable|string',
+        ]);
+
+        $referee->update($validated);
+        return response()->json($referee);
+    }
+
+    public function destroyReferee(Referee $referee): JsonResponse
+    {
+        $referee->delete();
+        return response()->json(['message' => 'Referee deleted']);
+    }
+
+    // ── HOSPITALITIES (Public & Admin) ─────────────────────────
+    public function indexHospitalities(): JsonResponse
+    {
+        return response()->json(Hospitality::orderBy('sort_order', 'asc')->get());
+    }
+
+    public function storeHospitality(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'tier'        => 'required|string|max:100',
+            'price'       => 'required|numeric|min:0',
+            'badge'       => 'nullable|string',
+            'is_featured' => 'boolean',
+            'description' => 'required|string',
+            'perks'       => 'nullable|array',
+            'cta_text'    => 'required|string',
+            'image_url'   => 'nullable|string',
+            'sort_order'  => 'integer|min:0',
+            'is_active'   => 'boolean',
+        ]);
+
+        $hospitality = Hospitality::create($validated);
+        return response()->json($hospitality, 201);
+    }
+
+    public function updateHospitality(Request $request, Hospitality $hospitality): JsonResponse
+    {
+        $validated = $request->validate([
+            'tier'        => 'sometimes|string|max:100',
+            'price'       => 'sometimes|numeric|min:0',
+            'badge'       => 'nullable|string',
+            'is_featured' => 'boolean',
+            'description' => 'sometimes|string',
+            'perks'       => 'nullable|array',
+            'cta_text'    => 'sometimes|string',
+            'image_url'   => 'nullable|string',
+            'sort_order'  => 'integer|min:0',
+            'is_active'   => 'boolean',
+        ]);
+
+        $hospitality->update($validated);
+        return response()->json($hospitality);
+    }
+
+    public function destroyHospitality(Hospitality $hospitality): JsonResponse
+    {
+        $hospitality->delete();
+        return response()->json(['message' => 'Hospitality deleted']);
+    }
 }

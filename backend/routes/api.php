@@ -5,6 +5,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\AccommodationController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TickerController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,9 @@ Route::prefix('v1')->group(function () {
     // Stats & Standings
     Route::get('/stats',     [ApiController::class, 'stats']);
     Route::get('/standings', [ApiController::class, 'standings']);
+
+    // Ticker (public — active items only)
+    Route::get('/ticker', [TickerController::class, 'index']);
 
     // News Proxy
     Route::get('/news',  [ApiController::class, 'news']);
@@ -121,5 +125,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/news',          [ApiController::class, 'storeNews']);
         Route::put('/news/{id}',      [ApiController::class, 'updateNews']);
         Route::delete('/news/{id}',   [ApiController::class, 'destroyNews']);
+
+        // Admin Ticker Management
+        Route::get('/ticker',                   [TickerController::class, 'indexAll']);
+        Route::post('/ticker',                  [TickerController::class, 'store']);
+        Route::put('/ticker/{ticker}',          [TickerController::class, 'update']);
+        Route::delete('/ticker/{ticker}',       [TickerController::class, 'destroy']);
     });
 });

@@ -13,12 +13,9 @@ class DatabaseSeeder extends Seeder
             HighlightSeeder::class,
             WorldCupSeeder::class,
             CitiesSeeder::class,
-<<<<<<< Updated upstream
             NewsArticleSeeder::class,
-=======
             FanZoneSeeder::class,
             HospitalitySeeder::class,
->>>>>>> Stashed changes
         ]);
     }
 }

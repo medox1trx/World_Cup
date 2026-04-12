@@ -134,11 +134,17 @@ export default function AdminHighlights() {
         .img-preview { width: 80px; height: 45px; border-radius: 8px; object-fit: cover; background: #eee; }
         
         .admin-badge {
-          display: inline-block; padding: 4px 12px; border-radius: 100px;
+          display: inline-flex; align-items: center; gap: 6px;
           font-family: ${FB}; font-size: 11px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: 0.05em;
         }
-        .admin-badge.published { background: rgba(34,197,94,0.1); color: #22c55e; }
-        .admin-badge.draft { background: rgba(234,179,8,0.1); color: #eab308; }
+        .admin-badge::before {
+          content: ''; width: 6px; height: 6px; border-radius: 50%;
+        }
+        .admin-badge.published { color: #22c55e; }
+        .admin-badge.published::before { background: #22c55e; }
+        .admin-badge.draft { color: #eab308; }
+        .admin-badge.draft::before { background: #eab308; }
         
         .admin-btn-primary {
           display: inline-flex; align-items: center; gap: 8px;
@@ -160,13 +166,15 @@ export default function AdminHighlights() {
         .btn-icon.delete:hover { background: #ef4444; color: white; border-color: #ef4444; }
 
         .modal-overlay {
-          position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-          display: flex; align-items: center; justify-content: center; z-index: 1000;
+          position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+          display: flex; align-items: center; justify-content: center; z-index: 5000;
           padding: 20px;
         }
         .modal-content {
-          background: ${bg}; width: 100%; max-width: 500px; border-radius: 32px;
-          padding: 40px; border: 1px solid ${border}; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+          background: ${bg}; width: 100%; max-width: 800px; border-radius: 24px;
+          padding: clamp(24px, 4vw, 36px); border: 1px solid ${border}; 
+          box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          position: relative; max-height: 95vh; overflow-y: auto;
         }
         .form-group { margin-bottom: 20px; }
         .form-label { 
@@ -201,27 +209,33 @@ export default function AdminHighlights() {
                   <th>Titre</th>
                   <th>Catégorie</th>
                   <th>Durée</th>
+                  <th>Statut</th>
                   <th>Stats</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="6" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
+                  <tr><td colSpan="8" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
                 ) : highlights.length === 0 ? (
-                  <tr><td colSpan="6" style={{ textAlign: "center", padding: 40 }}>Aucune vidéo trouvée</td></tr>
+                  <tr><td colSpan="8" style={{ textAlign: "center", padding: 40 }}>Aucune vidéo trouvée</td></tr>
                 ) : highlights.map((h) => (
                   <tr key={h.id}>
                     <td><img src={h.image_url} className="img-preview" alt="" /></td>
                     <td style={{ fontWeight: 700 }}>{h.title}</td>
                     <td>
-                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, opacity: 0.7 }}>
-                         <FiTag size={12} /> {h.category}
+                       <span style={{ fontSize: 13, color: textSecondary, fontWeight: 500 }}>
+                         {h.category}
                        </span>
                     </td>
                     <td>
-                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, opacity: 0.7 }}>
+                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: textSecondary }}>
                          <FiClock size={12} /> {h.duration}
+                       </span>
+                    </td>
+                    <td>
+                       <span className={`admin-badge ${h.status}`}>
+                         {h.status === 'published' ? 'Publié' : 'Brouillon'}
                        </span>
                     </td>
                     <td>

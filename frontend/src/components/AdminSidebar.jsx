@@ -1,10 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-<<<<<<< Updated upstream
-import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiShield } from 'react-icons/fi';
-=======
-import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiMapPin } from 'react-icons/fi';
->>>>>>> Stashed changes
+import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiShield, FiMapPin, FiRadio, FiStar } from 'react-icons/fi';
 import { useTheme } from '../context/ThemeContext';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
@@ -45,7 +41,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           position: fixed;
           top: 0;
           left: 0;
-          width: 320px;
+          width: 280px;
           height: 100%;
           background: var(--as-bg);
           z-index: 3001;
@@ -58,7 +54,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         }
 
         .sidebar-header {
-          padding: 32px 28px;
+          padding: 24px 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -266,6 +262,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             <FiFileText />
             <span>Actualités</span>
           </Link>
+
+          <Link to="/admin/ticker" className={`sidebar-link ${isActive('/admin/ticker') ? 'active' : ''}`} onClick={onClose}>
+            <FiRadio />
+            <span>Bandeau Ticker</span>
+          </Link>
           
           <Link to="/admin/matches" className={`sidebar-link ${isActive('/admin/matches') ? 'active' : ''}`} onClick={onClose}>
             <FiCalendar />
@@ -280,6 +281,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           <Link to="/admin/tickets" className={`sidebar-link ${isActive('/admin/tickets') ? 'active' : ''}`} onClick={onClose}>
             <FiFileText />
             <span>Billetterie & Ventes</span>
+          </Link>
+
+          <Link to="/admin/hospitality" className={`sidebar-link ${isActive('/admin/hospitality') ? 'active' : ''}`} onClick={onClose}>
+            <FiStar />
+            <span>Hospitalité</span>
           </Link>
           
           <Link to="/admin/fanzones" className={`sidebar-link ${isActive('/admin/fanzones') ? 'active' : ''}`} onClick={onClose}>

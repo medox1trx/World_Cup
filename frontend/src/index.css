@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,75 +9,295 @@
 }
 
 :root {
-  --container-max: 1440px;
-  --section-pad-y: 48px;
-  --section-pad-x: 24px;
-  --header-height: 64px;
+  --container-max: 1400px;
+  --container-narrow: 1100px;
+  --section-pad-y: 80px; 
+  --section-pad-x: 32px; 
+  --header-height: 102px; 
+  --main-bg: #ffffff;
+  --text-main: #0a0a0a;
+  --card-radius: 12px;
+  --button-radius: 8px;
+
+  /* ── Global Icon Size Scale ─────────────────────────────────
+   * xs  : tiny inline labels / badges            12px
+   * sm  : inline text icons, meta info           14px
+   * md  : default UI icons (buttons, inputs)     16px
+   * lg  : standalone icon buttons, nav chevrons  18px
+   * xl  : feature icons (cards, sections)        20px
+   * 2xl : hero / display icons                   24px
+   * ─────────────────────────────────────────────────────── */
+  --icon-xs:  12px;
+  --icon-sm:  14px;
+  --icon-md:  16px;
+  --icon-lg:  18px;
+  --icon-xl:  20px;
+  --icon-2xl: 24px;
+}
+
+/* Dark mode overrides */
+.dark-mode {
+  --main-bg: #0d0d0d;
+  --text-main: #f5f5f5;
 }
 
 html { 
   scroll-behavior: smooth; 
-  font-size: 100%;
+  font-size: 16px; /* Restored to standard for better icon/text balance */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   padding: 0;
   font-family: 'DM Sans', sans-serif;
-  background: #ffffff;
-  color: #0a0a0a;
+  background: var(--main-bg);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
-  line-height: 1.5;
+  line-height: 1.4; /* Tighter line height */
   overflow-x: hidden;
   max-width: 100vw;
 }
 
 #root {
   width: 100%;
-  max-width: 100%;
+}
+
+/* Global Content Wrapper */
+.layout-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--section-pad-x);
+  padding-right: var(--section-pad-x);
+  max-width: var(--container-max);
+  box-sizing: border-box;
+}
+
+/* Fix for square screens (unusual aspect ratios) */
+@media (min-aspect-ratio: 1/1) and (max-aspect-ratio: 1.2/1) {
+  :root {
+    --container-max: 900px;
+    --section-pad-y: 20px;
+  }
+  html { font-size: 13.5px; }
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  :root {
+    --section-pad-y: 20px;
+    --section-pad-x: 16px;
+  }
+  html { font-size: 14px; }
+}
+
+/* Compact Utilities */
+.section-under-header {
+  padding-top: var(--header-height);
+}
+
+/* Transitions for fluid feel */
+* {
+  transition: padding 0.2s ease, margin 0.2s ease, max-width 0.2s ease, font-size 0.2s ease;
 }
 
 main {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  background: var(--main-bg);
+  min-height: calc(100vh - var(--header-height));
 }
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.1;
+  font-weight: 700;
 }
 
-p {
-  margin: 0 0 1rem 0;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-img {
+p, span, div {
   max-width: 100%;
-  height: auto;
-  display: block;
+}
+
+/* Normalize Common Elements to be more "Compact" */
+input, select, textarea {
+  height: 38px; /* Standardize height */
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: var(--button-radius);
+}
+
+.card, [class*="card"] {
+  border-radius: var(--card-radius);
+  padding: 16px; /* Reduced from 20px */
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
+  background: #ccc;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
 }
 
 /* Selection */
 ::selection {
-  background: #000;
+  background: #ef4444;
   color: #fff;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GLOBAL ICON SYSTEM
+   Ensures all SVG icons (react-icons, lucide-react) are:
+   - Consistently sized by context
+   - Vertically centered with adjacent text
+   - Never too small to see or too large to dominate
+   ══════════════════════════════════════════════════════════════ */
+
+/* Base rule: all SVGs are flex items, properly aligned */
+svg {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  flex-shrink: 0;
+  /* Smooth scaling on responsive breakpoints */
+  transition: width 0.2s ease, height 0.2s ease;
+}
+
+/* ── Enforce MINIMUM icon sizes globally ──────────────────── */
+/* Prevents any icon from being rendered smaller than 12px */
+svg[width],
+svg[height] {
+  min-width: var(--icon-xs);
+  min-height: var(--icon-xs);
+}
+
+/* ── CONTEXT-BASED SIZE ENFORCEMENT ──────────────────────── */
+
+/* Inline text icons (meta info, labels, chips) */
+.icon-xs svg,
+.icon-xs { width: var(--icon-xs) !important; height: var(--icon-xs) !important; }
+
+.icon-sm svg,
+.icon-sm { width: var(--icon-sm) !important; height: var(--icon-sm) !important; }
+
+/* Standard UI icons (buttons, inputs, navigation) */
+.icon-md svg,
+.icon-md { width: var(--icon-md) !important; height: var(--icon-md) !important; }
+
+/* Standalone circular/square icon buttons */
+.icon-lg svg,
+.icon-lg { width: var(--icon-lg) !important; height: var(--icon-lg) !important; }
+
+/* Card / section feature icons */
+.icon-xl svg,
+.icon-xl { width: var(--icon-xl) !important; height: var(--icon-xl) !important; }
+
+/* Hero / display icons */
+.icon-2xl svg,
+.icon-2xl { width: var(--icon-2xl) !important; height: var(--icon-2xl) !important; }
+
+/* ── BUTTON ICON ALIGNMENT ────────────────────────────────── */
+/* Buttons containing icons: ensure flex + gap + alignment */
+button svg,
+a svg {
+  vertical-align: middle;
+  pointer-events: none;
+}
+
+/* ── INPUT ICON ALIGNMENT ─────────────────────────────────── */
+/* Icons inside input wrappers stay vertically centered */
+.input-icon-wrap {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.input-icon-wrap svg {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+/* ── SIDEBAR / NAV ICONS ──────────────────────────────────── */
+/* Admin sidebar and navigation icons: enforce xl size */
+.sidebar-link svg,
+.sidebar-link > svg {
+  width: var(--icon-xl) !important;
+  height: var(--icon-xl) !important;
+  flex-shrink: 0;
+}
+
+/* ── HEADER ICONS ─────────────────────────────────────────── */
+/* Header button icons: enforce lg size for circular buttons */
+.hdr-btn svg,
+.hdr-theme-btn svg {
+  width: var(--icon-lg) !important;
+  height: var(--icon-lg) !important;
+}
+
+/* Header lang/season button icons */
+.hdr-lang-btn svg,
+.hdr-season-btn svg {
+  width: var(--icon-sm) !important;
+  height: var(--icon-sm) !important;
+}
+
+/* Mobile header footer buttons */
+.hdr-mfooter .hdr-btn svg {
+  width: var(--icon-lg) !important;
+  height: var(--icon-lg) !important;
+}
+
+/* ── RESPONSIVE ICON SCALING ──────────────────────────────── */
+
+/* Square screens: prevent icon shrinkage below icon-sm */
+@media (min-aspect-ratio: 1/1) and (max-aspect-ratio: 1.2/1) {
+  :root {
+    --icon-xs:  12px;
+    --icon-sm:  13px;
+    --icon-md:  15px;
+    --icon-lg:  17px;
+    --icon-xl:  19px;
+    --icon-2xl: 22px;
+  }
+}
+
+/* Mobile: slight reduction but always visible */
+@media (max-width: 640px) {
+  :root {
+    --icon-xs:  12px;
+    --icon-sm:  14px;
+    --icon-md:  15px;
+    --icon-lg:  17px;
+    --icon-xl:  19px;
+    --icon-2xl: 22px;
+  }
+}
+
+/* Very small screens: hard floor */
+@media (max-width: 380px) {
+  :root {
+    --icon-xs:  11px;
+    --icon-sm:  13px;
+    --icon-md:  14px;
+    --icon-lg:  16px;
+    --icon-xl:  18px;
+    --icon-2xl: 20px;
+  }
 }

@@ -17,31 +17,31 @@ const NAV = [
   {
     label: "Compétition",
     children: [
-      { label: "Résultats & Calendrier", href: "/matches"       },
-      { label: "Classements",            href: "/standings"      },
-      { label: "Équipes",                href: "/teams"          },
-      { label: "Qualifications",         href: "/qualifications" },
+      { label: "Résultats & Calendrier", href: "/matches" },
+      { label: "Classements", href: "/standings" },
+      { label: "Équipes", href: "/teams" },
+      { label: "Qualifications", href: "/qualifications" },
     ],
   },
   {
     label: "Médias",
     badge: "NEW",
     children: [
-      { label: "Temps Forts",  href: "/highlights", badge: "NEW"  },
-      { label: "Actualités",   href: "/news",        badge: "LIVE" },
+      { label: "Temps Forts", href: "/highlights", badge: "NEW" },
+      { label: "Actualités", href: "/news", badge: "LIVE" },
     ],
   },
   {
     label: "Découvrir",
     children: [
       { label: "Villes Hôtes", href: "/cities" },
-      { label: "Fan Zone",     href: "/fans"   },
+      { label: "Fan Zone", href: "/fans" },
     ],
   },
   {
     label: "Billetterie",
     children: [
-      { label: "Billets",     href: "/tickets"     },
+      { label: "Billets", href: "/tickets" },
       { label: "Hospitalité", href: "/hospitality" },
     ],
   },
@@ -52,15 +52,15 @@ const LANGS = ["FR", "EN", "ES", "AR", "PT", "DE"];
 export default function Header({ onOpenAdminSidebar }) {
 
   const { t, i18n } = useTranslation();
-  const [menuOpen,   setMenuOpen]   = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [langOpen,   setLangOpen]   = useState(false);
-  const [openDrop,   setOpenDrop]   = useState(null);
+  const [langOpen, setLangOpen] = useState(false);
+  const [openDrop, setOpenDrop] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(null);
-  const [query,      setQuery]      = useState("");
-  const [lang,       setLang]       = useState((i18n.language || "en").toUpperCase());
-  const [scrolled,   setScrolled]   = useState(false);
-  const [userOpen,   setUserOpen]   = useState(false);
+  const [query, setQuery] = useState("");
+  const [lang, setLang] = useState((i18n.language || "en").toUpperCase());
+  const [scrolled, setScrolled] = useState(false);
+  const [userOpen, setUserOpen] = useState(false);
   const [seasonOpen, setSeasonOpen] = useState(false);
 
   const { darkMode, toggleTheme } = useTheme();
@@ -68,12 +68,12 @@ export default function Header({ onOpenAdminSidebar }) {
   const { season, selectSeason, clearSeason, seasons } = useSeason();
   const navigate = useNavigate();
 
-  const searchRef  = useRef(null);
-  const langRef    = useRef(null);
-  const navRef     = useRef(null);
-  const userRef    = useRef(null);
-  const seasonRef  = useRef(null);
-  const location   = useLocation();
+  const searchRef = useRef(null);
+  const langRef = useRef(null);
+  const navRef = useRef(null);
+  const userRef = useRef(null);
+  const seasonRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
     setMenuOpen(false); setSearchOpen(false);
@@ -156,7 +156,7 @@ export default function Header({ onOpenAdminSidebar }) {
         .hdr.scrolled { box-shadow: 0 4px 40px rgba(0,0,0,0.65); }
 
         .hdr-bar {
-          max-width: 1440px; margin: 0 auto; padding: 0 20px;
+          max-width: 1440px; margin: 0 auto; padding: 0 40px;
           display: flex; align-items: center;
           height: var(--hh); gap: 0;
           position: relative;
@@ -238,14 +238,15 @@ export default function Header({ onOpenAdminSidebar }) {
 
         .hdr-badge {
           display: inline-flex; align-items: center;
-          background: white; color: #0d0d0d;
-          font-family: var(--hfont); font-size: 7px; font-weight: 900;
-          letter-spacing: 0.05em; padding: 1px 4px; border-radius: 2px;
-          margin-left: 2px; line-height: 1.2; flex-shrink: 0;
+          color: #ef4444;
+          font-family: var(--hfont); font-size: 8px; font-weight: 700;
+          letter-spacing: 0.1em; margin-left: 6px; 
+          line-height: 1; flex-shrink: 0;
+          text-transform: uppercase;
         }
         .hdr-badge.admin-badge {
-          background: #ef4444; color: white;
-          font-size: 6px;
+          color: #ef4444;
+          font-size: 7px;
         }
 
         .hdr-drop {
@@ -673,12 +674,12 @@ export default function Header({ onOpenAdminSidebar }) {
 
           <nav className="hdr-nav" ref={navRef} aria-label="Navigation principale">
             {NAV.map((item) => {
-              const isOpen   = openDrop === item.label;
-              const gActive  = groupActive(item);
-              const linkCls  = [
+              const isOpen = openDrop === item.label;
+              const gActive = groupActive(item);
+              const linkCls = [
                 "hdr-link",
-                gActive  ? "grp"       : "",
-                isOpen   ? "drop-open" : "",
+                gActive ? "grp" : "",
+                isOpen ? "drop-open" : "",
               ].filter(Boolean).join(" ");
 
               return (
@@ -690,7 +691,7 @@ export default function Header({ onOpenAdminSidebar }) {
                     aria-expanded={isOpen} aria-haspopup="true">
                     {item.label}
                     {item.badge && <span className="hdr-badge">{item.badge}</span>}
-                    <FiChevronDown size={10} className="hdr-chev" />
+                    <FiChevronDown size={12} className="hdr-chev" />
                   </button>
                   <div className={`hdr-drop${isOpen ? " open" : ""}`} role="menu">
                     {item.children.map(child => (
@@ -708,7 +709,7 @@ export default function Header({ onOpenAdminSidebar }) {
             {/* Admin space link — opens sidebar */}
             {isAdmin && (
               <div className="hdr-item">
-                <button 
+                <button
                   className={`hdr-link admin-link${location.pathname.startsWith('/admin') ? " act" : ""}`}
                   onClick={onOpenAdminSidebar}
                 >
@@ -741,18 +742,18 @@ export default function Header({ onOpenAdminSidebar }) {
             <div className="hdr-lang-wrap" ref={langRef}>
               <button className={`hdr-lang-btn${langOpen ? " open" : ""}`}
                 onClick={() => setLangOpen(o => !o)} aria-label="Langue">
-                <FiGlobe size={12} />
+                <FiGlobe size={14} />
                 {lang}
-                <FiChevronDown size={10} className="lchev" />
+                <FiChevronDown size={12} className="lchev" />
               </button>
               <div className={`hdr-lang-drop${langOpen ? " open" : ""}`}>
                 {LANGS.map(l => (
                   <button key={l}
                     className={`hdr-lang-opt${lang === l ? " sel" : ""}`}
-                    onClick={() => { 
-                      setLang(l); 
+                    onClick={() => {
+                      setLang(l);
                       i18n.changeLanguage(l.toLowerCase());
-                      setLangOpen(false); 
+                      setLangOpen(false);
                     }}>
                     {l}
                   </button>
@@ -764,9 +765,9 @@ export default function Header({ onOpenAdminSidebar }) {
             <div className="hdr-season-wrap" ref={seasonRef}>
               <button className={`hdr-season-btn${seasonOpen ? " open" : ""}${season ? " active-season" : ""}`}
                 onClick={() => setSeasonOpen(o => !o)} aria-label="Saison">
-                <FiCalendar size={12} />
+                <FiCalendar size={14} />
                 {season ? season.id : "Saison"}
-                <FiChevronDown size={10} className="schev" />
+                <FiChevronDown size={12} className="schev" />
               </button>
               <div className={`hdr-season-drop${seasonOpen ? " open" : ""}`}>
                 {seasons.map(s => (
@@ -780,7 +781,7 @@ export default function Header({ onOpenAdminSidebar }) {
                 {season && (
                   <button className="hdr-season-clear"
                     onClick={() => { clearSeason(); setSeasonOpen(false); }}>
-                    <X size={10} /> {t('reset') || "Réinitialiser"}
+                    <X size={12} /> {t('reset') || "Réinitialiser"}
                   </button>
                 )}
               </div>
@@ -843,7 +844,7 @@ export default function Header({ onOpenAdminSidebar }) {
             {query && (
               <button onClick={() => setQuery("")}
                 style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.3)", padding: 4 }}>
-                <FiX size={13} />
+                <FiX size={15} />
               </button>
             )}
           </div>
@@ -851,7 +852,7 @@ export default function Header({ onOpenAdminSidebar }) {
 
         <nav className={`hdr-mob${menuOpen ? " open" : " closed"}`} aria-hidden={!menuOpen}>
           {NAV.map((item) => {
-            const isOpen  = mobileOpen === item.label;
+            const isOpen = mobileOpen === item.label;
             const gActive = groupActive(item);
             return (
               <div key={item.label}>
@@ -863,7 +864,7 @@ export default function Header({ onOpenAdminSidebar }) {
                     {item.badge && <span className="hdr-badge" style={{ display: "inline-flex" }}>{item.badge}</span>}
                   </span>
                   <div className="hdr-macc-r">
-                    <FiChevronDown size={14} className="hdr-mchev" />
+                    <FiChevronDown size={16} className="hdr-mchev" />
                   </div>
                 </button>
                 <div className={`hdr-msub${isOpen ? " open" : " closed"}`}>
@@ -930,8 +931,8 @@ export default function Header({ onOpenAdminSidebar }) {
 
           {/* Admin mobile links */}
           {isAdmin && (
-            <button 
-              className="hdr-msub-link" 
+            <button
+              className="hdr-msub-link"
               style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800, background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
               onClick={() => { setMenuOpen(false); onOpenAdminSidebar(); }}
             >

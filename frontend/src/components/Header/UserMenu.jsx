@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 
 const menuItems = [
-  { label: "Sign In",    href: "/login"    },
-  { label: "Register",  href: "/register" },
-  { label: "My Profile",href: "/profile"  },
+  { label: "Sign In", href: "/login" },
+  { label: "Register", href: "/register" },
+  { label: "My Profile", href: "/profile" },
 ];
 
 export default function UserMenu() {
   const [open, setOpen] = useState(false);
-  const ref  = useRef(null);
+  const ref = useRef(null);
 
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };

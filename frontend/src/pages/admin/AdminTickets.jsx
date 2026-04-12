@@ -154,13 +154,15 @@ export default function AdminTickets() {
         }
         .btn-icon:hover { background: ${accent}; color: ${accentContrast}; }
         .modal-overlay {
-          position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-          display: flex; align-items: center; justify-content: center; z-index: 1000;
+          position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+          display: flex; align-items: center; justify-content: center; z-index: 5000;
           padding: 20px;
         }
         .modal-content {
-          background: ${bg}; width: 100%; max-width: 500px; border-radius: 32px;
-          padding: 40px; border: 1px solid ${border};
+          background: ${bg}; width: 100%; max-width: 800px; border-radius: 24px;
+          padding: clamp(24px, 4vw, 36px); border: 1px solid ${border};
+          box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          position: relative; max-height: 95vh; overflow-y: auto;
         }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }

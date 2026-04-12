@@ -200,16 +200,17 @@ export default function AdminReferees() {
         .ar-btn-sm:hover { border-color: ${accent}; color: ${accent}; }
         .ar-btn-sm.danger:hover { border-color: #ef4444; color: #ef4444; }
         .ar-modal-overlay {
-          position: fixed; inset: 0; z-index: 9999;
-          background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+          position: fixed; inset: 0; z-index: 10000;
+          background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
           display: flex; align-items: center; justify-content: center;
           padding: 20px;
         }
         .ar-modal {
           background: ${card}; border: 1px solid ${border};
-          border-radius: 20px; width: 100%; max-width: 640px;
-          max-height: 90vh; overflow-y: auto;
-          box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+          border-radius: 20px; width: 100%; max-width: 850px;
+          max-height: 95vh; overflow-y: auto;
+          box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+          position: relative;
         }
         .ar-modal-head {
           display: flex; justify-content: space-between; align-items: center;

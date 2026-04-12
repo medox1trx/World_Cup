@@ -53,12 +53,12 @@ function LiveBadge({ minute }) {
       padding: "4px 10px", background: "#111111", borderRadius: 20,
     }}>
       <span style={{
-        width: 6, height: 6, borderRadius: "50%",
+        width: 8, height: 8, borderRadius: "50%",
         background: "#22c55e", flexShrink: 0,
         animation: "mpulse 1.4s ease-in-out infinite",
       }} />
       <span style={{
-        color: "#22c55e", fontSize: 8, fontWeight: 900,
+        color: "#22c55e", fontSize: 10, fontWeight: 900,
         letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: FONT.body,
       }}>
         Live {minute ? `· ${minute}'` : ""}
@@ -133,10 +133,10 @@ function FeaturedMatch({ match }) {
         </div>
         {!isLive && (
           <span style={{
-            display: "flex", alignItems: "center", gap: 4,
-            fontSize: 9, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
+            display: "flex", alignItems: "center", gap: 6,
+            fontSize: 11, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
           }}>
-            <FiCalendar size={9} /> {formatMatchDate(match.match_date)}
+            <FiCalendar size={13} /> {formatMatchDate(match.match_date)}
           </span>
         )}
       </div>
@@ -235,9 +235,9 @@ function FeaturedMatch({ match }) {
           display: "flex", alignItems: "center", justifyContent: "center",
           gap: 5, transition: "border-color 0.3s",
         }}>
-          <FiMapPin size={10} color={textSecondary} />
+          <FiMapPin size={13} color={textSecondary} />
           <span style={{
-            fontSize: 11, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
+            fontSize: 12, color: textSecondary, fontFamily: FONT.body, fontWeight: 600,
           }}>{match.venue}, {match.city}</span>
         </div>
       </div>
@@ -286,17 +286,17 @@ function MatchRow({ m }) {
     }} {...hoverProps}>
 
       {/* Date / Live pill */}
-      <div style={{ width: 42, flexShrink: 0 }}>
+      <div style={{ width: 50, flexShrink: 0 }}>
         {isLive
           ? <span style={{
-            display: "flex", alignItems: "center", gap: 3,
-            fontSize: 8, fontWeight: 900, color: "#16a34a",
+            display: "flex", alignItems: "center", gap: 4,
+            fontSize: 10, fontWeight: 900, color: "#16a34a",
             textTransform: "uppercase", fontFamily: FONT.body, letterSpacing: "0.1em",
           }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: liveGreen, flexShrink: 0, animation: "mpulse 1.4s ease-in-out infinite" }} />
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: liveGreen, flexShrink: 0, animation: "mpulse 1.4s ease-in-out infinite" }} />
             Live
           </span>
-          : <span style={{ fontSize: 10, color: textMuted, fontFamily: FONT.body, fontWeight: 600, lineHeight: 1.2 }}>
+          : <span style={{ fontSize: 11, color: textMuted, fontFamily: FONT.body, fontWeight: 600, lineHeight: 1.2 }}>
             {formatShort(m.match_date)}
           </span>
         }
@@ -579,7 +579,7 @@ export function MatchesSection({ matchFilter, setMatchFilter }) {
         background: surface, padding: "clamp(28px,5vw,48px) 0",
         transition: "background 0.3s",
       }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(12px,4vw,24px)" }}>
+        <div className="layout-container">
 
           <SectionHead eyebrow="Calendrier" title="Matchs" action="Tous les matchs" href="/matches" />
 

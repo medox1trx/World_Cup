@@ -254,23 +254,26 @@ export default function AdminFanZones() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0,0,0,0.75);
+          background: rgba(0,0,0,0.85);
+          backdrop-filter: blur(12px);
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: center;
           z-index: 10000;
-          padding: 40px 20px;
+          padding: 20px;
           overflow-y: auto;
           overflow-x: hidden;
         }
         .fz-modal-content {
           background: ${card};
-          border-radius: 16px;
+          border-radius: 20px;
           width: 100%;
-          max-width: 600px;
+          max-width: 800px;
           border: 1px solid ${border};
-          margin: 0 auto;
-          flex-shrink: 0;
+          box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          position: relative;
+          max-height: 95vh;
+          overflow-y: auto;
         }
         .fz-modal-header {
           padding: 20px 24px;

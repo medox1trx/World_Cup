@@ -101,7 +101,7 @@ export default function Matches() {
         {/* FILTERS */}
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20, overflowX: "auto", paddingBottom: 6, scrollbarWidth: "none" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 10px", background: "#f8f8f8", borderRadius: 100, border: "1px solid #eee", fontSize: 8, fontWeight: 800, color: "#999", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-            <FiFilter size={9} /> FILTRER
+            <FiFilter size={14} /> FILTRER
           </div>
           <div style={{ display: "flex", gap: 4 }}>
             {groups.map(g => (
