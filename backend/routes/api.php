@@ -115,5 +115,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/hospitalities',        [ApiController::class, 'storeHospitality']);
         Route::put('/hospitalities/{hospitality}', [ApiController::class, 'updateHospitality']);
         Route::delete('/hospitalities/{hospitality}', [ApiController::class, 'destroyHospitality']);
+        
+        // Admin News Management
+        Route::post('/news',          [ApiController::class, 'storeNews']);
+        Route::put('/news/{id}',      [ApiController::class, 'updateNews']);
+        Route::delete('/news/{id}',   [ApiController::class, 'destroyNews']);
     });
 });

@@ -1,63 +1,51 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Search, Calendar, Clock, ArrowRight, Newspaper, TrendingUp, ChevronRight, Share2 } from "lucide-react";
-import { FONT, C, NEWS_FEATURED, NEWS_SIDE, NEWS_MORE } from "./Home/constants";
+import { FiSearch, FiCalendar, FiArrowRight, FiActivity } from "react-icons/fi";
+import { NEWS_SIDE, NEWS_MORE, NEWS_FEATURED } from "./Home/constants";
 import { useTheme } from "../context/ThemeContext";
 
 const API_BASE_URL = "http://localhost:8000/api/v1";
+const FONT_D = "'Barlow Condensed', sans-serif";
+const FONT_B = "'Barlow', sans-serif";
 
 export default function News() {
   const { darkMode } = useTheme();
+  
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("FIFA World Cup");
+  const [filter, setFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
-  // Theme-aware palette
-  const theme = {
-    bg: darkMode ? "#080808" : "#fdfdfd",
-    cardBg: darkMode ? "#121212" : "#ffffff",
-    text: darkMode ? "#ffffff" : C.black,
-    subText: darkMode ? "#a0a0a0" : "#555",
-    border: darkMode ? "rgba(255,255,255,0.08)" : "#f0f0f0",
-    tabBg: darkMode ? "#121212" : "#ffffff",
-    shadow: darkMode ? "0 20px 40px rgba(0,0,0,0.4)" : "0 20px 40px rgba(0,0,0,0.08)",
-  };
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 40); return () => clearTimeout(t); }, []);
 
   const categories = [
-    { label: "Top Stories", query: "FIFA World Cup" },
-    { label: "Morocco 2030", query: "World Cup Morocco" },
-    { label: "Spain 2030", query: "World Cup Spain" },
-    { label: "Portugal 2030", query: "World Cup Portugal" },
-    { label: "Football News", query: "Football Soccer" },
+    { label: "À la Une", query: "" },
+    { label: "Stades & Infrastructures", query: "Stades" },
+    { label: "Billetterie", query: "Billets" },
+    { label: "Tirage au Sort", query: "Tirage" },
+    { label: "Technologies", query: "Technologie" },
+    { label: "Développement Durable", query: "Durabilité" },
   ];
 
-  /* ... rest of the code logic remains same ... */
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get(`${API_BASE_URL}/news`, {
-          params: {
-            q: filter,
-            language: "en",
-            pageSize: 12,
-          }
+          params: { q: filter, language: "en", pageSize: 12 }
         });
         
         const articles = response.data.articles || [];
-        const filtered = articles.filter(a => a.title !== "[Removed]" && a.urlToImage);
+        const filtered = articles.filter(a => a.title && (a.urlToImage || a.img));
         
-        if (filtered.length === 0) {
-          setNews([...NEWS_SIDE, ...NEWS_MORE, NEWS_FEATURED]); 
-        } else {
-          setNews(filtered);
-        }
+        if (filtered.length === 0) setNews([...NEWS_SIDE, ...NEWS_MORE, NEWS_FEATURED]); 
+        else setNews(filtered);
       } catch (err) {
         console.error("News API Error:", err);
-        setError("Failed to fetch fresh news. Showing editor's picks.");
+        setError("Impossible de charger les actualités fraîches. Affichage de la sélection.");
         setNews([...NEWS_SIDE, ...NEWS_MORE, NEWS_FEATURED]);
       } finally {
         setLoading(false);
@@ -68,444 +56,165 @@ export default function News() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchTerm.trim()) {
-      setFilter(searchTerm);
-    }
+    if (searchTerm.trim()) setFilter(searchTerm);
   };
 
   const formatDate = (dateStr) => {
     try {
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(dateStr).toLocaleDateString('fr-FR', options);
+      return new Date(dateStr).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: 'numeric' });
     } catch {
       return dateStr;
     }
   };
 
+  const tBg = darkMode ? "#0d0d0d" : "#fdfdfd";
+  const tText = darkMode ? "white" : "#0d0d0d";
+  const tCardBg = darkMode ? "#111111" : "#ffffff";
+  const tBorder = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const tBorderHov = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";
+  const tSubText = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)";
+  const tStroke = darkMode ? "1.5px rgba(255,255,255,0.6)" : "1.5px rgba(0,0,0,0.2)";
+  const tGradTop = darkMode ? "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0) 100%)" : "linear-gradient(to top, #fdfdfd 0%, rgba(253,253,253,0) 100%)";
+  const tInputBg = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)";
+  const tDot = darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.05)";
+  const tCardGrad = darkMode ? "linear-gradient(to top, rgba(17,17,17,0.95) 0%, transparent 60%)" : "linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 60%)";
+  const tBtnBg = darkMode ? "white" : "#0d0d0d";
+  const tBtnText = darkMode ? "#0d0d0d" : "white";
+
   return (
-    <div style={{ 
-      fontFamily: FONT.body, 
-      background: theme.bg, 
-      color: theme.text, 
-      minHeight: "100vh", 
-      paddingBottom: 120,
-      transition: "background 0.3s, color 0.3s"
-    }}>
-      {/* HEADER SECTION */}
-      <div style={{ 
-        background: `linear-gradient(135deg, ${C.black} 0%, #1a1a1a 100%)`, 
-        color: "white",
-        padding: "80px 32px 120px",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        {/* Subtle background decoration */}
-        <div style={{ 
-          position: "absolute", 
-          top: "-50%", 
-          right: "-10%", 
-          width: "500px", 
-          height: "500px", 
-          background: `radial-gradient(circle, ${C.red}33 0%, transparent 70%)`,
-          filter: "blur(60px)",
-          borderRadius: "50%"
-        }} />
+    <div style={{ fontFamily: FONT_B, background: tBg, color: tText, opacity: mounted ? 1 : 0, transition: "background-color 0.4s, color 0.4s, opacity 0.4s", minHeight: "100vh" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        .hw { max-width: 1380px; margin: 0 auto; padding: 0 clamp(16px,3vw,48px); }
+        .pkg { border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.22s ease, box-shadow 0.22s ease; background: ${tCardBg}; border: 1px solid ${tBorder}; }
+        .pkg:hover { transform:translateY(-5px); border-color: ${tBorderHov}; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .btn-shim { position:relative; overflow:hidden; }
+        .btn-shim .sh { position:absolute; top:0; left:-80%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent); pointer-events:none; }
+        .btn-shim:hover .sh { animation:shim 0.5s ease forwards; }
+        @keyframes shim { from{left:-80%;} to{left:130%;} }
+        /* Grid */
+        .g-news { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+        @media(max-width: 768px) { .g-news { grid-template-columns: 1fr; } }
+      `}</style>
 
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto" }}>
-          <span style={{ 
-            color: C.red, 
-            fontWeight: 800, 
-            letterSpacing: "0.3em", 
-            textTransform: "uppercase", 
-            fontSize: 14, 
-            display: "block", 
-            marginBottom: 20 
-          }}>
-            Le Hub Actu Officiel de 2030
-          </span>
-          <h1 style={{ 
-            fontFamily: FONT.display, 
-            fontSize: "clamp(3.5rem, 10vw, 7rem)", 
-            fontWeight: 900, 
-            textTransform: "uppercase", 
-            lineHeight: 0.85, 
-            margin: "0 0 40px" 
-          }}>
-            Actualités <span style={{ color: "transparent", WebkitTextStroke: "1px white" }}>Mondiales</span>
-          </h1>
+      {/* HERO SECTION */}
+      <section style={{ position: "relative", minHeight: "50vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(${tDot} 1px,transparent 1px)`, backgroundSize: "32px 32px", zIndex: 1 }} />
+        <div style={{ position: "absolute", inset: 0, background: tGradTop, zIndex: 1 }} />
+        
+        <div className="hw" style={{ position: "relative", zIndex: 2, width: "100%", padding: "clamp(120px,15vh,180px) clamp(16px,3vw,48px) 48px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 26 }}>
+            <div style={{ height: 1, width: 36, background: tBorderHov, flexShrink: 0 }} />
+            <span style={{ color: tSubText, fontFamily: FONT_B, fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>Le Hub Officiel</span>
+          </div>
+          
+          <div style={{ marginBottom: 40 }}>
+            <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px,8vw,110px)", fontWeight: 900, lineHeight: 0.85, textTransform: "uppercase", letterSpacing: "-0.02em", margin: 0 }}>
+              ACTUALITÉS <span style={{ color: "transparent", WebkitTextStroke: tStroke }}>MONDIALES</span>
+            </h1>
+          </div>
 
-          {/* SEARCH BOX */}
-          <form onSubmit={handleSearch} style={{ 
-            maxWidth: 600, 
-            margin: "0 auto", 
-            display: "flex", 
-            background: "rgba(255,255,255,0.1)", 
-            backdropFilter: "blur(10px)",
-            borderRadius: 16,
-            padding: 8,
-            border: "1px solid rgba(255,255,255,0.1)"
-          }}>
-            <input 
-              type="text" 
-              placeholder="Chercher un sujet ou une équipe..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                background: "transparent",
-                border: "none",
-                outline: "none",
-                color: "white",
-                padding: "12px 20px",
-                flex: 1,
-                fontSize: 16,
-                fontWeight: 500
-              }}
-            />
-            <button type="submit" style={{
-              background: C.red,
-              color: "white",
-              border: "none",
-              borderRadius: 12,
-              padding: "12px 24px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              fontWeight: 700,
-              transition: "transform 0.2s"
-            }}>
-              <Search size={18} />
-              <span className="hide-mobile">Chercher</span>
-            </button>
-          </form>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
+            <form onSubmit={handleSearch} style={{ display: "flex", background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
+              <input type="text" placeholder="Chercher un sujet..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                style={{ background: "transparent", border: "none", outline: "none", color: tText, padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
+              <button type="submit" style={{ background: tBtnBg, color: tBtnText, border: "none", padding: "0 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <FiSearch size={16} />
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* FILTER TABS */}
-      <div style={{ 
-        maxWidth: 1300, 
-        margin: "-40px auto 60px", 
-        padding: "0 32px",
-        position: "relative",
-        zIndex: 10
-      }}>
-        <div style={{ 
-          display: "flex", 
-          gap: 12, 
-          padding: 12, 
-          background: theme.tabBg, 
-          borderRadius: 20, 
-          boxShadow: theme.shadow,
-          overflowX: "auto",
-          scrollbarWidth: "none",
-          border: `1px solid ${theme.border}`,
-          transition: "all 0.3s"
-        }}>
+      {/* TABS */}
+      <div className="hw" style={{ marginBottom: 40 }}>
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 10, scrollbarWidth: "none" }}>
           {categories.map(cat => {
             const isSel = filter === cat.query;
             return (
-              <button 
-                key={cat.label}
-                onClick={() => setFilter(cat.query)}
-                style={{
-                  background: isSel ? (darkMode ? "white" : C.black) : "transparent",
-                  color: isSel ? (darkMode ? C.black : "white") : (darkMode ? "rgba(255,255,255,0.5)" : "#666"),
-                  border: "none",
-                  padding: "14px 28px",
-                  borderRadius: 12,
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em"
-                }}
-              >
+              <button key={cat.label} onClick={() => setFilter(cat.query)} style={{
+                background: isSel ? tBtnBg : "transparent",
+                color: isSel ? tBtnText : tSubText,
+                border: isSel ? `1px solid ${tBtnBg}` : `1px solid ${tBorder}`,
+                padding: "10px 22px", borderRadius: 100, fontSize: 12, fontWeight: 800,
+                cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s",
+                textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: FONT_B
+              }} onMouseOver={e => !isSel && (e.currentTarget.style.borderColor = tSubText)}
+                 onMouseOut={e => !isSel && (e.currentTarget.style.borderColor = tBorder)}>
                 {cat.label}
               </button>
-            );
+            )
           })}
         </div>
       </div>
 
-      <section style={{ maxWidth: 1380, margin: "0 auto", padding: "0 32px" }}>
+      {/* CONTENT */}
+      <section className="hw" style={{ paddingBottom: 100 }}>
         {error && (
-          <div style={{ 
-            background: darkMode ? "rgba(197, 48, 48, 0.1)" : "#fff5f5", 
-            border: `1px solid ${darkMode ? "rgba(197, 48, 48, 0.2)" : "#feb2b2"}`, 
-            color: "#c53030", 
-            padding: "16px 24px", 
-            borderRadius: 12, 
-            marginBottom: 40,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            fontWeight: 600
-          }}>
-            <TrendingUp size={20} />
-            {error}
+          <div style={{ padding: 20, background: "rgba(255,0,0,0.1)", border: "1px solid rgba(255,0,0,0.2)", borderRadius: 10, color: "#ff6b6b", marginBottom: 30, display: "flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600 }}>
+            <FiActivity size={16} /> {error}
           </div>
         )}
 
-        {/* NEWS GRID */}
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))", gap: 32 }}>
-            {[1, 2, 3, 4, 5, 6].map(n => (
-              <div key={n} style={{ height: 450, background: theme.border, borderRadius: 24, animation: "pulse 1.5s infinite ease-in-out" }} />
-            ))}
+          <div className="g-news">
+            {[...Array(6)].map((_, i) => <div key={i} style={{ height: 400, background: tInputBg, borderRadius: 10 }} />)}
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: 40 }}>
-            {/* FEATURED FIRST BIG BLOCK */}
-            {news.map((item, i) => {
-              const isLarge = i === 0;
-              return (
-                <article key={i} style={{ 
-                  gridColumn: isLarge ? "1 / -1" : "auto",
-                  display: isLarge ? "flex" : "block",
-                  flexDirection: isLarge ? (window.innerWidth < 900 ? "column" : "row") : "column",
-                  background: theme.cardBg,
-                  borderRadius: 32,
-                  overflow: "hidden",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-                  cursor: "pointer",
-                  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                  border: `1px solid ${theme.border}`,
-                  position: "relative"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-10px)";
-                  e.currentTarget.style.boxShadow = darkMode ? "0 30px 60px rgba(0,0,0,0.6)" : "0 30px 60px rgba(0,0,0,0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.03)";
-                }}
-                onClick={() => window.open(item.url || "#", "_blank")}
-                >
-                  {/* IMAGE */}
-                  <div style={{ 
-                    flex: isLarge ? "1.4" : "none",
-                    height: isLarge ? 550 : 260,
-                    overflow: "hidden",
-                    position: "relative"
-                  }}>
-                    <img 
-                      src={item.urlToImage || item.img} 
-                      alt={item.title} 
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                    />
-                    {isLarge && (
-                      <div style={{ 
-                        position: "absolute", 
-                        top: 24, 
-                        left: 24, 
-                        background: C.red, 
-                        color: "white", 
-                        padding: "8px 16px", 
-                        borderRadius: 8, 
-                        fontSize: 12, 
-                        fontWeight: 900,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em"
-                      }}>
-                        À LA UNE
-                      </div>
-                    )}
+          <div className="g-news">
+            {news.map((item, i) => (
+              <a href={item.url || "#"} target="_blank" rel="noopener noreferrer" key={i} className="pkg" style={{ textDecoration: "none", color: tText }}>
+                <div style={{ height: 220, overflow: "hidden", position: "relative" }}>
+                  <img src={item.urlToImage || item.img} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
+                    onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
+                    onMouseOut={e => e.currentTarget.style.transform = "translateY(0) scale(1)"} />
+                  <div style={{ position: "absolute", inset: 0, background: tCardGrad }} />
+                  {i === 0 && (
+                     <div style={{ position: "absolute", top: 14, left: 16, background: tBtnBg, color: tBtnText, fontFamily: FONT_B, fontSize: 9, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 10px", borderRadius: 2 }}>
+                       À La Une
+                     </div>
+                  )}
+                </div>
+                <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                    <span style={{ color: tSubText, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                      {item.source?.name || item.tag || "FIFA 2030"}
+                    </span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 5, color: tSubText, fontSize: 11, fontWeight: 600 }}>
+                      <FiCalendar size={12} /> {formatDate(item.publishedAt || item.date)}
+                    </span>
                   </div>
-
-                  {/* CONTENT */}
-                  <div style={{ 
-                    flex: 1, 
-                    padding: isLarge ? "60px" : "32px", 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    justifyContent: "center" 
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-                      <span style={{ 
-                        color: C.red, 
-                        fontSize: 11, 
-                        fontWeight: 900, 
-                        textTransform: "uppercase", 
-                        letterSpacing: "0.1em",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6
-                      }}>
-                        <Newspaper size={14} />
-                        {item.source?.name || item.tag || "FIFA 2030"}
-                      </span>
-                      <div style={{ width: 4, height: 4, background: darkMode ? "rgba(255,255,255,0.2)" : "#ccc", borderRadius: "50%" }} />
-                      <span style={{ color: theme.subText, fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
-                        <Calendar size={14} />
-                        {formatDate(item.publishedAt || item.date)}
-                      </span>
-                    </div>
-
-                    <h3 style={{ 
-                      fontFamily: FONT.display, 
-                      fontSize: isLarge ? "clamp(2rem, 4vw, 3.8rem)" : 28, 
-                      fontWeight: 900, 
-                      textTransform: "uppercase", 
-                      margin: "0 0 20px", 
-                      lineHeight: 1, 
-                      color: theme.text 
-                    }}>
-                      {item.title}
-                    </h3>
-
-                    <p style={{ 
-                      color: theme.subText, 
-                      fontSize: isLarge ? 18 : 15, 
-                      lineHeight: 1.6, 
-                      margin: 0, 
-                      maxWidth: "70ch",
-                      display: "-webkit-box",
-                      WebkitLineClamp: isLarge ? 3 : 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden"
-                    }}>
-                      {item.description || item.desc}
-                    </p>
-
-                    <div style={{ 
-                      marginTop: 32, 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "space-between" 
-                    }}>
-                      <div style={{ 
-                        color: C.red, 
-                        fontSize: 13, 
-                        fontWeight: 900, 
-                        textTransform: "uppercase", 
-                        letterSpacing: "0.1em",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        transition: "gap 0.2s"
-                      }}>
-                        Lire la suite <ArrowRight size={18} />
-                      </div>
-                      
-                      <button style={{ 
-                        background: "transparent", 
-                        border: "none", 
-                        color: darkMode ? "rgba(255,255,255,0.2)" : "#ccc", 
-                        cursor: "pointer" 
-                      }} onClick={(e) => {
-                        e.stopPropagation();
-                      }}>
-                        <Share2 size={18} />
-                      </button>
-                    </div>
+                  <h3 style={{ fontFamily: FONT_D, fontSize: 24, fontWeight: 800, lineHeight: 1.1, textTransform: "uppercase", letterSpacing: "0.02em", margin: "0 0 12px" }}>
+                    {item.title}
+                  </h3>
+                  <p style={{ color: tSubText, fontSize: 13, lineHeight: 1.6, fontFamily: FONT_B, flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {item.description || item.desc}
+                  </p>
+                  <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 6, color: tText, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    Lire l'article <FiArrowRight size={12} />
                   </div>
-                </article>
-              );
-            })}
+                </div>
+              </a>
+            ))}
           </div>
         )}
       </section>
-
-      {/* CALL TO ACTION */}
-      <div style={{ 
-        maxWidth: 1380, 
-        margin: "120px auto 0", 
-        padding: "0 32px" 
-      }}>
-        <div style={{ 
-          background: C.red, 
-          borderRadius: 40, 
-          padding: "80px", 
-          textAlign: "center", 
-          color: "white",
-          position: "relative",
-          overflow: "hidden",
-          boxShadow: `0 30px 60px ${C.red}33`
-        }}>
-          {/* Decorative pattern */}
-          <div style={{ 
-            position: "absolute", 
-            top: 0, 
-            left: 0, 
-            width: "100%", 
-            height: "100%", 
-            opacity: 0.1,
-            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "40px 40px"
-          }} />
-
-          <h2 style={{ 
-            fontFamily: FONT.display, 
-            fontSize: "clamp(2.5rem, 6vw, 4rem)", 
-            fontWeight: 900, 
-            margin: "0 0 24px", 
-            position: "relative" 
-          }}>
-            Restez Connectés à l'Histoire
-          </h2>
-          <p style={{ 
-            maxWidth: 600, 
-            margin: "0 auto 48px", 
-            fontSize: 18, 
-            opacity: 0.9, 
-            position: "relative" 
-          }}>
-            Abonnez-vous à notre newsletter pour recevoir les exclusivités sur la préparation du Maroc, de l'Espagne et du Portugal.
-          </p>
-          <div style={{ 
-            display: "flex", 
-            maxWidth: 500, 
-            margin: "0 auto", 
-            gap: 12, 
-            flexWrap: "wrap",
-            position: "relative" 
-          }}>
-            <input 
-              type="email" 
-              placeholder="votre@email.com" 
-              style={{
-                flex: 1,
-                padding: "20px 30px",
-                borderRadius: 16,
-                border: "none",
-                fontSize: 16,
-                fontWeight: 600,
-                color: "#333"
-              }}
-            />
-            <button style={{
-              background: C.black,
-              color: "white",
-              padding: "20px 40px",
-              borderRadius: 16,
-              border: "none",
-              fontSize: 16,
-              fontWeight: 800,
-              cursor: "pointer",
-              textTransform: "uppercase"
-            }}>
-              S'inscrire
+      
+      {/* Newsletter */}
+      <section className="hw" style={{ paddingBottom: 100 }}>
+        <div style={{ background: tCardBg, borderRadius: 10, border: `1px solid ${tBorder}`, padding: "clamp(40px,6vw,60px)", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: darkMode ? "none" : "0 20px 40px rgba(0,0,0,0.04)" }}>
+          <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(${tDot} 1px,transparent 1px)`, backgroundSize: "20px 20px" }} />
+          <h2 style={{ fontFamily: FONT_D, position: "relative", fontSize: "clamp(2rem,4vw,3.5rem)", fontWeight: 800, textTransform: "uppercase", margin: "0 0 16px", color: tText }}>Restez Connectés</h2>
+          <p style={{ color: tSubText, fontFamily: FONT_B, fontSize: 14, maxWidth: 500, margin: "0 auto 32px", position: "relative" }}>Abonnez-vous à notre newsletter pour recevoir les exclusivités sur la préparation de la Coupe du Monde 2030.</p>
+          <div style={{ display: "flex", justifyContent: "center", gap: 10, maxWidth: 400, margin: "0 auto", position: "relative" }}>
+            <input type="email" placeholder="votre@email.com" style={{ flex: 1, background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, padding: "0 20px", color: tText, fontFamily: FONT_B, fontSize: 14, outline: "none" }} />
+            <button className="btn-shim" style={{ background: tBtnBg, color: tBtnText, border: "none", padding: "14px 24px", borderRadius: 100, display: "flex", alignItems: "center", gap: 8, fontFamily: FONT_B, fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer" }}>
+              <span className="sh" style={{ background: `linear-gradient(90deg,transparent,${darkMode?"rgba(255,255,255,.45)":"rgba(0,0,0,.15)"},transparent)` }} /> S'inscrire
             </button>
           </div>
         </div>
-      </div>
-      
-      <style>{`
-        @keyframes pulse {
-          0% { opacity: 0.6; }
-          50% { opacity: 1; }
-          100% { opacity: 0.6; }
-        }
-        .hide-mobile {
-          @media (max-width: 600px) {
-            display: none;
-          }
-        }
-      `}</style>
+      </section>
     </div>
   );
 }

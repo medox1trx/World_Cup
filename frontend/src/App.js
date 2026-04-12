@@ -32,6 +32,7 @@ import AdminTeams from "./pages/admin/AdminTeams";
 import AdminTickets from "./pages/admin/AdminTickets";
 import AdminMatches from "./pages/admin/AdminMatches";
 import AdminReferees from "./pages/admin/AdminReferees";
+import AdminNews from "./pages/admin/AdminNews";
 
 /*
   HEIGHT BUDGET (sticky bars above page content):
@@ -75,51 +76,38 @@ function App() {
 
             {/* ── PAGE CONTENT ── */}
             <main style={{ minHeight: "calc(100vh - 102px)", paddingTop: 102 }}>
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/matches" element={<Matches />} />
-                <Route path="/standings" element={<Standings />} />
-                <Route path="/teams" element={<Teams />} />
-                <Route path="/highlights" element={<Highlights />} />
-                <Route path="/news" element={<News />} />
-                <Route path="/qualifications" element={<Qualifications />} />
-                <Route path="/cities" element={<Cities />} />
-                <Route path="/cities/:slug" element={<CityDetail />} />
-                <Route path="/cities/:slug/book/:id" element={<BookingPage />} />
-                <Route path="/tickets" element={<Tickets />} />
-                <Route path="/hospitality" element={<Hospitality />} />
-                <Route path="/fans" element={<Fans />} />
-                <Route path="/tournaments" element={<Tournaments />} />
-                <ScaledContent>
-                  <Routes>
-                    {/* Public routes */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/matches" element={<Matches />} />
-                    <Route path="/standings" element={<Standings />} />
-                    <Route path="/teams" element={<Teams />} />
-                    <Route path="/highlights" element={<Highlights />} />
-                    <Route path="/news" element={<News />} />
-                    <Route path="/qualifications" element={<Qualifications />} />
-                    <Route path="/cities" element={<Cities />} />
-                    <Route path="/tickets" element={<Tickets />} />
-                    <Route path="/hospitality" element={<Hospitality />} />
-                    <Route path="/fans" element={<Fans />} />
-                    <Route path="/tournaments" element={<Tournaments />} />
+              <ScaledContent>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/matches" element={<Matches />} />
+                  <Route path="/standings" element={<Standings />} />
+                  <Route path="/teams" element={<Teams />} />
+                  <Route path="/highlights" element={<Highlights />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/qualifications" element={<Qualifications />} />
+                  <Route path="/cities" element={<Cities />} />
+                  <Route path="/cities/:slug" element={<CityDetail />} />
+                  <Route path="/cities/:slug/book/:id" element={<BookingPage />} />
+                  <Route path="/tickets" element={<Tickets />} />
+                  <Route path="/hospitality" element={<Hospitality />} />
+                  <Route path="/fans" element={<Fans />} />
+                  <Route path="/tournaments" element={<Tournaments />} />
 
-                    {/* Auth routes */}
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  {/* Auth routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-                    {/* Admin routes (protected) */}
-                    <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
-                    <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
-                    <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
-                    <Route path="/admin/matches" element={<AdminRoute><AdminMatches /></AdminRoute>} />
-                    <Route path="/admin/referees" element={<AdminRoute><AdminReferees /></AdminRoute>} />
-                  </Routes>
-                </ScaledContent>
+                  {/* Admin routes (protected) */}
+                  <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
+                  <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
+                  <Route path="/admin/news" element={<AdminRoute><AdminNews /></AdminRoute>} />
+                  <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
+                  <Route path="/admin/matches" element={<AdminRoute><AdminMatches /></AdminRoute>} />
+                  <Route path="/admin/referees" element={<AdminRoute><AdminReferees /></AdminRoute>} />
+                </Routes>
+              </ScaledContent>
             </main>
 
             {/* ── FOOTER ── */}

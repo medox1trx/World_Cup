@@ -257,6 +257,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             <FiVideo />
             <span>Vidéos / Temps Forts</span>
           </Link>
+
+          <Link to="/admin/news" className={`sidebar-link ${isActive('/admin/news') ? 'active' : ''}`} onClick={onClose}>
+            <FiFileText />
+            <span>Actualités</span>
+          </Link>
           
           <Link to="/admin/matches" className={`sidebar-link ${isActive('/admin/matches') ? 'active' : ''}`} onClick={onClose}>
             <FiCalendar />

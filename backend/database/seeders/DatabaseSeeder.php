@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             HighlightSeeder::class,
             WorldCupSeeder::class,
             CitiesSeeder::class,
+            NewsArticleSeeder::class,
         ]);
     }
 }

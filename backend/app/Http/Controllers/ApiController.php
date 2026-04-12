@@ -21,24 +21,89 @@ class ApiController extends Controller
     // ── GET /api/v1/news ─────────────────────────────────────
     public function news(Request $request): JsonResponse
     {
-        $q       = $request->get('q', 'FIFA World Cup');
-        $apiKey  = env('NEWS_API_KEY');
-        $lang    = $request->get('language', 'en');
-        $pageSize = $request->get('pageSize', 12);
+        $limit = $request->get('pageSize', 12);
+        $q     = $request->get('q', '');
 
-        $response = Http::get('https://newsapi.org/v2/everything', [
-            'q'        => $q,
-            'apiKey'   => $apiKey,
-            'language' => $lang,
-            'sortBy'   => 'publishedAt',
-            'pageSize' => $pageSize,
-        ]);
+        $query = \App\Models\NewsArticle::query();
 
-        if ($response->failed()) {
-            return response()->json(['error' => 'Failed to fetch news'], 500);
+        if ($q && $q !== 'FIFA World Cup') {
+            $query->where('tag', 'like', "%{$q}%")
+                  ->orWhere('title', 'like', "%{$q}%");
         }
 
-        return response()->json($response->json());
+        $articles = $query->orderBy('published_at', 'desc')
+                          ->limit($limit)
+                          ->get()
+                          ->map(function ($article) {
+                              return [
+                                  'id'          => $article->id,
+                                  'tag'         => $article->tag,
+                                  'title'       => $article->title,
+                                  'description' => $article->description,
+                                  'urlToImage'  => $article->image_url,
+                                  'url'         => $article->url,
+                                  'source'      => ['name' => $article->source_name],
+                                  'publishedAt' => $article->published_at,
+                              ];
+                          });
+
+        return response()->json([
+            'status'       => 'ok',
+            'totalResults' => $articles->count(),
+            'articles'     => $articles
+        ]);
+    }
+
+    // ── POST /api/v1/admin/news ─────────────────────────────
+    public function storeNews(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'tag'         => 'nullable|string',
+            'title'       => 'required|string',
+            'description' => 'required|string',
+            'image_url'   => 'nullable|string',
+            'url'         => 'nullable|string',
+            'source_name' => 'nullable|string',
+            'published_at'=> 'nullable|date',
+        ]);
+
+        $article = \App\Models\NewsArticle::create([
+            'tag'         => $validated['tag'] ?? 'Actualités',
+            'title'       => $validated['title'],
+            'description' => $validated['description'],
+            'image_url'   => $validated['image_url'] ?? 'https://www.saurenergy.me/wp-content/uploads/2022/11/front-21.png',
+            'url'         => $validated['url'] ?? '#',
+            'source_name' => $validated['source_name'] ?? 'FIFA Official',
+            'published_at'=> $validated['published_at'] ?? now(),
+        ]);
+
+        return response()->json($article, 201);
+    }
+
+    // ── PUT /api/v1/admin/news/{id} ─────────────────────────
+    public function updateNews(Request $request, int $id): JsonResponse
+    {
+        $article = \App\Models\NewsArticle::findOrFail($id);
+
+        $validated = $request->validate([
+            'tag'         => 'nullable|string',
+            'title'       => 'sometimes|string',
+            'description' => 'sometimes|string',
+            'image_url'   => 'nullable|string',
+            'url'         => 'nullable|string',
+            'source_name' => 'nullable|string',
+            'published_at'=> 'nullable|date',
+        ]);
+
+        $article->update($validated);
+        return response()->json($article);
+    }
+
+    // ── DELETE /api/v1/admin/news/{id} ──────────────────────
+    public function destroyNews(int $id): JsonResponse
+    {
+        \App\Models\NewsArticle::findOrFail($id)->delete();
+        return response()->json(['message' => 'Article deleted']);
     }
 
     // ── GET /api/v1/stats ────────────────────────────────────
