@@ -107,6 +107,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/matches/{id}',[ApiController::class, 'destroyMatch']);
 
         // Admin Fan Zones Management
+        Route::get('/fan-zones-all',    [ApiController::class, 'indexAllFanZones']);
         Route::post('/fan-zones',        [ApiController::class, 'storeFanZone']);
         Route::put('/fan-zones/{fanZone}', [ApiController::class, 'updateFanZone']);
         Route::delete('/fan-zones/{fanZone}', [ApiController::class, 'destroyFanZone']);

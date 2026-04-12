@@ -1,17 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiCalendar, FiArrowRight, FiArrowUpRight, FiClock, FiImage } from "react-icons/fi";
 import { FONT, NEWS_FEATURED, NEWS_SIDE, NEWS_MORE } from "./constants";
 import { SectionHead } from "./ui";
 import { useTheme } from "../../context/ThemeContext";
 import { useNews } from "../../hooks/useWorldCup";
 
-// ─── Shared hover hook ────────────────────────────────────────
+function resolveImg(img, size = "w640") {
+  if (!img) return null;
+  if (img.startsWith("http")) return img;
+  return `https://flagcdn.com/${size}/${img.toLowerCase()}.png`;
+}
+
 function useHover() {
   const [h, setH] = useState(false);
   return [h, { onMouseEnter: () => setH(true), onMouseLeave: () => setH(false) }];
 }
 
-// ─── Tag pill ─────────────────────────────────────────────────
 function Tag({ label, dark = false }) {
   const { darkMode } = useTheme();
   const accent         = darkMode ? "#ffffff"               : "#0d0d0d";
@@ -34,7 +38,7 @@ function Tag({ label, dark = false }) {
 }
 
 // ─── Smart image — handles errors + fallback ──────────────────
-function ArticleImg({ src, style, onLoad }) {
+function ArticleImg({ src, style, onLoad, transition = false, isEntering = false }) {
   const { darkMode } = useTheme();
   const patternA = darkMode ? "#1a1a1a" : "#e0e0e0";
   const patternB = darkMode ? "#141414" : "#ebebeb";
@@ -65,16 +69,19 @@ function ArticleImg({ src, style, onLoad }) {
       alt=""
       onError={() => setOk(false)}
       onLoad={onLoad}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", ...style }}
+      style={{ 
+        position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+        opacity: transition ? 0 : 1,
+        transform: transition 
+          ? "translateX(-30px) scale(1.08)" 
+          : isEntering 
+            ? "translateX(40px) scale(0.95)" 
+            : "translateX(0) scale(1)",
+        transition: "opacity 0.18s ease-out, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        ...style 
+      }}
     />
   );
-}
-
-// ─── Resolve img field → URL ──────────────────────────────────
-function resolveImg(img, size = "w640") {
-  if (!img) return null;
-  if (img.startsWith("http")) return img;
-  return `https://flagcdn.com/${size}/${img.toLowerCase()}.png`;
 }
 
 // ─── Count-up ──────────────────────────────────────────────────
@@ -116,101 +123,135 @@ function StatCell({ value, label, started, index }) {
 export function StatsBar({ stats, loading }) {
   const { darkMode } = useTheme();
 
-  const bg            = darkMode ? "#0d0d0d"                  : "#f5f5f5";
-  const border        = darkMode ? "rgba(255,255,255,0.07)"   : "rgba(0,0,0,0.07)";
+  const bg            = darkMode ? "#0a0a0a"                  : "#f8f8f8";
   const textPrimary   = darkMode ? "#ffffff"                   : "#0d0d0d";
-  const textMuted     = darkMode ? "rgba(255,255,255,0.2)"    : "rgba(0,0,0,0.25)";
-  const textSecondary = darkMode ? "rgba(255,255,255,0.4)"    : "rgba(0,0,0,0.4)";
-  const hover         = darkMode ? "rgba(255,255,255,0.025)"  : "rgba(0,0,0,0.025)";
-  const accent        = darkMode ? "#ffffff"                   : "#0d0d0d";
-  const skeleton      = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.06)";
+  const textMuted     = darkMode ? "rgba(255,255,255,0.65)"   : "rgba(0,0,0,0.65)";
 
-  const ref = useRef(null);
-  const [entered, setEntered] = useState(false);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setEntered(true); obs.disconnect(); } },
-      { threshold: 0.2 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  const fallback = [
-    { value: "48",  label: "Équipes"       },
-    { value: "104", label: "Matchs"        },
-    { value: "6",   label: "Nations hôtes" },
-    { value: "1",   label: "Champion"      },
+  
+  const items = [
+    { value: "48",  label: "Équipes" },
+    { value: "104", label: "Matchs" },
+    { value: "16",  label: "Stades" },
+    { value: "12",  label: "Villes hôtes" },
+    { value: "800+", label: "Buts attendus" },
+    { value: "3.5M", label: "Spectateurs" },
   ];
 
-  const items = (!loading && stats?.length) ? stats : fallback;
+  const displayItems = [...items, ...items];
 
   return (
     <>
       <style>{`
-        .sb-root { background: ${bg}; border-bottom: 1px solid ${border}; transition: background 0.3s, border-color 0.3s; }
-        .sb-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); }
-        .sb-cell {
-          position: relative; display: flex; flex-direction: column;
-          align-items: center; justify-content: center; padding: 20px 12px;
-          cursor: default; background: transparent;
-          transition: background 0.35s ease, opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1), color 0.3s;
-          opacity: 0; transform: translateY(10px);
+        @keyframes sb-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-1080px); }
         }
-        .sb-cell:hover { background: ${hover}; }
-        .sb-cell:not(:last-child)::after {
-          content: ''; position: absolute; right: 0; top: 22%; bottom: 22%;
-          width: 1px; background: ${border};
+        
+        .sb-root { 
+          background: ${bg}; 
+          border-top: 1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'};
+          border-bottom: 1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'};
+          padding: 20px 0;
+          overflow: hidden;
+          transition: background 0.3s;
         }
-        .sb-cell::before {
-          content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-          width: 0; height: 1px; background: ${accent}; opacity: 0.15;
-          transition: width 0.45s cubic-bezier(0.22,1,0.36,1);
+        
+        .sb-track {
+          display: flex;
+          align-items: center;
+          animation: sb-scroll 40s linear infinite;
+          width: max-content;
+          height: 80px;
         }
-        .sb-cell:hover::before { width: 100%; }
-        .sb-in .sb-cell:nth-child(1) { opacity:1; transform:none; transition-delay:0.00s; }
-        .sb-in .sb-cell:nth-child(2) { opacity:1; transform:none; transition-delay:0.08s; }
-        .sb-in .sb-cell:nth-child(3) { opacity:1; transform:none; transition-delay:0.16s; }
-        .sb-in .sb-cell:nth-child(4) { opacity:1; transform:none; transition-delay:0.24s; }
-        .sb-num {
-          font-family: ${FONT.display}; font-weight: 900; color: ${textPrimary};
-          font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1; letter-spacing: -0.03em;
-          font-variant-numeric: tabular-nums; transition: transform 0.3s ease, color 0.3s;
+        
+        .sb-track:hover {
+          animation-play-state: paused;
         }
-        .sb-cell:hover .sb-num { transform: translateY(-1px); }
+        
+        .sb-item {
+          display: inline-flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          gap: 4px;
+          padding: 0;
+          height: 80px;
+          width: 180px;
+          white-space: nowrap;
+          transition: opacity 0.2s ease;
+          flex-shrink: 0;
+        }
+        
+        .sb-item:hover {
+          opacity: 0.85;
+        }
+        
+
+        
+        .sb-value {
+          font-family: ${FONT.display};
+          font-weight: 900;
+          color: ${textPrimary};
+          font-size: 2.2rem;
+          line-height: 1;
+          letter-spacing: -0.04em;
+          font-variant-numeric: tabular-nums;
+        }
+        
         .sb-label {
-          font-family: ${FONT.body}; font-size: clamp(9px, 0.8vw, 11px);
-          font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
-          color: ${textMuted}; margin-top: 6px; text-align: center;
-          line-height: 1.4; transition: color 0.3s;
+          font-family: ${FONT.body};
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: ${textMuted};
+          line-height: 1;
         }
-        .sb-cell:hover .sb-label { color: ${textSecondary}; }
-        @keyframes sb-pulse { 0%,100%{opacity:.05} 50%{opacity:.14} }
-        .sb-sk { background: ${skeleton}; border-radius: 2px; animation: sb-pulse 1.7s ease-in-out infinite; }
-        @media (max-width: 600px) {
-          .sb-inner { grid-template-columns: repeat(2,1fr); }
-          .sb-cell:nth-child(2)::after, .sb-cell:nth-child(4)::after { display: none; }
-          .sb-cell:nth-child(1), .sb-cell:nth-child(2) { border-bottom: 1px solid ${border}; }
-          .sb-cell { padding: 16px 10px; }
+        
+        .sb-divider {
+          width: 1px;
+          height: 48px;
+          background: ${darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
+          flex-shrink: 0;
+          align-self: center;
+        }
+        
+        @media (max-width: 768px) {
+          .sb-track { height: 72px; }
+          .sb-item { padding: 0; gap: 4px; height: 72px; width: 160px; }
+          .sb-value { font-size: 1.9rem; }
+          .sb-divider { height: 44px; }
+          @keyframes sb-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-960px); }
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .sb-track { height: 64px; }
+          .sb-item { padding: 0; gap: 4px; height: 64px; width: 140px; }
+          .sb-value { font-size: 1.7rem; }
+          @keyframes sb-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-840px); }
+          }
         }
       `}</style>
 
-      <div className="sb-root" ref={ref}>
-        <div className={`sb-inner${entered ? " sb-in" : ""}`}>
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="sb-cell" style={{ gap: 7, opacity: 1, transform: "none" }}>
-                  <div className="sb-sk" style={{ width: 48, height: 26, animationDelay: `${i * 0.15}s` }} />
-                  <div className="sb-sk" style={{ width: 38, height: 6, animationDelay: `${i * 0.1}s` }} />
+      <div className="sb-root">
+        <div className="sb-track">
+          {[...items, ...items].map((item, i) => {
+            return (
+              <React.Fragment key={i}>
+                <div className="sb-item">
+                  <span className="sb-value">{item.value}</span>
+                  <span className="sb-label">{item.label}</span>
                 </div>
-              ))
-            : items.map((item, i) => (
-                <StatCell key={i} index={i} value={item.value} label={item.label} started={entered} />
-              ))
-          }
+                {i < 11 && <div className="sb-divider" />}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
     </>
@@ -218,7 +259,7 @@ export function StatsBar({ stats, loading }) {
 }
 
 // ─── Featured card ────────────────────────────────────────────
-function FeaturedCard({ article }) {
+function FeaturedCard({ article, transition = false, isEntering = false }) {
   const { darkMode } = useTheme();
   const textPrimary     = darkMode ? "#ffffff"                   : "#0d0d0d";
   const imageText       = darkMode ? "#ffffff"                   : "#ffffff";
@@ -234,7 +275,18 @@ function FeaturedCard({ article }) {
   const src = resolveImg(article.img, "w640");
 
   return (
-    <a href="/news" style={{ textDecoration: "none", display: "block" }} {...hoverProps}>
+    <a href="/news" style={{ 
+      textDecoration: "none", 
+      display: "block",
+      opacity: transition ? 0 : 1,
+      transform: transition 
+        ? "translateY(30px) scale(0.92) translateZ(-10px)" 
+        : isEntering 
+          ? "translateY(-25px) scale(1.04) translateZ(10px)" 
+          : "translateY(0) scale(1) translateZ(0)",
+      transition: "opacity 0.18s ease-out, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      perspective: "1000px",
+    }} {...hoverProps}>
       <div style={{
         position: "relative", overflow: "hidden",
         background: surface, minHeight: "clamp(280px,40vw,460px)",
@@ -243,10 +295,12 @@ function FeaturedCard({ article }) {
       }}>
         <ArticleImg
           src={src}
+          transition={transition}
+          isEntering={isEntering}
           style={{
-            opacity: hovered ? 0.65 : 0.5,
-            transform: hovered ? "scale(1.05)" : "scale(1)",
-            transition: "transform 0.7s cubic-bezier(0.22,1,0.36,1), opacity 0.4s",
+            opacity: hovered ? 0.7 : 0.5,
+            transform: hovered ? "scale(1.08)" : "scale(1)",
+            transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease",
           }}
         />
         <div style={{ position: "absolute", inset: 0, background: overlayGrad, transition: "background 0.3s" }} />
@@ -259,8 +313,8 @@ function FeaturedCard({ article }) {
             fontFamily: FONT.display, fontWeight: 900, color: imageText,
             fontSize: "clamp(1.4rem, 3vw, 2rem)",
             lineHeight: 1.1, letterSpacing: "0.02em", margin: "12px 0 10px",
-            transform: hovered ? "translateY(-3px)" : "translateY(0)",
-            transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), color 0.3s",
+            transform: hovered ? "translateY(-4px)" : "translateY(0)",
+            transition: "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.3s",
           }}>{article.title}</h3>
           <p style={{
             color: imageTextSec, fontFamily: FONT.body,
@@ -284,7 +338,7 @@ function FeaturedCard({ article }) {
           </div>
           <div style={{
             position: "absolute", bottom: 0, left: 0, height: 2, background: accent,
-            width: hovered ? "100%" : "0%", transition: "width 0.55s cubic-bezier(0.22,1,0.36,1)",
+            width: hovered ? "100%" : "0%", transition: "width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
           }} />
         </div>
       </div>
@@ -293,7 +347,7 @@ function FeaturedCard({ article }) {
 }
 
 // ─── Side article ─────────────────────────────────────────────
-function SideArticle({ article, last }) {
+function SideArticle({ article, last, className = "", active = false, onClick, transition = false }) {
   const { darkMode } = useTheme();
   const card          = darkMode ? "#1c1c1c"                  : "#ffffff";
   const cardHover     = darkMode ? "rgba(255,255,255,0.06)"   : "#f7f7f7";
@@ -307,13 +361,21 @@ function SideArticle({ article, last }) {
   const src = resolveImg(article.img, "w160");
 
   return (
-    <a href="/news" style={{
+    <a href="/news" className={className} style={{
       display: "flex", alignItems: "stretch",
       borderBottom: last ? "none" : `1px solid ${border}`,
       textDecoration: "none",
-      background: hovered ? cardHover : card,
-      transition: "background 0.3s, border-color 0.3s", flex: 1,
-    }} {...hoverProps}>
+      background: active ? (darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)") : (hovered ? cardHover : card),
+      borderLeft: active ? `3px solid ${accent}` : "3px solid transparent",
+      transition: "background 0.3s ease, border-color 0.3s ease, opacity 0.18s ease-out, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      flex: 1,
+      cursor: "pointer",
+      opacity: transition ? 0 : 1,
+      transform: transition ? "translateY(-20px)" : "translateY(0)",
+    }} {...hoverProps} onClick={(e) => {
+      e.preventDefault();
+      if (onClick) onClick();
+    }}>
       <div style={{
         width: 80, flexShrink: 0, background: surface, position: "relative", overflow: "hidden",
         transition: "background 0.3s",
@@ -321,9 +383,9 @@ function SideArticle({ article, last }) {
         <ArticleImg
           src={src}
           style={{
-            opacity: 0.5,
-            transform: hovered ? "scale(1.07)" : "scale(1)",
-            transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
+            opacity: hovered ? 0.75 : 0.5,
+            transform: hovered ? "scale(1.1)" : "scale(1)",
+            transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease",
           }}
         />
       </div>
@@ -331,7 +393,7 @@ function SideArticle({ article, last }) {
         flex: 1, padding: "12px 14px", display: "flex", flexDirection: "column",
         justifyContent: "center", gap: 4,
         borderLeft: hovered ? `2px solid ${accent}` : "2px solid transparent",
-        transition: "border-color 0.3s",
+        transition: "border-color 0.3s ease",
       }}>
         <Tag label={article.tag} />
         <p style={{
@@ -375,16 +437,17 @@ function NewsCard({ article }) {
     <a href="/news" style={{
       display: "flex", flexDirection: "column", textDecoration: "none", background: card,
       border: `1px solid ${hovered ? borderHover : border}`, borderRadius: 4, overflow: "hidden",
-      transition: "border-color 0.3s, box-shadow 0.3s, background 0.3s",
-      boxShadow: hovered ? `0 6px 24px ${shadow}` : "none",
+      transition: "border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      boxShadow: hovered ? `0 12px 32px ${shadow}` : "none",
+      transform: hovered ? "translateY(-4px) scale(1.02)" : "translateY(0) scale(1)",
     }} {...hoverProps}>
        <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden", background: surface, transition: "background 0.3s" }}>
          <ArticleImg
            src={src}
            style={{
-             opacity: hovered ? 0.85 : 0.72,
-             transform: hovered ? "scale(1.05)" : "scale(1)",
-             transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.4s",
+             opacity: hovered ? 0.9 : 0.72,
+             transform: hovered ? "scale(1.08)" : "scale(1)",
+             transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease",
            }}
          />
          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', pointerEvents: 'none' }} />
@@ -428,16 +491,101 @@ function NewsCard({ article }) {
 }
 
 // ─── NEWS SECTION ─────────────────────────────────────────────
+const MOCK_NEWS = [
+  {
+    urlToImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=640",
+    title: "Coupe du Monde 2030 : Le Maroc prêt à accueillir le monde",
+    description: "Le Maroc se prépare à accueillir la plus grande compétition de football avec de nouveaux stades et infrastructures modernes.",
+    publishedAt: "2026-04-12T10:00:00Z",
+    source: { name: "FIFA" }
+  },
+  {
+    urlToImage: "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?w=640",
+    title: "48 équipes participeront à la Coupe du Monde 2030",
+    description: "La FIFA confirme un record historique avec 48 équipes incontourna pour cette édition historique au Maroc, Espagne et Portugal.",
+    publishedAt: "2026-04-11T15:00:00Z",
+    source: { name: "Sports" }
+  },
+  {
+    urlToImage: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=640",
+    title: "Stades historiques : Les préparatifs avancent",
+    description: "Les travaux de construction des nouveaux stades avancent selon le calendrier prévu pour le Mondial 2030.",
+    publishedAt: "2026-04-10T09:00:00Z",
+    source: { name: "Actu Foot" }
+  },
+  {
+    urlToImage: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=640",
+    title: "Billets : La demande dépasse les attentes",
+    description: "Plus de 2 millions de demandes de billets enregistrées pour les matchs de la Coupe du Monde 2030.",
+    publishedAt: "2026-04-09T12:00:00Z",
+    source: { name: "FIFA" }
+  }
+];
+
 export function NewsSection() {
   const { darkMode } = useTheme();
-  const { data: news, loading } = useNews({ q: "FIFA World Cup 2026", pageSize: 5 });
+  const { data: news, loading, error } = useNews({ q: "FIFA World Cup 2026", pageSize: 8 });
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
   const card         = darkMode ? "#1c1c1c"                  : "#ffffff";
   const border       = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
+  
+  const [rotationIndex, setRotationIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isEntering, setIsEntering] = useState(false);
+  const [prevIndex, setPrevIndex] = useState(0);
+  
+  const articles = (news?.articles?.length > 0 ? news.articles : MOCK_NEWS);
+  
+  useEffect(() => {
+    if (articles.length < 2) return;
+    
+    const interval = setInterval(() => {
+      setPrevIndex(rotationIndex);
+      setIsEntering(true);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setRotationIndex(i => (i + 1) % articles.length);
+        setIsTransitioning(false);
+        setTimeout(() => setIsEntering(false), 40);
+      }, 180);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [articles.length, rotationIndex]);
+  
+  const handleNewsSelect = (index) => {
+    setPrevIndex(rotationIndex);
+    setIsEntering(true);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setRotationIndex(index);
+      setIsTransitioning(false);
+      setTimeout(() => setIsEntering(false), 40);
+    }, 180);
+  };
+  
+  const getMainArticle = () => {
+    if (articles.length === 0) return null;
+    return articles[rotationIndex % articles.length];
+  };
+  
+  const getSideArticles = () => {
+    if (articles.length <= 1) return [];
+    return [
+      articles[(rotationIndex + 1) % articles.length],
+      articles[(rotationIndex + 2) % articles.length],
+    ].filter(Boolean);
+  };
+  
+  const mainArticle = getMainArticle();
+  const sideArticles = getSideArticles();
+  const activeSideIndex = rotationIndex % Math.max(1, sideArticles.length);
 
   return (
     <>
       <style>{`
+
+        
         .ns-grid {
           display: grid; grid-template-columns: 1fr 260px;
           border: 1px solid ${border}; border-radius: 4px; overflow: hidden;
@@ -446,15 +594,34 @@ export function NewsSection() {
         .ns-side {
           display: flex; flex-direction: column; border-left: 1px solid ${border};
           background: ${card}; transition: background 0.3s, border-color 0.3s;
+          position: relative;
+          height: 100%;
         }
-        .ns-side a { flex: 1; }
+        .ns-side .side-article {
+          opacity: 1;
+          pointer-events: auto;
+          position: relative;
+        }
+        .side-article-enter {
+          animation: slideIn 0.35s ease-out forwards;
+        }
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
         @media (max-width: 860px) {
           .ns-grid { grid-template-columns: 1fr; }
           .ns-side { border-left: none; border-top: 1px solid ${border}; flex-direction: row; flex-wrap: wrap; }
-          .ns-side a { flex: 1 1 260px; }
+          .ns-side .side-article { flex: 1 1 260px; }
         }
         @media (max-width: 540px) { 
-          .ns-side a { flex: 1 1 100%; } 
+          .ns-side .side-article { flex: 1 1 100%; } 
           .sb-inner { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 400px) {
@@ -479,22 +646,32 @@ export function NewsSection() {
                 </div>
               </div>
             ) : (
-              <>
-                <FeaturedCard article={{
-                  img: news?.articles?.[0]?.urlToImage,
-                  title: news?.articles?.[0]?.title,
-                  desc: news?.articles?.[0]?.description,
-                  date: new Date(news?.articles?.[0]?.publishedAt).toLocaleDateString('fr-FR'),
-                  tag: news?.articles?.[0]?.source?.name || "Actualité"
-                }} />
+               <>
+                 <FeaturedCard article={{
+                   img: mainArticle?.urlToImage,
+                   title: mainArticle?.title,
+                   desc: mainArticle?.description,
+                   date: mainArticle ? new Date(mainArticle.publishedAt).toLocaleDateString('fr-FR') : '',
+                   tag: mainArticle?.source?.name || "Actualité",
+                   transition: isTransitioning,
+                   isEntering: isEntering
+                 }} />
                 <div className="ns-side">
-                  {news?.articles?.slice(1, 5).map((n, i) => (
-                    <SideArticle key={i} article={{
-                      img: n.urlToImage,
-                      title: n.title,
-                      date: new Date(n.publishedAt).toLocaleDateString('fr-FR'),
-                      tag: n.source?.name || "Actualité"
-                    }} last={i === 3} />
+                  {sideArticles.map((n, i) => (
+                    <SideArticle 
+                      key={`${n?.title}-${i}`}
+                      article={{
+                        img: n?.urlToImage,
+                        title: n?.title,
+                        date: n ? new Date(n.publishedAt).toLocaleDateString('fr-FR') : '',
+                        tag: n?.source?.name || "Actualité"
+                      }} 
+                      last={i === sideArticles.length - 1}
+                      active={i === activeSideIndex}
+                      onClick={() => handleNewsSelect((rotationIndex + 1 + i) % articles.length)}
+                      className="side-article"
+                      transition={isTransitioning}
+                    />
                   ))}
                 </div>
               </>
@@ -511,6 +688,8 @@ export function MoreNewsSection() {
   const { darkMode } = useTheme();
   const { data: news, loading } = useNews({ q: "FIFA World Cup 2026", pageSize: 9 });
   const surface = darkMode ? "#171717" : "#f5f5f5";
+  
+  const newsArticles = (news?.articles?.length > 0 ? news.articles : MOCK_NEWS);
 
   return (
     <>
@@ -527,12 +706,12 @@ export function MoreNewsSection() {
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px,3vw,24px)" }}>
           <SectionHead eyebrow="Plus d'actualités" title="Dernières Nouvelles" action="Toutes" href="/news" icon={require("react-icons/fi").FiList} />
           <div className="mn-grid">
-            {loading ? (
+            {loading || newsArticles.length === 0 ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} style={{ height: 240, borderRadius: 4, background: darkMode ? "#1c1c1c" : "#ffffff" }} />
               ))
             ) : (
-              news?.articles?.slice(0, 3).map((n, i) => (
+              newsArticles.slice(0, 3).map((n, i) => (
                 <NewsCard key={i} article={{
                   img: n.urlToImage,
                   title: n.title,

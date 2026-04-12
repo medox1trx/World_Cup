@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Accommodation;
 use App\Models\City;
 use App\Models\Comment;
+use App\Models\FanZone;
 use App\Models\FootballMatch;
 use App\Models\Highlight;
 use App\Models\Referee;
@@ -14,7 +15,9 @@ use App\Models\TeamStanding;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
@@ -443,4 +446,132 @@ class ApiController extends Controller
 
         return response()->json($results);
     }
+<<<<<<< Updated upstream
+=======
+
+    // ── FAN ZONES (Public) ─────────────────────────────────────
+    public function indexFanZones(): JsonResponse
+    {
+        $fanZones = FanZone::where('is_active', true)->orderBy('sort_order')->get();
+        
+        $grouped = $fanZones->groupBy('group_label')->map(function ($zones, $label) {
+            $cities = $zones->map(function ($z) {
+                return [
+                    'key' => $z->city_name . '-' . strtolower($z->country_code),
+                    'name' => $z->city_name,
+                    'country' => $z->country,
+                    'code' => $z->country_code,
+                    'stadium' => $z->stadium_name,
+                    'cap' => $z->capacity,
+                    'matches' => $z->matches_count,
+                    'zone' => $z->zone_name,
+                    'desc' => $z->description,
+                    'img' => $z->image_url,
+                    'opening_hours' => $z->opening_hours,
+                    'is_centenary' => $z->is_centenary,
+                ];
+            })->toArray();
+            
+            return [
+                'label' => $label,
+                'cities' => $cities,
+            ];
+        })->values();
+
+        return response()->json($grouped);
+    }
+
+    // ── FAN ZONES (Admin) ─────────────────────────────────────
+    public function storeFanZone(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'city_name' => 'required|string|max:100',
+            'country' => 'required|string|max:100',
+            'country_code' => 'required|string|max:10',
+            'stadium_name' => 'required|string|max:150',
+            'capacity' => 'required|string|max:50',
+            'matches_count' => 'required|integer|min:0',
+            'zone_name' => 'required|string|max:150',
+            'description' => 'required|string',
+            'image_url' => 'nullable|string',
+            'opening_hours' => 'nullable|string',
+            'is_centenary' => 'boolean',
+            'group_label' => 'required|string|max:100',
+            'sort_order' => 'integer|min:0',
+            'is_active' => 'boolean',
+        ]);
+
+        $fanZone = FanZone::create($validated);
+        return response()->json($fanZone, 201);
+    }
+
+    public function updateFanZone(Request $request, FanZone $fanZone): JsonResponse
+    {
+        $validated = $request->validate([
+            'city_name' => 'sometimes|string|max:100',
+            'country' => 'sometimes|string|max:100',
+            'country_code' => 'sometimes|string|max:10',
+            'stadium_name' => 'sometimes|string|max:150',
+            'capacity' => 'sometimes|string|max:50',
+            'matches_count' => 'sometimes|integer|min:0',
+            'zone_name' => 'sometimes|string|max:150',
+            'description' => 'sometimes|string',
+            'image_url' => 'nullable|string',
+            'opening_hours' => 'nullable|string',
+            'is_centenary' => 'boolean',
+            'group_label' => 'sometimes|string|max:100',
+            'sort_order' => 'sometimes|integer|min:0',
+            'is_active' => 'sometimes|boolean',
+        ]);
+
+        $fanZone->update($validated);
+        return response()->json($fanZone);
+    }
+
+    public function destroyFanZone(FanZone $fanZone): JsonResponse
+    {
+        $fanZone->delete();
+        return response()->json(['message' => 'Fan zone deleted']);
+    }
+
+    // ── FAN ZONES (Admin - All including inactive) ─────────────
+    public function indexAllFanZones(): JsonResponse
+    {
+        $fanZones = FanZone::orderBy('sort_order')->get();
+        
+        $grouped = $fanZones->groupBy('group_label')->map(function ($zones, $label) {
+            $cities = $zones->map(function ($z) {
+                return [
+                    'id' => $z->id,
+                    'key' => $z->city_name . '-' . strtolower($z->country_code),
+                    'name' => $z->city_name,
+                    'country' => $z->country,
+                    'country_code' => $z->country_code,
+                    'city_name' => $z->city_name,
+                    'country' => $z->country,
+                    'country_code' => $z->country_code,
+                    'stadium_name' => $z->stadium_name,
+                    'capacity' => $z->capacity,
+                    'matches_count' => $z->matches_count,
+                    'zone_name' => $z->zone_name,
+                    'description' => $z->description,
+                    'image_url' => $z->image_url,
+                    'opening_hours' => $z->opening_hours,
+                    'is_centenary' => $z->is_centenary,
+                    'group_label' => $z->group_label,
+                    'sort_order' => $z->sort_order,
+                    'is_active' => $z->is_active,
+                ];
+            })->toArray();
+            
+            return [
+                'label' => $label,
+                'cities' => $cities,
+            ];
+        })->values();
+
+        return response()->json($grouped);
+    }
+
+>>>>>>> Stashed changes
 }

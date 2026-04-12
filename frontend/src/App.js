@@ -17,6 +17,7 @@ import Teams from "./pages/Teams";
 import Highlights from "./pages/Highlights";
 import News from "./pages/News";
 import Qualifications from "./pages/Qualifications";
+<<<<<<< Updated upstream
 import Cities from "./pages/Cities";
 import CityDetail from "./pages/CityDetail";
 import BookingPage from "./pages/BookingPage";
@@ -33,6 +34,23 @@ import AdminTickets from "./pages/admin/AdminTickets";
 import AdminMatches from "./pages/admin/AdminMatches";
 import AdminReferees from "./pages/admin/AdminReferees";
 import AdminNews from "./pages/admin/AdminNews";
+=======
+import Cities         from "./pages/Cities";
+import CityDetail     from "./pages/CityDetail";
+import BookingPage    from "./pages/BookingPage";
+import Tickets        from "./pages/Tickets";
+import Hospitality    from "./pages/Hospitality";
+import Fans           from "./pages/Fans";
+import Tournaments    from "./pages/Tournaments";
+import Login          from "./pages/Login";
+import Register       from "./pages/Register";
+import Profile        from "./pages/Profile";
+import AdminHighlights  from "./pages/admin/AdminHighlights";
+import AdminTeams     from "./pages/admin/AdminTeams";
+import AdminTickets   from "./pages/admin/AdminTickets";
+import AdminMatches   from "./pages/admin/AdminMatches";
+import AdminFanZones  from "./pages/admin/AdminFanZones";
+>>>>>>> Stashed changes
 
 /*
   HEIGHT BUDGET (sticky bars above page content):
@@ -99,6 +117,7 @@ function App() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
+<<<<<<< Updated upstream
                   {/* Admin routes (protected) */}
                   <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
                   <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
@@ -108,6 +127,15 @@ function App() {
                   <Route path="/admin/referees" element={<AdminRoute><AdminReferees /></AdminRoute>} />
                 </Routes>
               </ScaledContent>
+=======
+                {/* Admin routes (protected) */}
+                <Route path="/admin/highlights" element={<AdminRoute><AdminHighlights /></AdminRoute>} />
+                <Route path="/admin/teams" element={<AdminRoute><AdminTeams /></AdminRoute>} />
+                <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
+                <Route path="/admin/matches" element={<AdminRoute><AdminMatches /></AdminRoute>} />
+                <Route path="/admin/fanzones" element={<AdminRoute><AdminFanZones /></AdminRoute>} />
+              </Routes>
+>>>>>>> Stashed changes
             </main>
 
             {/* ── FOOTER ── */}

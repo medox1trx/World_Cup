@@ -1,6 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+<<<<<<< Updated upstream
 import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiShield } from 'react-icons/fi';
+=======
+import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiMapPin } from 'react-icons/fi';
+>>>>>>> Stashed changes
 import { useTheme } from '../context/ThemeContext';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
@@ -276,6 +280,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           <Link to="/admin/tickets" className={`sidebar-link ${isActive('/admin/tickets') ? 'active' : ''}`} onClick={onClose}>
             <FiFileText />
             <span>Billetterie & Ventes</span>
+          </Link>
+          
+          <Link to="/admin/fanzones" className={`sidebar-link ${isActive('/admin/fanzones') ? 'active' : ''}`} onClick={onClose}>
+            <FiMapPin />
+            <span>Fan Zones</span>
           </Link>
 
           <Link to="/admin/referees" className={`sidebar-link ${isActive('/admin/referees') ? 'active' : ''}`} onClick={onClose}>

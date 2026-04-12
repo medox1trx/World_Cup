@@ -73,6 +73,13 @@ export const getCity = (slug) => api.get(`/cities/${slug}`);
 export const getAccommodation = (id) => api.get(`/accommodations/${id}`);
 export const getAccommodations = (slug, params = {}) => api.get(`/cities/${slug}/accommodations`, { params });
 
+// ── Fan Zones ───────────────────────────────────────────────
+export const getFanZones = () => api.get("/fan-zones");
+export const adminGetFanZones = () => api.get("/fan-zones-all");
+export const createFanZone = (data) => api.post("/admin/fan-zones", data);
+export const updateFanZone = (id, data) => api.put(`/admin/fan-zones/${id}`, data);
+export const deleteFanZone = (id) => api.delete(`/admin/fan-zones/${id}`);
+
 // ── Reservations (Protected) ────────────────────────────────────
 export const storeReservation = (data) => api.post("/reservations", data);
 export const getUserReservations = () => api.get("/reservations/user");

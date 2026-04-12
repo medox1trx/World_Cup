@@ -29,7 +29,8 @@ export const CODES = {
   "South Africa":"za", Egypt:"eg", Nigeria:"ng", Algeria:"dz",
   Brésil:"br", Argentine:"ar", Espagne:"es",
   Angleterre:"gb", Maroc:"ma", Colombie:"co", Japon:"jp",
-  Mexique:"mx",
+  Mexique:"mx", Brazil:"br", Cameroon:"cm", 
+  Morocco:"ma", France:"fr", Spain:"es", England:"gb",
 };
 
 export const STAGE_LABEL = {
@@ -142,7 +143,9 @@ export function getTimeLeft() {
 }
 
 export function getCode(team) {
-  return CODES[team] || null;
+  if (!team) return null;
+  const normalized = team.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return CODES[team] || CODES[normalized] || null;
 }
 // ─── MATCHES ──────────────────────────────────────────────────
 export const MATCHES = [

@@ -1,9 +1,70 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FiShoppingCart, FiArrowRight, FiPlay, FiCalendar } from "react-icons/fi";
 import { FONT, TICKER_ITEMS } from "./constants";
 import { useTheme } from "../../context/ThemeContext";
+import { useMatches } from "../../hooks/useWorldCup";
 
 const YT_VIDEO_ID = "RDtdVQgB9ME";
+
+function getCountryCode(teamName) {
+  if (!teamName) return 'xx';
+  const map = {
+    morocco: 'ma', france: 'fr', brazil: 'br', argentina: 'ar', germany: 'de',
+    spain: 'es', england: 'gb', portugal: 'pt', italy: 'it', netherlands: 'nl',
+    belgium: 'be', usa: 'us', canada: 'ca', mexico: 'mx', japan: 'jp',
+    south_korea: 'kr', australia: 'au', saudi_arabia: 'sa', qatar: 'qa', uae: 'ae',
+  };
+  const key = teamName.toLowerCase().replace(/[^a-z]/g, '');
+  return map[key] || teamName.substring(0, 2).toLowerCase();
+}
+
+function getTeamCode(teamName) {
+  if (!teamName) return 'TBD';
+  const codes = {
+    morocco: 'MAR', france: 'FRA', brazil: 'BRA', argentina: 'ARG', germany: 'GER',
+    spain: 'ESP', england: 'ENG', portugal: 'POR', italy: 'ITA', netherlands: 'NED',
+    belgium: 'BEL', usa: 'USA', canada: 'CAN', mexico: 'MEX', japan: 'JPN',
+    south_korea: 'KOR', australia: 'AUS', saudi_arabia: 'KSA', qatar: 'QAT', uae: 'UAE',
+  };
+  const key = teamName.toLowerCase();
+  return codes[key] || teamName.substring(0, 3).toUpperCase();
+}
+
+function getFlagUrl(flag) {
+  if (!flag) return 'https://flagcdn.com/w80/xx.png';
+  if (flag.startsWith('http')) return flag;
+  if (flag.startsWith('🇺')) return 'https://flagcdn.com/w80/us.png';
+  if (flag.startsWith('🇲')) return 'https://flagcdn.com/w80/ma.png';
+  if (flag.startsWith('🇫')) return 'https://flagcdn.com/w80/fr.png';
+  if (flag.startsWith('🇧')) return 'https://flagcdn.com/w80/br.png';
+  if (flag.startsWith('🇦')) return 'https://flagcdn.com/w80/ar.png';
+  if (flag.startsWith('🇩')) return 'https://flagcdn.com/w80/de.png';
+  if (flag.startsWith('🇪')) return 'https://flagcdn.com/w80/es.png';
+  if (flag.startsWith('🇬')) return 'https://flagcdn.com/w80/gb.png';
+  if (flag.startsWith('🇵')) return 'https://flagcdn.com/w80/pt.png';
+  if (flag.startsWith('🇮')) return 'https://flagcdn.com/w80/it.png';
+  if (flag.startsWith('🇳')) return 'https://flagcdn.com/w80/nl.png';
+  if (flag.startsWith('🇧')) return 'https://flagcdn.com/w80/be.png';
+  if (flag.startsWith('🇨')) return 'https://flagcdn.com/w80/ca.png';
+  if (flag.startsWith('🇲')) return 'https://flagcdn.com/w80/mx.png';
+  if (flag.startsWith('🇯')) return 'https://flagcdn.com/w80/jp.png';
+  if (flag.startsWith('🇰')) return 'https://flagcdn.com/w80/kr.png';
+  if (flag.startsWith('🇦')) return 'https://flagcdn.com/w80/au.png';
+  if (flag.startsWith('🇸')) return 'https://flagcdn.com/w80/sa.png';
+  if (flag.startsWith('🇶')) return 'https://flagcdn.com/w80/qa.png';
+  if (flag.startsWith('🇦')) return 'https://flagcdn.com/w80/ae.png';
+  return 'https://flagcdn.com/w80/xx.png';
+}
+
+function formatMatchDate(dateStr, timeStr) {
+  if (!dateStr) return 'Date à venir';
+  const months = ['jan', 'fév', 'mar', 'avr', 'mai', 'jun', 'jul', 'aoû', 'sep', 'oct', 'nov', 'déc'];
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const time = timeStr ? timeStr.substring(0, 5) : '';
+  return time ? `${day} ${month} · ${time}` : `${day} ${month}`;
+}
 
 // ─── NEWS TICKER ───────────────────────────────────────────────
 export function NewsTicker() {
@@ -31,68 +92,72 @@ export function NewsTicker() {
   }, []);
 
   return (
-    <div style={{
-      background: bg, borderBottom: `1px solid ${borderColor}`,
-      transition: "background 0.3s, border-color 0.3s",
-    }}>
+    <>
       <div style={{
-        maxWidth: 1380, margin: "0 auto", padding: "0 clamp(16px,3vw,32px)",
-        display: "flex", alignItems: "center", height: 44, gap: 14,
+        background: bg, borderBottom: `1px solid ${borderColor}`,
+        transition: "background 0.3s, border-color 0.3s",
       }}>
         <div style={{
-          flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
-          background: badgeBg, padding: "4px 10px", borderRadius: 2,
-          transition: "background 0.3s",
+          maxWidth: 1380, margin: "0 auto", padding: "0 16px",
+          display: "flex", alignItems: "center", height: 44, gap: 14,
         }}>
-          <span style={{
-            width: 6, height: 6, borderRadius: "50%", background: brandRed,
-            flexShrink: 0, animation: "tdot 1.4s ease-in-out infinite",
+          <div style={{
+            flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
+            background: badgeBg, padding: "4px 10px", borderRadius: 2,
+            transition: "background 0.3s",
+          }}>
+            <span style={{
+              width: 6, height: 6, borderRadius: "50%", background: brandRed,
+              flexShrink: 0, animation: "tdot 1.4s ease-in-out infinite",
+            }} />
+            <span style={{
+              color: badgeText, fontSize: "9px", fontWeight: 900,
+              letterSpacing: "0.2em", textTransform: "uppercase",
+              fontFamily: FONT.body, whiteSpace: "nowrap",
+              transition: "color 0.3s",
+            }}>En Direct</span>
+          </div>
+
+          <div style={{
+            width: 1, height: 16, background: divider, flexShrink: 0,
+            transition: "background 0.3s",
           }} />
-          <span style={{
-            color: badgeText, fontSize: 9, fontWeight: 900,
-            letterSpacing: "0.2em", textTransform: "uppercase",
-            fontFamily: FONT.body, whiteSpace: "nowrap",
-            transition: "color 0.3s",
-          }}>En Direct</span>
-        </div>
 
-        <div style={{
-          width: 1, height: 16, background: divider, flexShrink: 0,
-          transition: "background 0.3s",
-        }} />
+          <p style={{
+            flex: 1, color: textSecondary, fontSize: "12px",
+            fontFamily: FONT.body, overflow: "hidden", whiteSpace: "nowrap",
+            textOverflow: "ellipsis", opacity: fade ? 1 : 0, transition: "opacity 0.28s, color 0.3s",
+            minWidth: 0, lineHeight: 1.4, margin: 0,
+          }}>
+            {TICKER_ITEMS[idx]}
+          </p>
 
-        <p style={{
-          flex: 1, color: textSecondary, fontSize: 12,
-          fontFamily: FONT.body, overflow: "hidden", whiteSpace: "nowrap",
-          textOverflow: "ellipsis", opacity: fade ? 1 : 0, transition: "opacity 0.28s, color 0.3s",
-          minWidth: 0,
-        }}>
-          {TICKER_ITEMS[idx]}
-        </p>
-
-        <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-          {TICKER_ITEMS.map((_, i) => (
-            <button key={i}
-              onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 200); }}
-              style={{
-                width: i === idx ? 14 : 5, height: 5, borderRadius: 3,
-                border: "none", cursor: "pointer", padding: 0,
-                background: i === idx ? dotActive : dotInactive,
-                transition: "all 0.3s",
-              }}
-            />
-          ))}
+          <div style={{ display: "none", gap: 4, flexShrink: 0 }}>
+            {TICKER_ITEMS.map((_, i) => (
+              <button key={i}
+                onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 200); }}
+                style={{
+                  width: i === idx ? 14 : 5, height: 5, borderRadius: 3,
+                  border: "none", cursor: "pointer", padding: 0,
+                  background: i === idx ? dotActive : dotInactive,
+                  transition: "all 0.3s",
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
-
       <style>{`@keyframes tdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}`}</style>
-    </div>
+    </>
   );
 }
 
 // ─── HERO ──────────────────────────────────────────────────────
 export function HeroSection() {
   const { darkMode } = useTheme();
+  const { data: matches, loading: matchesLoading } = useMatches({ status: 'upcoming', limit: 20 });
+  
+  const nextMatch = matches?.find(m => m.status === 'upcoming') || matches?.[0] || null;
 
   /* ── colour tokens ── */
   const heroBg          = darkMode ? "#0a0a0a"                   : "#f5f5f5";
@@ -285,23 +350,23 @@ export function HeroSection() {
           padding: clamp(11px,1.4vh,14px) clamp(20px,2.2vw,28px);
           border-radius: 100px; text-decoration: none;
           box-shadow: 0 4px 20px ${shadow};
-          transition: transform .2s ease, box-shadow .2s ease, background .3s, color 0.3s;
+          transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease, background 0.3s, color 0.3s;
           white-space: nowrap;
         }
         .btn-buy:hover {
           background: ${accentHover};
-          transform: translateY(-2px);
-          box-shadow: 0 10px 30px ${shadowStrong};
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 14px 35px ${shadowStrong};
         }
-        .btn-buy:active { transform: translateY(0); }
+        .btn-buy:active { transform: translateY(-1px) scale(1); }
         .btn-buy .shimmer {
           position: absolute; top: 0; left: -80%; width: 50%; height: 100%;
           background: linear-gradient(90deg, transparent, ${shimmerColor}, transparent);
           pointer-events: none;
         }
         .btn-buy:hover .shimmer { animation: shim .5s ease forwards; }
-        .btn-buy .arr { transition: transform .2s; }
-        .btn-buy:hover .arr { transform: translateX(3px); }
+        .btn-buy .arr { transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .btn-buy:hover .arr { transform: translateX(4px); }
 
         .btn-watch {
           display: inline-flex; align-items: center; gap: 9px;
@@ -310,19 +375,19 @@ export function HeroSection() {
           border: none;
           border-radius: 100px;
           padding: clamp(11px,1.4vh,14px) clamp(16px,2vw,22px);
-          transition: background .25s, transform .2s;
+          transition: background 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
           white-space: nowrap;
         }
         .btn-watch:hover {
           background: ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.14)"};
-          transform: translateY(-2px);
+          transform: translateY(-3px) scale(1.02);
         }
-        .btn-watch:active { transform: translateY(0); }
+        .btn-watch:active { transform: translateY(-1px) scale(1); }
         .btn-watch-circle {
           width: clamp(22px,2.2vw,26px); height: clamp(22px,2.2vw,26px);
           border-radius: 50%; background: ${darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"};
           display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; transition: background .25s;
+          flex-shrink: 0; transition: background 0.3s ease;
         }
         .btn-watch:hover .btn-watch-circle { background: ${darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.18)"}; }
         .btn-watch-label {
@@ -361,7 +426,12 @@ export function HeroSection() {
           -webkit-backdrop-filter: blur(24px);
           width: clamp(180px,18vw,240px);
           flex-shrink: 0;
-          transition: background 0.3s, border-color 0.3s;
+          transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+        }
+        .match-card:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 16px 40px ${shadowStrong};
+          border-color: ${borderMed};
         }
         .mc-head { display: flex; align-items: center; gap: 6px; margin-bottom: clamp(12px,1.5vh,18px); }
         .mc-head-txt {
@@ -375,11 +445,17 @@ export function HeroSection() {
           align-items: center; gap: 6px;
           margin-bottom: clamp(12px,1.5vh,18px);
         }
-        .mc-team { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .mc-team { display: flex; flex-direction: column; align-items: center; gap: 5px; transition: transform 0.3s ease; }
+        .mc-team:hover { transform: scale(1.08); }
         .mc-flag {
           width: clamp(32px,3.5vw,44px); height: clamp(22px,2.3vw,30px);
           object-fit: cover; border-radius: 3px; display: block;
           box-shadow: 0 2px 8px ${shadow};
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .mc-team:hover .mc-flag {
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px ${shadowStrong};
         }
         .mc-code {
           color: ${textPrimary}; font-family: 'Barlow Condensed', sans-serif;
@@ -404,9 +480,13 @@ export function HeroSection() {
           letter-spacing: .12em; text-transform: uppercase;
           padding: clamp(8px,1vh,11px) 14px;
           border-radius: 100px; text-decoration: none;
-          transition: background .3s, color 0.3s;
+          transition: background 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
         }
-        .mc-btn:hover { background: ${accentHover}; }
+        .mc-btn:hover { 
+          background: ${accentHover}; 
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 6px 16px ${shadow};
+        }
 
         @media (max-width: 1024px) {
           .hero-wrap { grid-template-columns: 1fr auto; gap: 20px; }
@@ -524,30 +604,62 @@ export function HeroSection() {
 
           {/* ── RIGHT: Match card ── */}
           <div className="hero-right" style={s(0.62)}>
-            <div className="match-card">
-              <div className="mc-head">
-                <span className="live-dot" />
-                <span className="mc-head-txt">Prochain match</span>
-              </div>
-              <div className="mc-teams">
-                <div className="mc-team">
-                  <img className="mc-flag" src="https://flagcdn.com/w80/fr.png" alt="France" />
-                  <span className="mc-code">FRA</span>
+            {matchesLoading ? (
+              <div className="match-card">
+                <div className="mc-head">
+                  <span className="mc-head-txt">Prochain match</span>
                 </div>
-                <div className="mc-vs">
-                  <span className="mc-vs-t">VS</span>
-                  <span className="mc-time">11 juin · 18h00</span>
-                </div>
-                <div className="mc-team">
-                  <img className="mc-flag" src="https://flagcdn.com/w80/br.png" alt="Brésil" />
-                  <span className="mc-code">BRÉ</span>
+                <div className="mc-teams" style={{ justifyContent: 'center', minHeight: 100 }}>
+                  <span style={{ color: textMuted, fontSize: 12 }}>Chargement...</span>
                 </div>
               </div>
-              <a href="/matches" className="mc-btn">
-                <FiCalendar size={11} />
-                <span>Voir le match</span>
-              </a>
-            </div>
+            ) : nextMatch ? (
+              <div className="match-card">
+                <div className="mc-head">
+                  <span className="live-dot" />
+                  <span className="mc-head-txt">Prochain match</span>
+                </div>
+                <div className="mc-teams">
+                  <div className="mc-team">
+                    <img 
+                      className="mc-flag" 
+                      src={getFlagUrl(nextMatch.home_flag)} 
+                      alt={nextMatch.home_team} 
+                    />
+                    <span className="mc-code">{getTeamCode(nextMatch.home_team)}</span>
+                  </div>
+                  <div className="mc-vs">
+                    <span className="mc-vs-t">VS</span>
+                    <span className="mc-time">{formatMatchDate(nextMatch.match_date, nextMatch.match_time)}</span>
+                  </div>
+                  <div className="mc-team">
+                    <img 
+                      className="mc-flag" 
+                      src={getFlagUrl(nextMatch.away_flag)} 
+                      alt={nextMatch.away_team} 
+                    />
+                    <span className="mc-code">{getTeamCode(nextMatch.away_team)}</span>
+                  </div>
+                </div>
+                <a href="/matches" className="mc-btn">
+                  <FiCalendar size={11} />
+                  <span>Voir le match</span>
+                </a>
+              </div>
+            ) : (
+              <div className="match-card">
+                <div className="mc-head">
+                  <span className="mc-head-txt">Prochain match</span>
+                </div>
+                <div className="mc-teams">
+                  <span style={{ color: textMuted, fontSize: 12 }}>Aucun match à venir</span>
+                </div>
+                <a href="/matches" className="mc-btn">
+                  <FiCalendar size={11} />
+                  <span>Voir le calendrier</span>
+                </a>
+              </div>
+            )}
           </div>
 
         </div>
