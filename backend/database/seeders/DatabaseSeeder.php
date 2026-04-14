@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             NewsArticleSeeder::class,
             FanZoneSeeder::class,
             HospitalitySeeder::class,
+            TicketSeeder::class,
         ]);
     }
 }
