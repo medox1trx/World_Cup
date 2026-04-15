@@ -14,9 +14,14 @@ return new class extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code');
+            $table->string('code'); // 3 letters FIFA code
+            $table->string('flag'); // ISO code for flagcdn or URL
             $table->string('group_name');
-            $table->integer('rank')->default(0);
+            $table->string('coach')->nullable();
+            $table->string('captain')->nullable();
+            $table->integer('world_ranking')->default(0);
+            $table->integer('world_cup_titles')->default(0);
+            $table->text('description')->nullable();
             $table->string('key_player')->nullable();
             $table->string('image_url')->nullable();
             $table->timestamps();

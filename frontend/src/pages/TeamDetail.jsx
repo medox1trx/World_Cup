@@ -103,26 +103,33 @@ export default function TeamDetail() {
                 <span style={{ fontSize: 24, fontWeight: 900 }}>{team.group_name}</span>
               </div>
               <div style={{ background: theme.card, padding: 24, borderRadius: 24, border: `1px solid ${theme.border}` }}>
-                <span style={{ display: "block", fontSize: 11, fontWeight: 800, color: theme.subText, textTransform: "uppercase", marginBottom: 4 }}>FIFA Rank</span>
-                <span style={{ fontSize: 24, fontWeight: 900 }}>#{team.rank}</span>
+                <span style={{ display: "block", fontSize: 11, fontWeight: 800, color: theme.subText, textTransform: "uppercase", marginBottom: 4 }}>Rang FIFA</span>
+                <span style={{ fontSize: 24, fontWeight: 900 }}>#{team.world_ranking}</span>
               </div>
             </div>
 
             <div style={{ background: darkMode ? "rgba(255,255,255,0.03)" : "#f0f0f0", borderRadius: 32, padding: 32, border: `1px solid ${theme.border}` }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 24 }}>
-                <div style={{ width: 56, height: 56, borderRadius: "50%", background: theme.accent, display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
-                  <FiStar size={24} />
-                </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, marginBottom: 32 }}>
                 <div>
                   <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Joueur Clé</span>
-                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.key_player || "Non spécifié"}</span>
+                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.key_player || "N/A"}</span>
+                </div>
+                <div>
+                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Capitaine</span>
+                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.captain || "N/A"}</span>
+                </div>
+                <div>
+                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Sélectionneur</span>
+                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.coach || "N/A"}</span>
+                </div>
+                <div>
+                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Titres mondiaux</span>
+                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.world_cup_titles}</span>
                 </div>
               </div>
               
               <p style={{ fontSize: 16, lineHeight: 1.6, color: theme.subText, margin: 0 }}>
-                {team.name} participe à la Coupe du Monde 2030 avec de grandes ambitions. 
-                Portée par son joueur star {team.key_player || "emblématique"}, l'équipe nationale 
-                compte briller dans le {team.group_name} et aller le plus loin possible dans la compétition.
+                {team.description || `${team.name} participe à la Coupe du Monde 2030 avec de grandes ambitions.`}
               </p>
             </div>
 

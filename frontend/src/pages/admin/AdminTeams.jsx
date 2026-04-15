@@ -28,7 +28,9 @@ export default function AdminTeams() {
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
-    name: "", code: "", group_name: "", rank: 0, key_player: "", image_url: ""
+    name: "", code: "", flag: "", group_name: "", world_ranking: 0, 
+    key_player: "", coach: "", captain: "", world_cup_titles: 0, 
+    description: "", image_url: ""
   });
 
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -73,15 +75,23 @@ export default function AdminTeams() {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", code: "", group_name: "", rank: 0, key_player: "", image_url: "" });
+    setFormData({ 
+      name: "", code: "", flag: "", group_name: "", world_ranking: 0, 
+      key_player: "", coach: "", captain: "", world_cup_titles: 0, 
+      description: "", image_url: "" 
+    });
     setEditId(null);
   };
 
   const handleEdit = (t) => {
     setEditId(t.id);
     setFormData({
-      name: t.name, code: t.code, group_name: t.group_name,
-      rank: t.rank, key_player: t.key_player || "", image_url: t.image_url || ""
+      name: t.name, code: t.code, flag: t.flag, group_name: t.group_name,
+      world_ranking: t.world_ranking, key_player: t.key_player || "",
+      coach: t.coach || "", captain: t.captain || "",
+      world_cup_titles: t.world_cup_titles || 0,
+      description: t.description || "",
+      image_url: t.image_url || ""
     });
     setShowModal(true);
   };
@@ -198,7 +208,7 @@ export default function AdminTeams() {
                   <tr key={t.id}>
                     <td>
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <img className="admin-flag" src={`https://flagcdn.com/w80/${t.code}.png`} alt={t.name} />
+                        <img className="admin-flag" src={`https://flagcdn.com/w80/${t.flag}.png`} alt={t.name} />
                         <span style={{ fontWeight: 800, fontSize: 16 }}>{t.name}</span>
                       </div>
                     </td>
@@ -206,7 +216,7 @@ export default function AdminTeams() {
                       <span className="admin-badge" style={{ fontWeight: 600 }}>{t.group_name}</span>
                     </td>
                     <td>
-                      <div style={{ fontWeight: 800 }}>#{t.rank}</div>
+                      <div style={{ fontWeight: 800 }}>#{t.world_ranking}</div>
                     </td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }}>
@@ -238,28 +248,55 @@ export default function AdminTeams() {
                   <input className="form-input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required placeholder="Ex: Maroc" />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Code Pays (ISO)</label>
-                  <select className="form-input" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} required>
-                    <option value="">Sélectionner</option>
-                    {WORLD_CUP_COE_LIST.map(c => <option key={c.code} value={c.code}>{c.name} ({c.code.toUpperCase()})</option>)}
-                  </select>
+                  <label className="form-label">Code FIFA (3 lettres)</label>
+                  <input className="form-input" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value.toUpperCase()})} required placeholder="Ex: MAR" />
                 </div>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
                 <div className="form-group">
+                  <label className="form-label">Code ISO Drapeau (2 lettres)</label>
+                  <select className="form-input" value={formData.flag} onChange={e => setFormData({...formData, flag: e.target.value})} required>
+                    <option value="">Sélectionner</option>
+                    {WORLD_CUP_COE_LIST.map(c => <option key={c.code} value={c.code}>{c.name} ({c.code.toUpperCase()})</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
                   <label className="form-label">Groupe</label>
                   <input className="form-input" value={formData.group_name} onChange={e => setFormData({...formData, group_name: e.target.value})} required placeholder="Ex: Groupe A" />
                 </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
                 <div className="form-group">
                   <label className="form-label">Rang FIFA</label>
-                  <input type="number" className="form-input" value={formData.rank} onChange={e => setFormData({...formData, rank: parseInt(e.target.value)})} required />
+                  <input type="number" className="form-input" value={formData.world_ranking} onChange={e => setFormData({...formData, world_ranking: parseInt(e.target.value)})} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Titres Mondiaux</label>
+                  <input type="number" className="form-input" value={formData.world_cup_titles} onChange={e => setFormData({...formData, world_cup_titles: parseInt(e.target.value)})} required />
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                <div className="form-group">
+                  <label className="form-label">Sélectionneur</label>
+                  <input className="form-input" value={formData.coach} onChange={e => setFormData({...formData, coach: e.target.value})} placeholder="Walid Regragui" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Capitaine</label>
+                  <input className="form-input" value={formData.captain} onChange={e => setFormData({...formData, captain: e.target.value})} placeholder="Romain Saïss" />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Joueur Clé</label>
+                <label className="form-label">Joueur Vedette</label>
                 <input className="form-input" value={formData.key_player} onChange={e => setFormData({...formData, key_player: e.target.value})} placeholder="Ex: Achraf Hakimi" />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-input" rows="3" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Bref historique de l'équipe..." />
               </div>
 
               <div className="form-group">

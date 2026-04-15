@@ -174,7 +174,7 @@ export default function Teams() {
                   <span style={{ fontSize: 32, fontWeight: 900, color: darkMode ? '#333' : '#ddd', textTransform: 'uppercase' }}>{t.name.charAt(0)}</span>
                 </div>
                 <div className="team-card-badge">
-                  <Flag code={t.code} size={20} />
+                   <Flag code={t.flag} size={20} />
                 </div>
               </div>
 
@@ -182,10 +182,10 @@ export default function Teams() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                   <div>
                     <h3 className="team-card-title" style={{ fontFamily: FONT.display, fontSize: "clamp(18px, 3.5vw, 28px)", fontWeight: 900, textTransform: "uppercase", margin: 0, lineHeight: 1, color: theme.text }}>{t.name}</h3>
-                    <span style={{ color: C.red, fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.group_name || t.group}</span>
+                    <span style={{ color: C.red, fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.group_name}</span>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: 18, fontWeight: 900, color: theme.text }}>#{t.rank}</span>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: theme.text }}>#{t.world_ranking}</span>
                     <span style={{ display: "block", fontSize: 7, fontWeight: 800, color: theme.subText, textTransform: "uppercase" }}>FIFA Rank</span>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ export default function Teams() {
                     <FiStar color={C.red} size={12} />
                   </div>
                   <div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: theme.text, display: "block" }}>{t.key_player || t.player}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: theme.text, display: "block" }}>{t.key_player}</span>
                     <span style={{ fontSize: 8, color: theme.subText, fontWeight: 600 }}>Joueur clé</span>
                   </div>
                 </div>
