@@ -102,6 +102,7 @@ export const deleteHospitality = (id) => api.delete(`/admin/hospitalities/${id}`
 
 // ── Teams ───────────────────────────────────────────────────
 export const getTeams = () => api.get("/teams");
+export const getTeam = (id) => api.get(`/teams/${id}`);
 export const createTeam = (data) => api.post("/admin/teams", data);
 export const updateTeam = (id, data) => api.put(`/admin/teams/${id}`, data);
 export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);

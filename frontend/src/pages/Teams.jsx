@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FONT, C, CODES, getCode } from "./Home/constants";
 import { Flag } from "./Home/ui";
@@ -8,6 +9,7 @@ import { useTheme } from "../context/ThemeContext";
 const API_BASE_URL = "http://localhost:8000/api/v1";
 
 export default function Teams() {
+  const navigate = useNavigate();
   const { darkMode } = useTheme();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +153,12 @@ export default function Teams() {
       <section className="teams-hero" style={{ paddingTop: 0 }}>
         <div className="teams-grid">
           {filteredTeams.map((t, i) => (
-            <div key={t.id || i} className="team-card">
+            <div 
+              key={t.id || i} 
+              className="team-card" 
+              onClick={() => navigate(`/teams/${t.id}`)}
+              style={{ cursor: "pointer" }}
+            >
               <div style={{ position: "relative", overflow: "hidden" }}>
                 <img
                   src={t.image_url || t.img}

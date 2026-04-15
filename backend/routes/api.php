@@ -92,6 +92,7 @@ Route::prefix('v1')->group(function () {
 
     // Teams (Public)
     Route::get('/teams', [TeamController::class, 'index']);
+    Route::get('/teams/{team}', [TeamController::class, 'show']);
 
     // Admin routes (protected)
     Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {

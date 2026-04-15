@@ -14,6 +14,7 @@ import Home from "./pages/Home/Home";
 import Matches from "./pages/Matches";
 import Standings from "./pages/Standings";
 import Teams from "./pages/Teams";
+import TeamDetail from "./pages/TeamDetail";
 import Highlights from "./pages/Highlights";
 import News from "./pages/News";
 import Qualifications from "./pages/Qualifications";
@@ -73,6 +74,7 @@ function App() {
                   <Route path="/matches" element={<Matches />} />
                   <Route path="/standings" element={<Standings />} />
                   <Route path="/teams" element={<Teams />} />
+                  <Route path="/teams/:id" element={<TeamDetail />} />
                   <Route path="/highlights" element={<Highlights />} />
                   <Route path="/news" element={<News />} />
                   <Route path="/qualifications" element={<Qualifications />} />
