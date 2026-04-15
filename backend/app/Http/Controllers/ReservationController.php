@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Http\Requests\StoreReservationRequest;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
 class ReservationController extends Controller
@@ -21,14 +22,17 @@ class ReservationController extends Controller
         $validated = $request->validated();
         $acc = \App\Models\Accommodation::findOrFail($validated['accommodation_id']);
 
+        $checkIn = Carbon::parse($validated['check_in'])->format('Y-m-d');
+        $checkOut = Carbon::parse($validated['check_out'])->format('Y-m-d');
+
         // 2. Check overlap
         $overlap = Reservation::where('accommodation_id', $acc->id)
-            ->where(function ($query) use ($validated) {
-                $query->whereBetween('check_in', [$validated['check_in'], $validated['check_out']])
-                      ->orWhereBetween('check_out', [$validated['check_in'], $validated['check_out']])
-                      ->orWhere(function ($q) use ($validated) {
-                          $q->where('check_in', '<=', $validated['check_in'])
-                            ->where('check_out', '>=', $validated['check_out']);
+            ->where(function ($query) use ($checkIn, $checkOut) {
+                $query->whereBetween('check_in', [$checkIn, $checkOut])
+                      ->orWhereBetween('check_out', [$checkIn, $checkOut])
+                      ->orWhere(function ($q) use ($checkIn, $checkOut) {
+                          $q->where('check_in', '<=', $checkIn)
+                            ->where('check_out', '>=', $checkOut);
                       });
             })
             ->exists();
@@ -41,9 +45,9 @@ class ReservationController extends Controller
         }
 
         // 3. Calculate Price
-        $checkIn = new \DateTime($validated['check_in']);
-        $checkOut = new \DateTime($validated['check_out']);
-        $nights = $checkIn->diff($checkOut)->days;
+        $checkInDate = Carbon::parse($validated['check_in']);
+        $checkOutDate = Carbon::parse($validated['check_out']);
+        $nights = $checkInDate->diffInDays($checkOutDate);
         if ($nights <= 0) $nights = 1;
 
         $totalPrice = $nights * $acc->price_per_night;
@@ -52,8 +56,8 @@ class ReservationController extends Controller
         $reservation = Reservation::create([
             'accommodation_id' => $acc->id,
             'user_id' => auth('web')->id(),
-            'check_in' => $validated['check_in'],
-            'check_out' => $validated['check_out'],
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
             'guests' => $validated['guests'],
             'notes' => $validated['notes'] ?? null,
             'total_price' => $totalPrice,
@@ -104,10 +108,10 @@ class ReservationController extends Controller
 
         // Business logic: check if it's already in the past? (Optional but good)
         // For now, let's just allow it or check if it's started.
-        $now = new \DateTime();
-        $checkIn = new \DateTime($reservation->check_in);
+        $now = Carbon::now();
+        $checkIn = Carbon::parse($reservation->check_in);
         
-        if ($checkIn < $now) {
+        if ($checkIn->lt($now)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Cannot cancel a reservation that has already started.'

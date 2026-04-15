@@ -67,6 +67,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/reservations',                         [ReservationController::class, 'store']);
         Route::get('/reservations/user',                     [ReservationController::class, 'userReservations']);
         Route::delete('/reservations/{id}',                  [ReservationController::class, 'destroy']);
+        
+        // Ticket Bookings
+        Route::post('/ticket-bookings',                      [\App\Http\Controllers\TicketBookingController::class, 'store']);
+        Route::get('/ticket-bookings',                       [\App\Http\Controllers\TicketBookingController::class, 'index']);
     });
 
     // Accommodation Details

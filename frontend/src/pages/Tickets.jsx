@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { FiSearch, FiCalendar, FiMapPin, FiClock, FiArrowRight, FiActivity, FiShield, FiZap, FiCheck } from "react-icons/fi";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { FiSearch, FiCalendar, FiMapPin, FiClock, FiArrowRight, FiActivity, FiShield, FiZap, FiCheck, FiShoppingBag } from "react-icons/fi";
 import { useTheme } from "../context/ThemeContext";
-import { getMatches } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import { getMatches, bookTicket } from "../services/api";
 import { getCode } from "./Home/constants";
+import toast from "react-hot-toast";
 
 const FONT_D = "'Barlow Condensed', sans-serif";
 const FONT_B = "'Barlow', sans-serif";
 
 export default function Tickets() {
   const { darkMode } = useTheme();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const matchId = searchParams.get("match_id");
 
@@ -18,6 +22,10 @@ export default function Tickets() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [bookingId, setBookingId] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [activeTicket, setActiveTicket] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => { 
     const t = setTimeout(() => setMounted(true), 40); 
@@ -34,6 +42,58 @@ export default function Tickets() {
       console.error("Tickets data fetch failed:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBookTicket = (ticket) => {
+    if (!user) {
+      toast.error("Veuillez vous connecter pour réserver des billets.");
+      navigate("/login");
+      return;
+    }
+    setActiveTicket(ticket);
+    setQuantity(1);
+    setShowConfirm(true);
+  };
+
+  const executeBooking = async () => {
+    if (!activeTicket) return;
+    
+    setBookingId(activeTicket.id);
+    setShowConfirm(false);
+    
+    const tid = toast.loading("Finalisation de votre réservation...");
+    
+    try {
+      const res = await bookTicket({
+        ticket_id: activeTicket.id,
+        quantity: quantity
+      });
+      
+      if (res.status === 'success') {
+        toast.success(res.message || "Réservation confirmée !", { id: tid });
+        // Update local state to reflect new availability
+        setMatches(prev => prev.map(m => ({
+          ...m,
+          tickets: m.tickets.map(t => {
+            if (t.id === activeTicket.id) {
+              const newAvailable = t.available - quantity;
+              return { 
+                ...t, 
+                available: newAvailable,
+                status: newAvailable <= 0 ? 'sold_out' : t.status
+              };
+            }
+            return t;
+          })
+        })));
+      }
+    } catch (err) {
+      toast.error(err.message || "Erreur lors de la réservation.", { id: tid });
+    } finally {
+      setBookingId(null);
+      setActiveTicket(null);
+      setQuantity(1);
     }
   };
 
@@ -103,6 +163,11 @@ export default function Tickets() {
         .ticket-row:hover { border-color: ${tBorderHov}; background: ${darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'}; }
         .buy-btn { background: ${tBtnBg}; color: ${tBtnText}; border: none; padding: 6px 14px; borderRadius: 4px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; }
         .buy-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: flex; alignItems: center; justifyContent: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-content { background: ${tCardBg}; border: 1px solid ${tBorder}; border-radius: 24px; width: 90%; max-width: 500px; padding: 40px; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-overlay.open .modal-content { transform: scale(1); }
       `}</style>
 
       {/* HERO SECTION */}
@@ -208,8 +273,12 @@ export default function Tickets() {
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         <span style={{ fontSize: 14, fontWeight: 900 }}>{t.price}€</span>
-                        <button className="buy-btn" disabled={t.status !== 'available'}>
-                          {t.status === 'available' ? 'Réserver' : 'Épuisé'}
+                        <button 
+                          className="buy-btn" 
+                          disabled={t.status !== 'available' || bookingId === t.id}
+                          onClick={() => handleBookTicket(t)}
+                        >
+                          {bookingId === t.id ? '...' : (t.status === 'available' ? 'Réserver' : 'Épuisé')}
                         </button>
                       </div>
                     </div>
@@ -266,6 +335,68 @@ export default function Tickets() {
           </div>
         </div>
       </section>
+
+      {/* CONFIRMATION MODAL */}
+      <div className={`modal-overlay ${showConfirm ? 'open' : ''}`} onClick={() => setShowConfirm(false)}>
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: tInputBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <FiShoppingBag size={32} />
+            </div>
+          </div>
+          
+          <h2 style={{ fontFamily: FONT_D, fontSize: 32, fontWeight: 900, textTransform: "uppercase", textAlign: "center", marginBottom: 12 }}>
+            Confirmation
+          </h2>
+          
+          <p style={{ textAlign: "center", color: tSubText, fontSize: 16, lineHeight: 1.6, marginBottom: 24 }}>
+            Sélectionnez le nombre de billets pour la catégorie <strong style={{color: tText}}>{activeTicket?.category}</strong>.
+          </p>
+
+          <div style={{ background: tInputBg, borderRadius: 16, padding: 24, marginBottom: 32 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <span style={{ fontWeight: 800, textTransform: "uppercase", fontSize: 12, opacity: 0.6 }}>Quantité</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 15 }}>
+                <button 
+                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                  style={{ width: 32, height: 32, borderRadius: "50%", border: `1px solid ${tBorder}`, background: tCardBg, color: tText, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                > - </button>
+                <span style={{ fontSize: 18, fontWeight: 900, minWidth: 20, textAlign: "center" }}>{quantity}</span>
+                <button 
+                  onClick={() => setQuantity(q => Math.min(3, q + 1))}
+                  style={{ width: 32, height: 32, borderRadius: "50%", border: `1px solid ${tBorder}`, background: tCardBg, color: tText, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                > + </button>
+              </div>
+            </div>
+            
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 20, borderTop: `1px dashed ${tBorder}` }}>
+              <span style={{ fontWeight: 800, textTransform: "uppercase", fontSize: 12, opacity: 0.6 }}>Total</span>
+              <span style={{ fontSize: 24, fontWeight: 900, color: "#c8102e" }}>{(activeTicket?.price * quantity).toFixed(2)}€</span>
+            </div>
+            
+            <p style={{ fontSize: 10, color: "#c8102e", textAlign: "center", marginTop: 16, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Limite de 3 billets par commande
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <button onClick={() => setShowConfirm(false)} style={{ 
+              background: "transparent", border: `1px solid ${tBorder}`, 
+              color: tText, padding: "16px", borderRadius: 100, fontWeight: 800, 
+              fontSize: 13, textTransform: "uppercase", cursor: "pointer" 
+            }}>
+              Annuler
+            </button>
+            <button onClick={executeBooking} style={{ 
+              background: "#c8102e", border: "none", color: "white", 
+              padding: "16px", borderRadius: 100, fontWeight: 800, 
+              fontSize: 13, textTransform: "uppercase", cursor: "pointer" 
+            }}>
+              Réserver {quantity > 1 ? `(${quantity})` : ''}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -50,6 +50,8 @@ export const adminGetTickets = () => api.get("/admin/tickets");
 export const createTicket = (data) => api.post("/admin/tickets", data);
 export const updateTicket = (id, data) => api.put(`/admin/tickets/${id}`, data);
 export const deleteTicket = (id) => api.delete(`/admin/tickets/${id}`);
+export const bookTicket = (data) => api.post("/ticket-bookings", data);
+export const getUserTicketBookings = () => api.get("/ticket-bookings");
 
 // ── Referees ─────────────────────────────────────────────────
 export const getReferees = () => api.get("/referees");

@@ -17,13 +17,20 @@ import {
   ChevronLeft,
   ArrowRight,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  DoorOpen,
+  User
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 const FD = "'Barlow Condensed', sans-serif";
 const FB = "'Barlow', sans-serif";
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+};
 
 export default function BookingPage() {
   const { id } = useParams();
@@ -220,53 +227,67 @@ export default function BookingPage() {
 
               {/* Sticky Booking Card */}
               <div style={{ position: "sticky", top: 140 }}>
-                 <div style={{ background: darkMode ? "#141414" : "white", padding: 32, borderRadius: 24, border: `1px solid ${darkMode ? "#222" : "#eee"}`, boxShadow: "0 10px 40px rgba(0,0,0,0.1)" }}>
+                 <div style={{ background: darkMode ? "#1a1a1a" : "white", padding: 28, borderRadius: 24, border: `1px solid ${darkMode ? "#333" : "#e5e5e5"}`, boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
                        <div>
-                          <span style={{ fontSize: 28, fontWeight: 900 }}>${acc.price_per_night}</span>
-                          <span style={{ color: darkMode ? "#888" : "#666", fontWeight: 600 }}> / {t('perNight')}</span>
+                          <span style={{ fontSize: 32, fontWeight: 900, color: darkMode ? "#fff" : "#111" }}>${acc.price_per_night}</span>
+                          <span style={{ color: darkMode ? "#888" : "#666", fontWeight: 600, fontSize: 15 }}> / {t('perNight')}</span>
+                       </div>
+                       <div style={{ display: "flex", alignItems: "center", gap: 6, background: darkMode ? "#222" : "#f5f5f5", padding: "6px 12px", borderRadius: 20 }}>
+                          <Star size={14} fill="#ffb400" stroke="#ffb400" />
+                          <span style={{ fontWeight: 700, fontSize: 14 }}>{acc.rating}</span>
                        </div>
                     </div>
 
                     <form onSubmit={handleGoToSummary}>
-                      <div style={{ border: `1px solid ${darkMode ? "#333" : "#ddd"}`, borderRadius: 16, overflow: "hidden", marginBottom: 24 }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: `1px solid ${darkMode ? "#333" : "#ddd"}` }}>
-                           <div style={{ padding: "12px 16px" }}>
-                              <label style={{ display: "block", fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>{t('checkIn')}</label>
-                              <input type="date" name="check_in" value={form.check_in} onChange={handleChange} required style={{ width: "100%", border: "none", outline: "none", background: "transparent", color: "inherit", fontWeight: 700, fontSize: 14 }} />
+                      <div style={{ border: `1px solid ${darkMode ? "#444" : "#ddd"}`, borderRadius: 16, overflow: "hidden", marginBottom: 20, background: darkMode ? "#0f0f0f" : "#fafafa" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: `1px solid ${darkMode ? "#444" : "#ddd"}` }}>
+                           <div style={{ padding: "16px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                                <DoorOpen size={14} style={{ color: "#c8102e" }} />
+                                <label style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: darkMode ? "#888" : "#666" }}>{t('checkIn')}</label>
+                              </div>
+                              <input type="date" name="check_in" value={form.check_in} onChange={handleChange} required style={{ width: "100%", border: "none", outline: "none", background: "transparent", color: darkMode ? "#fff" : "#111", fontWeight: 700, fontSize: 14, fontFamily: FB }} />
                            </div>
-                           <div style={{ padding: "12px 16px", borderLeft: `1px solid ${darkMode ? "#333" : "#ddd"}` }}>
-                              <label style={{ display: "block", fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>{t('checkOut')}</label>
-                              <input type="date" name="check_out" value={form.check_out} onChange={handleChange} required style={{ width: "100%", border: "none", outline: "none", background: "transparent", color: "inherit", fontWeight: 700, fontSize: 14 }} />
+                           <div style={{ padding: "16px", borderLeft: `1px solid ${darkMode ? "#444" : "#ddd"}` }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                                <DoorOpen size={14} style={{ transform: "scaleX(-1)", color: "#c8102e" }} />
+                                <label style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: darkMode ? "#888" : "#666" }}>{t('checkOut')}</label>
+                              </div>
+                              <input type="date" name="check_out" value={form.check_out} onChange={handleChange} required style={{ width: "100%", border: "none", outline: "none", background: "transparent", color: darkMode ? "#fff" : "#111", fontWeight: 700, fontSize: 14, fontFamily: FB }} />
                            </div>
                         </div>
-                        <div style={{ padding: "12px 16px" }}>
-                           <label style={{ display: "block", fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>{t('guests')}</label>
-                           <input type="number" name="guests" min="1" max={acc.capacity} value={form.guests} onChange={handleChange} style={{ width: "100%", border: "none", outline: "none", background: "transparent", color: "inherit", fontWeight: 700, fontSize: 14 }} />
+                        <div style={{ padding: "16px" }}>
+                           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                             <User size={14} style={{ color: "#c8102e" }} />
+                             <label style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: darkMode ? "#888" : "#666" }}>{t('guests')}</label>
+                           </div>
+                           <input type="number" name="guests" min="1" max={acc.capacity} value={form.guests} onChange={handleChange} style={{ width: "100%", border: "none", outline: "none", background: "transparent", color: darkMode ? "#fff" : "#111", fontWeight: 700, fontSize: 14, fontFamily: FB }} />
                         </div>
                       </div>
 
-                      <button type="submit" disabled={!acc.is_available} style={{ width: "100%", padding: "18px", borderRadius: 100, background: "#c8102e", color: "white", border: "none", fontWeight: 900, fontFamily: FD, letterSpacing: "0.1em", fontSize: 16, cursor: !acc.is_available ? "not-allowed" : "pointer", opacity: !acc.is_available ? 0.6 : 1, transition: "transform 0.1s" }} onMouseDown={e => !submitting && (e.currentTarget.style.transform="scale(0.98)")} onMouseUp={e => !submitting && (e.currentTarget.style.transform="scale(1)")}>
+                      <button type="submit" disabled={!acc.is_available} style={{ width: "100%", padding: "18px", borderRadius: 100, background: "#c8102e", color: "white", border: "none", fontWeight: 900, fontFamily: FD, letterSpacing: "0.12em", fontSize: 16, cursor: !acc.is_available ? "not-allowed" : "pointer", opacity: !acc.is_available ? 0.6 : 1, transition: "transform 0.1s", boxShadow: "0 4px 16px rgba(200, 16, 46, 0.3)" }} onMouseDown={e => !submitting && (e.currentTarget.style.transform="scale(0.98)")} onMouseUp={e => !submitting && (e.currentTarget.style.transform="scale(1)")}>
                         RESERVE NOW
                       </button>
 
                       {nights > 0 && (
-                         <div style={{ marginTop: 24 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, color: darkMode ? "#aaa" : "#555", fontWeight: 600 }}>
-                               <span style={{ textDecoration: "underline" }}>${acc.price_per_night} x {nights} {t('nights')}</span>
+                         <div style={{ marginTop: 24, padding: 20, background: darkMode ? "#0f0f0f" : "#fafafa", borderRadius: 16 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, color: darkMode ? "#aaa" : "#555", fontWeight: 600, fontSize: 14 }}>
+                               <span>${acc.price_per_night} × {nights} {t('nights')}</span>
                                <span>${totalPrice}</span>
                             </div>
-                            <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 16, borderTop: `1px solid ${darkMode ? "#222" : "#eee"}`, fontWeight: 900, fontSize: 20 }}>
-                               <span>Total</span>
-                               <span>${totalPrice}</span>
+                            <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 16, borderTop: `1px solid ${darkMode ? "#333" : "#eee"}`, fontWeight: 900, fontSize: 22 }}>
+                               <span style={{ color: darkMode ? "#fff" : "#111" }}>Total</span>
+                               <span style={{ color: "#c8102e" }}>${totalPrice}</span>
                             </div>
                          </div>
                       )}
                     </form>
 
-                    <p style={{ textAlign: "center", fontSize: 12, color: darkMode ? "#666" : "#aaa", marginTop: 24, fontWeight: 500 }}>
-                      <Info size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} /> You won't be charged yet.
-                    </p>
+                    <div style={{ textAlign: "center", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                      <Info size={14} style={{ color: darkMode ? "#666" : "#999" }} />
+                      <span style={{ fontSize: 12, color: darkMode ? "#666" : "#999", fontWeight: 500 }}>You won't be charged yet</span>
+                    </div>
                  </div>
               </div>
             </div>
@@ -281,7 +302,7 @@ export default function BookingPage() {
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 32 }}>
                   <div>
                     <p style={{ margin: 0, fontSize: 11, fontWeight: 900, textTransform: "uppercase", color: "#888" }}>Dates</p>
-                    <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700 }}>{form.check_in} – {form.check_out}</p>
+                    <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700 }}>{formatDate(form.check_in)} – {formatDate(form.check_out)}</p>
                   </div>
                   <div>
                     <p style={{ margin: 0, fontSize: 11, fontWeight: 900, textTransform: "uppercase", color: "#888" }}>Guests</p>
