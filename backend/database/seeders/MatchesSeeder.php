@@ -11,8 +11,10 @@ class MatchesSeeder extends Seeder
 {
     public function run()
     {
-        // Nettoyer la table avant de peupler
+        // Désactiver les contraintes de clés étrangères pour le troncage
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('matches')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $matches = [
             // ════════════════════════════════
