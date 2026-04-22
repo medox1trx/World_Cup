@@ -252,7 +252,7 @@ export default function Register() {
         <div className="reg-card">
           <div className="brand">
             <p className="brand-title">CRÉER UN COMPTE</p>
-            <p className="brand-sub">Rejoignez la communauté FIFA 2030</p>
+            <p className="brand-sub">Rejoignez la communauté FIFA 2026</p>
           </div>
 
           <div className="soc-grid">

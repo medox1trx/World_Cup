@@ -98,7 +98,7 @@ export default function Standings() {
             display: "block", 
             marginBottom: 16 
           }}>
-            FIFA World Cup 2030 Official
+            FIFA World Cup 2026 Official
           </span>
           <h1 style={{ 
             fontFamily: FONT.display, 
@@ -118,7 +118,7 @@ export default function Standings() {
             opacity: 0.8,
             fontWeight: 400
           }}>
-            Suivez la bataille pour la gloire éternelle au Maroc, en Espagne et au Portugal. Les deux premiers de chaque groupe accèdent à l'histoire.
+            Suivez la bataille pour la gloire éternelle aux USA, au Mexique et au Canada. Les deux premiers de chaque groupe accèdent à l'histoire.
           </p>
         </div>
       </section>

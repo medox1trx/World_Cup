@@ -121,7 +121,7 @@ export default function Teams() {
       }}>
         <div style={{ position: "absolute", top: "-20%", left: "-10%", width: 600, height: 600, background: `radial-gradient(circle, ${C.red}22 0%, transparent 70%)`, borderRadius: "50%", filter: "blur(60px)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto" }}>
-          <span style={{ color: C.red, fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10, display: "block", marginBottom: 10 }}>FIFA World Cup 2030</span>
+          <span style={{ color: C.red, fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10, display: "block", marginBottom: 10 }}>FIFA World Cup 2026</span>
           <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(2.2rem, 8vw, 5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, marginBottom: 20 }}>Nations</h1>
           <p style={{ maxWidth: 600, margin: "0 auto 32px", fontSize: "clamp(14px, 1.5vw, 18px)", opacity: 0.8 }}>Découvrez les équipes qui s'affronteront pour le titre mondial.</p>
 

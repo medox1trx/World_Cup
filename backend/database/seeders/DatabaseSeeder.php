@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             HospitalitySeeder::class,
             TicketSeeder::class,
             TeamSeeder::class,
+            MatchesSeeder::class,
         ]);
     }
 }

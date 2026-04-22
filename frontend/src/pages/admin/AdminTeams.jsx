@@ -181,7 +181,7 @@ export default function AdminTeams() {
           <div className="admin-header">
             <div>
               <h1 className="admin-title">Gestion des Équipes</h1>
-              <p className="admin-sub">Gérer les nations participant à la Coupe du Monde 2030</p>
+              <p className="admin-sub">Gérer les nations participant à la Coupe du Monde 2026</p>
             </div>
             <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
               <FiPlus /> Ajouter une équipe

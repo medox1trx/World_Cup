@@ -5,14 +5,14 @@ const ThemeContext = createContext(null);
 export function ThemeProvider({ children }) {
   const [darkMode, setDarkMode] = useState(() => {
     try {
-      const saved = localStorage.getItem("fifa2030_theme");
+      const saved = localStorage.getItem("fifa2026_theme");
       return saved ? saved === "dark" : true;
     } catch { return true; }
   });
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
-    localStorage.setItem("fifa2030_theme", darkMode ? "dark" : "light");
+    localStorage.setItem("fifa2026_theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
   const toggleTheme = () => setDarkMode(d => !d);

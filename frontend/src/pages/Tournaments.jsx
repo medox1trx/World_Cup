@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FONT, C } from "./Home/constants";
 
 const HISTORY = [
-  { year: "2030", host: "Maroc / Espagne / Portugal", winner: "À venir", img: "https://www.atalayar.com/media/atalayar/images/2023/10/19/2023101911255391424.jpg" },
+  { year: "2026", host: "USA / Mexique / Canada", winner: "À venir", img: "https://www.atalayar.com/media/atalayar/images/2023/10/19/2023101911255391424.jpg" },
   { year: "2026", host: "USA / Canada / Mexique", winner: "À venir", img: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=800&q=80" },
   { year: "2022", host: "Qatar", winner: "Argentine", img: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80" },
   { year: "2018", host: "Russie", winner: "France", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&q=80" },
@@ -49,7 +49,7 @@ export default function Tournaments() {
               
               <div style={{ padding: 40 }}>
                 <span style={{ color: "#c8102e", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 12 }}>
-                  {h.year === "2030" || h.year === "2026" ? "ÉDITION FUTURE" : "VAINQUEUR"}
+                  {h.year === "2026" ? "ÉDITION FUTURE" : "VAINQUEUR"}
                 </span>
                 <h3 style={{ fontFamily: FONT.display, fontSize: 32, fontWeight: 900, textTransform: "uppercase", marginBottom: 16 }}>{h.winner}</h3>
                 <div style={{ color: "#666", fontSize: 16, fontWeight: 600 }}>📍 {h.host}</div>

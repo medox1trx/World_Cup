@@ -94,7 +94,7 @@ export default function Matches() {
         <div style={{ textAlign: "center", marginBottom: clampValue(32, 56) }}>
           <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(2rem, 7vw, 5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, marginBottom: 16 }}>Calendrier</h1>
           <p style={{ color: "#666", fontSize: "clamp(13px, 1.2vw, 16px)", maxWidth: 550, margin: "0 auto", lineHeight: 1.5 }}>
-            Consultez le programme complet des 104 matchs de la Coupe du Monde FIFA 2030™. Filtrez par groupe ou par phase pour ne rien manquer.
+            Consultez le programme complet des 104 matchs de la Coupe du Monde FIFA 2026™. Filtrez par groupe ou par phase pour ne rien manquer.
           </p>
         </div>
 

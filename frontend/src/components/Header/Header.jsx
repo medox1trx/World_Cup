@@ -663,12 +663,12 @@ export default function Header({ onOpenAdminSidebar }) {
           </button>
 
           <Link to="/" className="hdr-logo">
-            <img src="/WC26_Logo.avif" alt="FIFA World Cup 2030"
+            <img src="/WC26_Logo.avif" alt="FIFA World Cup 2026"
               onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
             />
             <div className="hdr-logo-fb">
               <span className="t1">WORLD CUP</span>
-              <span className="t2">2030 ™</span>
+              <span className="t2">2026 ™</span>
             </div>
           </Link>
 

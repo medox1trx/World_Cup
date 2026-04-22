@@ -129,7 +129,7 @@ export default function TeamDetail() {
               </div>
               
               <p style={{ fontSize: 16, lineHeight: 1.6, color: theme.subText, margin: 0 }}>
-                {team.description || `${team.name} participe à la Coupe du Monde 2030 avec de grandes ambitions.`}
+                {team.description || `${team.name} participe à la Coupe du Monde 2026 avec de grandes ambitions.`}
               </p>
             </div>
 

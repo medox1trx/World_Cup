@@ -179,7 +179,7 @@ export default function News() {
                 <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
                     <span style={{ color: tSubText, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                      {item.source?.name || item.tag || "FIFA 2030"}
+                      {item.source?.name || item.tag || "FIFA 2026"}
                     </span>
                     <span style={{ display: "flex", alignItems: "center", gap: 5, color: tSubText, fontSize: 11, fontWeight: 600 }}>
                       <FiCalendar size={14} /> {formatDate(item.publishedAt || item.date)}
@@ -206,7 +206,7 @@ export default function News() {
         <div style={{ background: tCardBg, borderRadius: 10, border: `1px solid ${tBorder}`, padding: "clamp(40px,6vw,60px)", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: darkMode ? "none" : "0 20px 40px rgba(0,0,0,0.04)" }}>
           <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(${tDot} 1px,transparent 1px)`, backgroundSize: "20px 20px" }} />
           <h2 style={{ fontFamily: FONT_D, position: "relative", fontSize: "clamp(2rem,4vw,3.5rem)", fontWeight: 800, textTransform: "uppercase", margin: "0 0 16px", color: tText }}>Restez Connectés</h2>
-          <p style={{ color: tSubText, fontFamily: FONT_B, fontSize: 14, maxWidth: 500, margin: "0 auto 32px", position: "relative" }}>Abonnez-vous à notre newsletter pour recevoir les exclusivités sur la préparation de la Coupe du Monde 2030.</p>
+          <p style={{ color: tSubText, fontFamily: FONT_B, fontSize: 14, maxWidth: 500, margin: "0 auto 32px", position: "relative" }}>Abonnez-vous à notre newsletter pour recevoir les exclusivités sur la préparation de la Coupe du Monde 2026.</p>
           <div style={{ display: "flex", justifyContent: "center", gap: 10, maxWidth: 400, margin: "0 auto", position: "relative" }}>
             <input type="email" placeholder="votre@email.com" style={{ flex: 1, background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, padding: "0 20px", color: tText, fontFamily: FONT_B, fontSize: 14, outline: "none" }} />
             <button className="btn-shim" style={{ background: tBtnBg, color: tBtnText, border: "none", padding: "14px 24px", borderRadius: 100, display: "flex", alignItems: "center", gap: 8, fontFamily: FONT_B, fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer" }}>
