@@ -8,6 +8,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TickerController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\JoueurController;
+use App\Http\Controllers\GroupController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -94,6 +95,9 @@ Route::prefix('v1')->group(function () {
     // Teams (Public)
     Route::get('/teams', [TeamController::class, 'index']);
     Route::get('/teams/{team}', [TeamController::class, 'show']);
+
+    // Groups (Public)
+    Route::get('/groups', [GroupController::class, 'index']);
 
     // Joueurs (Public)
     Route::get('/joueurs', [JoueurController::class, 'index']);

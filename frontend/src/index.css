@@ -8,37 +8,37 @@
   padding: 0;
 }
 
+/* Dark mode overrides - Sync with ThemeContext's data-theme="dark" */
+[data-theme="dark"] {
+  --main-bg: #0d0d0d;
+  --text-main: #fcfcfc;
+  --text-main-rgb: 252, 252, 252;
+  --border-main: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --text-muted: rgba(255, 255, 255, 0.45);
+  --btn-bg: #ffffff;
+  --btn-text: #0d0d0d;
+  --card-bg: #111111;
+  --accent-color: #ef4444;
+}
+
 :root {
   --container-max: 1400px;
   --container-narrow: 1100px;
   --section-pad-y: 80px; 
   --section-pad-x: 32px; 
   --header-height: 102px; 
-  --main-bg: #ffffff;
+  --main-bg: #fdfdfd;
   --text-main: #0a0a0a;
+  --text-main-rgb: 10, 10, 10;
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --border-main: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.2);
+  --btn-bg: #0d0d0d;
+  --btn-text: #ffffff;
+  --card-bg: #ffffff;
+  --accent-color: #c8102e;
   --card-radius: 12px;
-  --button-radius: 8px;
-
-  /* ── Global Icon Size Scale ─────────────────────────────────
-   * xs  : tiny inline labels / badges            12px
-   * sm  : inline text icons, meta info           14px
-   * md  : default UI icons (buttons, inputs)     16px
-   * lg  : standalone icon buttons, nav chevrons  18px
-   * xl  : feature icons (cards, sections)        20px
-   * 2xl : hero / display icons                   24px
-   * ─────────────────────────────────────────────────────── */
-  --icon-xs:  12px;
-  --icon-sm:  14px;
-  --icon-md:  16px;
-  --icon-lg:  18px;
-  --icon-xl:  20px;
-  --icon-2xl: 24px;
-}
-
-/* Dark mode overrides */
-.dark-mode {
-  --main-bg: #0d0d0d;
-  --text-main: #f5f5f5;
 }
 
 html { 

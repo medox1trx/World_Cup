@@ -18,7 +18,7 @@ const NAV = [
     label: "Compétition",
     children: [
       { label: "Résultats & Calendrier", href: "/matches" },
-      { label: "Classements", href: "/standings" },
+      { label: "Groupes & Classements", href: "/standings" },
       { label: "Équipes", href: "/teams" },
       { label: "Qualifications", href: "/qualifications" },
     ],

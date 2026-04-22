@@ -120,28 +120,29 @@ class ApiController extends Controller
     // ── GET /api/v1/standings ────────────────────────────────
     public function standings(): JsonResponse
     {
-        $standings = TeamStanding::orderBy('group_name')->orderBy('position')->get();
+        $groups = \App\Models\Group::with('teams')->get();
         
-        $grouped = $standings->groupBy('group_name')->map(function ($items, $group) {
+        $grouped = $groups->map(function ($group) {
             return [
-                'name' => $group,
-                'teams' => $items->map(function ($t) {
+                'name' => $group->name,
+                'teams' => $group->teams->map(function ($t, $idx) {
                     return [
-                        'pos' => $t->position,
-                        'team' => $t->team_name,
-                        'code' => $t->team_code,
-                        'pld' => $t->played,
-                        'w'   => $t->won,
-                        'd'   => $t->drawn,
-                        'l'   => $t->lost,
-                        'gf'  => $t->goals_for,
-                        'ga'  => $t->goals_against,
-                        'gd'  => $t->goal_difference,
-                        'pts' => $t->points
+                        'id'   => $t->id,
+                        'pos'  => $idx + 1,
+                        'team' => $t->name,
+                        'code' => $t->flag, // using flag as code for the UI
+                        'pld'  => 0,
+                        'w'    => 0,
+                        'd'    => 0,
+                        'l'    => 0,
+                        'gf'   => 0,
+                        'ga'   => 0,
+                        'gd'   => 0,
+                        'pts'  => 0
                     ];
                 })
             ];
-        })->values();
+        });
 
         return response()->json($grouped);
     }

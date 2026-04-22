@@ -53,8 +53,8 @@ const IMG = {
 
 // ─── TICKER ───────────────────────────────────────────────────
 export const TICKER_ITEMS = [
-  "Coupe du Monde FIFA 2026™ : J-X avant le coup d'envoi au Mexique",
-  "Estadio Azteca prêt pour l'ouverture : Mexique vs Équateur le 11 juin",
+  "Coupe du Monde FIFA 2026™ : J-X avant le coup d'envoi au Mexico",
+  "Estadio Azteca prêt pour l'ouverture : Mexico vs Ecuador le 11 juin",
   "Billets Phase Finale : le MetLife Stadium affiche complet pour le 19 juillet",
   "FIFA 2026 : diffusion mondiale assurée dans 210 pays",
   "48 nations · 104 matchs · 3 pays hôtes · 11 juin – 19 juillet 2026",
@@ -71,7 +71,7 @@ export const NEWS_FEATURED = {
 
 export const NEWS_SIDE = [
   { tag:"Stades",  title:"Le SoFi Stadium de Los Angeles prêt pour les grands rendez-vous",       date:"21 Avr 2026", img: IMG.stadium },
-  { tag:"Équipes", title:"Le Mexique dévoile son effectif pour le match d'ouverture",             date:"20 Avr 2026", img: IMG.crowd   },
+  { tag:"Équipes", title:"Le Mexico dévoile son effectif pour le match d'ouverture",             date:"20 Avr 2026", img: IMG.crowd   },
   { tag:"Billets", title:"Phase finale : record de ventes pour les matchs à New York",            date:"19 Avr 2026", img: IMG.fans    },
   { tag:"Médias",  title:"Technologie : la VAR 2.0 sera déployée dans les 16 stades hôtes",       date:"18 Avr 2026", img: IMG.pitch   },
 ];
@@ -89,16 +89,16 @@ export const GROUPS = [
     teams:[
       { pos:1, team:"USA",      code:"us", pld:"—", gd:"—", pts:"—" },
       { pos:2, team:"Panama",   code:"pa", pld:"—", gd:"—", pts:"—" },
-      { pos:3, team:"Albanie",  code:"al", pld:"—", gd:"—", pts:"—" },
+      { pos:3, team:"Albania",  code:"al", pld:"—", gd:"—", pts:"—" },
       { pos:4, team:"Ukraine",  code:"ua", pld:"—", gd:"—", pts:"—" },
     ],
   },
   {
     name:"Groupe B",
     teams:[
-      { pos:1, team:"Mexique",  code:"mx", pld:"—", gd:"—", pts:"—" },
-      { pos:2, team:"Équateur", code:"ec", pld:"—", gd:"—", pts:"—" },
-      { pos:3, team:"Jamaïque", code:"jm", pld:"—", gd:"—", pts:"—" },
+      { pos:1, team:"Mexico",   code:"mx", pld:"—", gd:"—", pts:"—" },
+      { pos:2, team:"Ecuador",  code:"ec", pld:"—", gd:"—", pts:"—" },
+      { pos:3, team:"Jamaica",  code:"jm", pld:"—", gd:"—", pts:"—" },
       { pos:4, team:"Venezuela",code:"ve", pld:"—", gd:"—", pts:"—" },
     ],
   },
@@ -106,8 +106,8 @@ export const GROUPS = [
     name:"Groupe C",
     teams:[
       { pos:1, team:"Canada",   code:"ca", pld:"—", gd:"—", pts:"—" },
-      { pos:2, team:"Maroc",    code:"ma", pld:"—", gd:"—", pts:"—" },
-      { pos:3, team:"Belgique", code:"be", pld:"—", gd:"—", pts:"—" },
+      { pos:2, team:"Morocco",  code:"ma", pld:"—", gd:"—", pts:"—" },
+      { pos:3, team:"Belgium",  code:"be", pld:"—", gd:"—", pts:"—" },
       { pos:4, team:"Honduras", code:"hn", pld:"—", gd:"—", pts:"—" },
     ],
   },
@@ -115,16 +115,16 @@ export const GROUPS = [
 
 export const TOP_SCORERS = [
   { player:"Kylian Mbappé", team:"France",     code:"fr", goals:0, assists:0 },
-  { player:"Lionel Messi",  team:"Argentine",  code:"ar", goals:0, assists:0 },
-  { player:"Vinicius Jr.",  team:"Brésil",     code:"br", goals:0, assists:0 },
+  { player:"Lionel Messi",  team:"Argentina",  code:"ar", goals:0, assists:0 },
+  { player:"Vinicius Jr.",  team:"Brazil",     code:"br", goals:0, assists:0 },
   { player:"Christian Pulisic", team:"USA",    code:"us", goals:0, assists:0 },
-  { player:"S. Giménez",    team:"Mexique",    code:"mx", goals:0, assists:0 },
+  { player:"S. Giménez",    team:"Mexico",     code:"mx", goals:0, assists:0 },
 ];
 
 // ─── FIFA 2026 host nations: USA · Mexico · Canada
 export const HOST_CITIES = [
   { city:"USA",      country:"Nation hôte · 11 villes", code:"us", bg:"#002868" },
-  { city:"Mexique",  country:"Nation hôte · 3 villes",  code:"mx", bg:"#006847" },
+  { city:"Mexico",   country:"Nation hôte · 3 villes",  code:"mx", bg:"#006847" },
   { city:"Canada",   country:"Nation hôte · 2 villes",  code:"ca", bg:"#FF0000" },
 ];
 
@@ -152,7 +152,7 @@ export const MATCHES = [
   {
     id: 1,
     stage: "group", group_name: "Groupe B",
-    home_team: "Mexique",    away_team: "Équateur",
+    home_team: "Mexico",     away_team: "Ecuador",
     match_date: "2026-06-11", match_time: "19:00",
     venue: "Estadio Azteca", city: "Mexico City",
     status: "upcoming", home_score: null, away_score: null,
@@ -168,7 +168,7 @@ export const MATCHES = [
   {
     id: 3,
     stage: "group", group_name: "Groupe C",
-    home_team: "Canada",     away_team: "Belgique",
+    home_team: "Canada",     away_team: "Belgium",
     match_date: "2026-06-13", match_time: "18:00",
     venue: "BC Place", city: "Vancouver",
     status: "upcoming", home_score: null, away_score: null,
@@ -176,7 +176,7 @@ export const MATCHES = [
   {
     id: 4,
     stage: "group", group_name: "Groupe D",
-    home_team: "Espagne",    away_team: "Brésil",
+    home_team: "Spain",      away_team: "Brazil",
     match_date: "2026-06-14", match_time: "21:00",
     venue: "MetLife Stadium", city: "New York",
     status: "upcoming", home_score: null, away_score: null,
@@ -184,7 +184,7 @@ export const MATCHES = [
   {
     id: 5,
     stage: "group", group_name: "Groupe E",
-    home_team: "France",     away_team: "Argentine",
+    home_team: "France",     away_team: "Argentina",
     match_date: "2026-06-15", match_time: "21:00",
     venue: "AT&T Stadium", city: "Dallas",
     status: "upcoming", home_score: null, away_score: null,
@@ -192,7 +192,7 @@ export const MATCHES = [
   {
     id: 6,
     stage: "group", group_name: "Groupe F",
-    home_team: "Allemagne",  away_team: "Portugal",
+    home_team: "Germany",    away_team: "Portugal",
     match_date: "2026-06-16", match_time: "18:00",
     venue: "Gillette Stadium", city: "Boston",
     status: "upcoming", home_score: null, away_score: null,

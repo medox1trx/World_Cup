@@ -1,5 +1,23 @@
 import axios from "axios";
 
+export const getImageUrl = (path) => {
+  const NO_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Crect width='150' height='150' fill='%23ccc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%23777'%3EAucune Image%3C/text%3E%3C/svg%3E";
+  
+  if (!path) return NO_IMAGE;
+  
+  // IF photo starts with "http": use it directly
+  if (path.startsWith("http")) return path;
+  
+  // ELSE: prepend /storage/ (and include host to ensure it works on local dev)
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  if (cleanPath.startsWith('/storage/')) {
+    return `http://localhost:8000${cleanPath}`;
+  }
+  
+  // Handle 'uploads/...' or other relative storage paths
+  return `http://localhost:8000/storage/${path.startsWith('/') ? path.slice(1) : path}`;
+};
+
 const api = axios.create({
   baseURL: "http://localhost:8000/api/v1",
   headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -103,17 +121,26 @@ export const deleteHospitality = (id) => api.delete(`/admin/hospitalities/${id}`
 // c:\Users\HP\Desktop\ProjetSyntese\World_Cup\frontend\src\services\api.js
 
 // ── Teams ───────────────────────────────────────────────────
-export const getTeams = () => api.get("/teams");
+export const getTeams = (params = {}) => api.get("/teams", { params });
 export const getTeam = (id) => api.get(`/teams/${id}`);
 export const createTeam = (data) => api.post("/admin/teams", data);
-export const updateTeam = (id, data) => api.put(`/admin/teams/${id}`, data);
+export const updateTeam = (id, data) => {
+  if (data instanceof FormData) return api.post(`/admin/teams/${id}`, data);
+  return api.put(`/admin/teams/${id}`, data);
+};
 export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);
+
+// ── Groups ──────────────────────────────────────────────────
+export const getGroups = () => api.get("/groups");
 
 // ── Joueurs ──────────────────────────────────────────────────
 export const getJoueurs = () => api.get("/joueurs");
 export const adminGetJoueurs = () => api.get("/admin/joueurs");
 export const createJoueur = (data) => api.post("/admin/joueurs", data);
-export const updateJoueur = (id, data) => api.put(`/admin/joueurs/${id}`, data);
+export const updateJoueur = (id, data) => {
+  if (data instanceof FormData) return api.post(`/admin/joueurs/${id}`, data);
+  return api.put(`/admin/joueurs/${id}`, data);
+};
 export const deleteJoueur = (id) => api.delete(`/admin/joueurs/${id}`);
 
 

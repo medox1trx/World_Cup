@@ -1,39 +1,30 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { FONT, C, CODES, getCode } from "./Home/constants";
-import { Flag } from "./Home/ui";
-import { FiSearch, FiStar, FiAward, FiAlertCircle, FiRefreshCw } from "react-icons/fi";
+import { getTeams, getImageUrl } from "../services/api";
+import { FONT, C } from "./Home/constants";
+import { Flag, SectionHead } from "./Home/ui";
+import { FiSearch, FiStar, FiAlertCircle, FiArrowRight } from "react-icons/fi";
 import { useTheme } from "../context/ThemeContext";
-
-const API_BASE_URL = "http://localhost:8000/api/v1";
 
 export default function Teams() {
   const navigate = useNavigate();
   const { darkMode } = useTheme();
+  
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
-
-  const clampValue = (min, max) => `clamp(${min}px, ${(max / 12.8).toFixed(2)}vw, ${max}px)`;
-
-  const theme = {
-    bg: darkMode ? "#080808" : "#f8f9fa",
-    card: darkMode ? "#111111" : "#ffffff",
-    text: darkMode ? "#ffffff" : "#0d0d0d",
-    subText: darkMode ? "#888" : "#666",
-    border: darkMode ? "rgba(255,255,255,0.08)" : "#eeeeee",
-    accent: C.red,
-    inputBg: darkMode ? "#1a1a1a" : "#f8f8f8",
-  };
+  const [selectedConfed, setSelectedConfed] = useState("All");
+  const [mounted, setMounted] = useState(false);
+  const confederations = ["All", "UEFA", "CAF", "CONMEBOL", "CONCACAF", "AFC", "OFC"];
 
   useEffect(() => {
+    setMounted(true);
     const fetchTeams = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE_URL}/teams`);
-        setTeams(res.data);
+        const data = await getTeams();
+        setTeams(data || []);
       } catch (err) {
         console.error("Failed to fetch teams:", err);
         setError("Impossible de charger les équipes.");
@@ -44,172 +35,210 @@ export default function Teams() {
     fetchTeams();
   }, []);
 
-  const filteredTeams = teams.filter(t =>
-    t.name.toLowerCase().includes(search.toLowerCase()) ||
-    t.group_name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  if (loading) {
-    return (
-      <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: theme.bg, color: theme.text }}>
-        <div style={{ animation: "spin 1s linear infinite", border: `3px solid ${theme.border}`, borderTop: `3px solid ${theme.accent}`, borderRadius: "50%", width: 40, height: 40 }} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: theme.bg, color: theme.text, padding: 40, textAlign: "center" }}>
-        <FiAlertCircle size={48} color={theme.accent} style={{ marginBottom: 20 }} />
-        <h2 style={{ fontFamily: FONT.display, fontSize: 32, marginBottom: 16 }}>Oups !</h2>
-        <p style={{ color: theme.subText, maxWidth: 400 }}>{error}</p>
-        <button onClick={() => window.location.reload()} style={{ marginTop: 24, padding: "12px 24px", background: theme.accent, color: "white", border: "none", borderRadius: 12, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-          <FiRefreshCw /> Réessayer
-        </button>
-      </div>
-    );
-  }
+  const filteredTeams = teams.filter(t => {
+    const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
+                          (t.group?.name || "").toLowerCase().includes(search.toLowerCase());
+    const matchesConfed = selectedConfed === "All" || t.confederation === selectedConfed;
+    return matchesSearch && matchesConfed;
+  });
 
   return (
     <div style={{
-      fontFamily: FONT.body,
-      background: theme.bg,
-      color: theme.text,
+      fontFamily: "'Barlow', sans-serif",
+      background: "var(--main-bg)",
+      color: "var(--text-main)",
       minHeight: "100vh",
-      transition: "background 0.3s, color 0.3s",
-      paddingBottom: 100
+      opacity: mounted ? 1 : 0,
+      transition: "background 0.3s, color 0.3s, opacity 0.4s",
+      paddingBottom: 150
     }}>
       <style>{`
-        .teams-hero { padding: clamp(32px, 6vh, 100px) var(--section-pad-x); max-width: 1380px; margin: 0 auto; }
-        .search-container { position: relative; max-width: 600px; margin: 0 auto; }
-        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: clamp(12px, 2vw, 20px); }
-        .team-card {
-          background: ${theme.card}; borderRadius: 16px; overflow: hidden; border: 1px solid ${theme.border};
-          box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.3s;
+        .hw { max-width: 1380px; margin: 0 auto; padding: 0 clamp(16px,3vw,48px); }
+        .teams-grid { 
+          display: grid; 
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+          gap: 24px;
         }
-        .team-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+        .pkg { 
+          background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--border-main);
+          transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+        .pkg:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
         .team-card-img {
           width: 100%;
-          height: clamp(120px, 18vh, 180px);
+          height: 220px;
           object-fit: cover;
-          object-position: center top;
           display: block;
-          background: ${darkMode ? "#1a1a1a" : "#f5f5f5"};
+          transition: transform 0.5s ease;
         }
-        .team-card-badge { position: absolute; top: 10px; right: 10px; }
+        .pkg:hover .team-card-img { transform: scale(1.05); }
+        
+        .filter-tabs { 
+          display: flex; gap: 8px; margin-bottom: 40px; overflow-x: auto; scrollbar-width: none;
+        }
+        .filter-btn {
+          background: transparent; color: var(--text-muted); border: 1px solid var(--border-main);
+          padding: 10px 22px; borderRadius: 100px; fontSize: 11px; fontWeight: 800; cursor: pointer;
+          whiteSpace: nowrap; transition: all 0.2s;
+          text-transform: uppercase; letter-spacing: 0.08em;
+          font-family: 'Barlow', sans-serif;
+        }
+        .filter-btn.active { background: var(--btn-bg); color: var(--btn-text); border-color: var(--btn-bg); }
+        .filter-btn:hover:not(.active) { border-color: var(--text-muted); color: var(--text-main); }
+
+        .search-wrap {
+          max-width: 400px; position: relative; margin-bottom: 40px;
+        }
+        .search-input {
+          width: 100%; padding: 12px 20px 12px 52px; border-radius: 100px;
+          background: rgba(var(--text-main-rgb), 0.03); border: 1px solid var(--border-main);
+          color: var(--text-main); font-family: 'Barlow', sans-serif; font-size: 14px; outline: none;
+          transition: 0.3s;
+        }
+        .search-input:focus { border-color: var(--border-hover); }
+
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 600px) {
-          .team-card-body { padding: 14px !important; }
-          .team-card-title { font-size: 18px !important; }
-          .teams-hero { padding: 80px 10px 16px !important; }
-          .teams-hero h1 { font-size: clamp(2rem, 8vw, 4rem) !important; }
-          .search-container input { padding: 10px 14px 10px 36px !important; font-size: 13px !important; }
-          .team-card-img { height: 140px !important; }
-          .team-card-badge { top: 8px; right: 8px; }
+        @media (max-width: 640px) {
+           .teams-grid { grid-template-columns: 1fr; }
         }
       `}</style>
 
-      {/* HEADER SECTION - Matching Standings style but simplified */}
-      <section style={{
-        padding: "clamp(48px, 10vh, 100px) var(--section-pad-x) clamp(60px, 12vh, 80px)",
-        background: darkMode ? "#000" : `linear-gradient(135deg, ${C.black} 0%, #1a1a1a 100%)`,
-        color: "white",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
-        marginBottom: 40
-      }}>
-        <div style={{ position: "absolute", top: "-20%", left: "-10%", width: 600, height: 600, background: `radial-gradient(circle, ${C.red}22 0%, transparent 70%)`, borderRadius: "50%", filter: "blur(60px)" }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto" }}>
-          <span style={{ color: C.red, fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10, display: "block", marginBottom: 10 }}>FIFA World Cup 2026</span>
-          <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(2.2rem, 8vw, 5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, marginBottom: 20 }}>Nations</h1>
-          <p style={{ maxWidth: 600, margin: "0 auto 32px", fontSize: "clamp(14px, 1.5vw, 18px)", opacity: 0.8 }}>Découvrez les équipes qui s'affronteront pour le titre mondial.</p>
+      <section style={{ position: "relative", minHeight: "45vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(var(--text-muted) 0.5px,transparent 0.5px)`, opacity: 0.1, backgroundSize: "32px 32px", zIndex: 1 }} />
+        <div style={{ 
+          position: "absolute", inset: 0, 
+          background: darkMode ? "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0) 100%)" : "linear-gradient(to top, #fdfdfd 0%, rgba(253,253,253,0) 100%)", 
+          zIndex: 1 
+        }} />
+        
+        <div className="hw" style={{ position: "relative", zIndex: 2, width: "100%", padding: "clamp(100px,12vh,150px) clamp(16px,3vw,48px) 48px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+            <div style={{ height: 1, width: 36, background: "var(--border-hover)", flexShrink: 0 }} />
+            <span style={{ color: "var(--text-muted)", fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>Hub Nations Officielles</span>
+          </div>
+          
+          <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(42px,8vw,90px)", fontWeight: 900, lineHeight: 0.85, textTransform: "uppercase", letterSpacing: "-0.02em", margin: 0 }}>
+            LES ÉQUIPES <span style={{ color: "transparent", WebkitTextStroke: darkMode ? "1.5px rgba(255,255,255,0.6)" : "1.5px rgba(0,0,0,0.2)" }}>MONDIALES</span>
+          </h1>
+        </div>
+      </section>
 
-          <div className="search-container">
-            <FiSearch style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#aaa" }} size={14} />
-            <input
+      <main className="hw" style={{ position: "relative", marginTop: 40 }}>
+        
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 20 }}>
+          <div className="search-wrap">
+            <FiSearch style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", zIndex: 1 }} size={16} />
+            <input 
+              className="search-input"
               type="text"
-              placeholder="Rechercher une nation, un groupe..."
+              placeholder="Rechercher une nation..."
+              style={{ background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)" }}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 100,
-                padding: "14px 18px 14px 42px",
-                color: "#ffffff",
-                fontSize: 14,
-                width: "100%",
-                outline: "none",
-                fontFamily: FONT.body,
-                transition: "0.2s",
-                backdropFilter: "blur(10px)"
-              }}
             />
           </div>
-        </div>
-      </section>
 
-      <section className="teams-hero" style={{ paddingTop: 0 }}>
-        <div className="teams-grid">
-          {filteredTeams.map((t, i) => (
-            <div 
-              key={t.id || i} 
-              className="team-card" 
-              onClick={() => navigate(`/teams/${t.id}`)}
-              style={{ cursor: "pointer" }}
-            >
-              <div style={{ position: "relative", overflow: "hidden" }}>
-                <img
-                  src={t.image_url || t.img}
-                  alt={t.name}
-                  className="team-card-img"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                <div style={{ display: 'none', position: 'absolute', inset: 0, background: darkMode ? '#1a1a1a' : '#f0f0f0', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 32, fontWeight: 900, color: darkMode ? '#333' : '#ddd', textTransform: 'uppercase' }}>{t.name.charAt(0)}</span>
-                </div>
-                <div className="team-card-badge">
-                   <Flag code={t.flag} size={20} />
-                </div>
-              </div>
-
-              <div className="team-card-body" style={{ padding: "clamp(14px, 2.5vw, 24px)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                  <div>
-                    <h3 className="team-card-title" style={{ fontFamily: FONT.display, fontSize: "clamp(18px, 3.5vw, 28px)", fontWeight: 900, textTransform: "uppercase", margin: 0, lineHeight: 1, color: theme.text }}>{t.name}</h3>
-                    <span style={{ color: C.red, fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.group_name}</span>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: 18, fontWeight: 900, color: theme.text }}>#{t.world_ranking}</span>
-                    <span style={{ display: "block", fontSize: 7, fontWeight: 800, color: theme.subText, textTransform: "uppercase" }}>FIFA Rank</span>
-                  </div>
-                </div>
-
-                <div style={{ background: darkMode ? "rgba(255,255,255,0.02)" : "#fcfcfc", border: `1px solid ${theme.border}`, borderRadius: 12, padding: "10px 12px", display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: theme.border, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <FiStar color={C.red} size={12} />
-                  </div>
-                  <div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: theme.text, display: "block" }}>{t.key_player}</span>
-                    <span style={{ fontSize: 8, color: theme.subText, fontWeight: 600 }}>Joueur clé</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredTeams.length === 0 && (
-          <div style={{ textAlign: "center", padding: "80px 0" }}>
-            <p style={{ color: theme.subText }}>Aucune équipe ne correspond à votre recherche.</p>
+          <div className="filter-tabs">
+            {confederations.map(confed => (
+              <button
+                key={confed}
+                className={`filter-btn ${selectedConfed === confed ? 'active' : ''}`}
+                onClick={() => setSelectedConfed(confed)}
+              >
+                {confed === "All" ? "Toutes" : confed}
+              </button>
+            ))}
           </div>
+        </div>
+
+        {loading ? (
+          <div className="teams-grid">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} style={{ height: 380, borderRadius: 10, background: "var(--border-main)", animation: "pulse 1.5s infinite" }} />
+            ))}
+          </div>
+        ) : error ? (
+          <div style={{ textAlign: "center", padding: "100px 0" }}>
+            <FiAlertCircle size={48} color={C.red} style={{ marginBottom: 16 }} />
+            <h2 style={{ fontSize: 24, fontWeight: 900 }}>{error}</h2>
+            <button onClick={() => window.location.reload()} style={{ marginTop: 20, background: "var(--btn-bg)", color: "var(--btn-text)", padding: "12px 24px", borderRadius: 8, border: "none", fontWeight: 800, cursor: "pointer", textTransform: "uppercase", fontSize: 12 }}>Réessayer</button>
+          </div>
+        ) : (
+          <>
+            <div className="teams-grid">
+              {filteredTeams.map((t) => (
+                <div 
+                  key={t.id} 
+                  className="pkg" 
+                  onClick={() => navigate(`/teams/${t.id}`)}
+                  style={{ cursor: "pointer", position: "relative", textDecoration: "none", color: "var(--text-main)" }}
+                >
+                  <div style={{ position: "relative", height: 220, overflow: "hidden" }}>
+                    <img
+                      src={getImageUrl(t.hero_image || t.flag)}
+                      alt={t.name}
+                      className="team-card-img"
+                      loading="lazy"
+                      onError={(e) => { e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360' viewBox='0 0 640 360'%3E%3Crect width='640' height='360' fill='%23ccc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23777'%3EFIFA World Cup 2026%3C/text%3E%3C/svg%3E"; }}
+                    />
+                    
+                    <div style={{ 
+                      position: "absolute", inset: 0,
+                      background: darkMode ? "linear-gradient(to top, rgba(17,17,17,0.95) 0%, transparent 60%)" : "linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 60%)",
+                      pointerEvents: "none"
+                    }} />
+
+                    <div style={{ 
+                      position: "absolute", bottom: -15, right: 20, 
+                      width: 44, height: 44, borderRadius: "50%", 
+                      background: "var(--card-bg)", padding: 3, 
+                      boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      zIndex: 10, border: `1px solid var(--border-main)`
+                    }}>
+                      <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+                         <Flag code={t.flag} size={44} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="team-card-body" style={{ padding: "28px 24px 24px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                      <div>
+                        <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 26, fontWeight: 900, textTransform: "uppercase", margin: 0, color: "var(--text-main)", letterSpacing: "0.01em", lineHeight: 1 }}>{t.name}</h3>
+                        <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center" }}>
+                          <span style={{ color: "var(--accent-color)", fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em" }}>{t.group?.name || "TBD"}</span>
+                          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--text-muted)" }}></span>
+                          <span style={{ color: "var(--text-muted)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.confederation}</span>
+                        </div>
+                      </div>
+                      <div style={{ background: "rgba(var(--text-main-rgb), 0.05)", padding: "4px 10px", borderRadius: 4, border: `1px solid var(--border-main)` }}>
+                        <span style={{ fontSize: 13, fontWeight: 900, color: "var(--text-main)" }}>#{t.world_ranking || 0}</span>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 10 }}>
+                        <FiStar color="var(--accent-color)" size={14} />
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Vedette: <span style={{ color: "var(--text-main)" }}>{t.key_player || "Non défini"}</span></span>
+                    </div>
+
+                    <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 6, color: "var(--text-main)", fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                      Voir le profil <FiArrowRight size={14} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredTeams.length === 0 && (
+              <div style={{ textAlign: "center", padding: "100px 0" }}>
+                <FiAlertCircle size={40} color="var(--text-muted)" style={{ marginBottom: 16, opacity: 0.3 }} />
+                <p style={{ color: "var(--text-muted)", fontWeight: 700 }}>Aucune nation ne correspond à votre recherche.</p>
+              </div>
+            )}
+          </>
         )}
-      </section>
+      </main>
     </div>
   );
 }

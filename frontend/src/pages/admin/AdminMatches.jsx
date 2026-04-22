@@ -7,41 +7,56 @@ const FD = "'Barlow Condensed', sans-serif";
 const FB = "'Barlow', sans-serif";
 
 const WORLD_CUP_TEAMS = [
-  { code: "", name: "Sélectionner un pays" },
-  { code: "dz", name: "Algérie 🇩🇿" },
-  { code: "de", name: "Allemagne 🇩🇪" },
-  { code: "gb", name: "Angleterre 🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-  { code: "sa", name: "Arabie Saoudite 🇸🇦" },
-  { code: "ar", name: "Argentine 🇦🇷" },
-  { code: "au", name: "Australie 🇦🇺" },
-  { code: "be", name: "Belgique 🇧🇪" },
-  { code: "br", name: "Brésil 🇧🇷" },
-  { code: "cm", name: "Cameroun 🇨🇲" },
+  { code: "", name: "Select a country" },
+  { code: "al", name: "Albania 🇦🇱" },
+  { code: "dz", name: "Algeria 🇩🇿" },
+  { code: "ar", name: "Argentina 🇦🇷" },
+  { code: "au", name: "Australia 🇦🇺" },
+  { code: "be", name: "Belgium 🇧🇪" },
+  { code: "bo", name: "Bolivia 🇧🇴" },
+  { code: "br", name: "Brazil 🇧🇷" },
+  { code: "cm", name: "Cameroon 🇨🇲" },
   { code: "ca", name: "Canada 🇨🇦" },
-  { code: "co", name: "Colombie 🇨🇴" },
-  { code: "kr", name: "Corée du Sud 🇰🇷" },
-  { code: "hr", name: "Croatie 🇭🇷" },
-  { code: "dk", name: "Danemark 🇩🇰" },
-  { code: "eg", name: "Égypte 🇪🇬" },
-  { code: "ec", name: "Équateur 🇪🇨" },
-  { code: "es", name: "Espagne 🇪🇸" },
+  { code: "cl", name: "Chile 🇨🇱" },
+  { code: "co", name: "Colombia 🇨🇴" },
+  { code: "cr", name: "Costa Rica 🇨🇷" },
+  { code: "hr", name: "Croatia 🇭🇷" },
+  { code: "dk", name: "Denmark 🇩🇰" },
+  { code: "ec", name: "Ecuador 🇪🇨" },
+  { code: "eg", name: "Egypt 🇪🇬" },
+  { code: "gb", name: "England 🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
   { code: "fr", name: "France 🇫🇷" },
+  { code: "de", name: "Germany 🇩🇪" },
+  { code: "gh", name: "Ghana 🇬🇭" },
+  { code: "hn", name: "Honduras 🇭🇳" },
   { code: "ir", name: "Iran 🇮🇷" },
-  { code: "it", name: "Italie 🇮🇹" },
-  { code: "jp", name: "Japon 🇯🇵" },
-  { code: "ma", name: "Maroc 🇲🇦" },
-  { code: "mx", name: "Mexique 🇲🇽" },
+  { code: "it", name: "Italy 🇮🇹" },
+  { code: "ci", name: "Ivory Coast 🇨🇮" },
+  { code: "jm", name: "Jamaica 🇯🇲" },
+  { code: "jp", name: "Japan 🇯🇵" },
+  { code: "mx", name: "Mexico 🇲🇽" },
+  { code: "ma", name: "Morocco 🇲🇦" },
+  { code: "nl", name: "Netherlands 🇳🇱" },
+  { code: "nz", name: "New Zealand 🇳🇿" },
   { code: "ng", name: "Nigeria 🇳🇬" },
-  { code: "nl", name: "Pays-Bas 🇳🇱" },
-  { code: "pl", name: "Pologne 🇵🇱" },
+  { code: "pa", name: "Panama 🇵🇦" },
+  { code: "py", name: "Paraguay 🇵🇾" },
+  { code: "pe", name: "Peru 🇵🇪" },
+  { code: "pl", name: "Poland 🇵🇱" },
   { code: "pt", name: "Portugal 🇵🇹" },
   { code: "qa", name: "Qatar 🇶🇦" },
-  { code: "sn", name: "Sénégal 🇸🇳" },
-  { code: "rs", name: "Serbie 🇷🇸" },
-  { code: "ch", name: "Suisse 🇨🇭" },
-  { code: "tn", name: "Tunisie 🇹🇳" },
+  { code: "sa", name: "Saudi Arabia 🇸🇦" },
+  { code: "sn", name: "Senegal 🇸🇳" },
+  { code: "rs", name: "Serbia 🇷🇸" },
+  { code: "kr", name: "South Korea 🇰🇷" },
+  { code: "es", name: "Spain 🇪🇸" },
+  { code: "ch", name: "Switzerland 🇨🇭" },
+  { code: "tn", name: "Tunisia 🇹🇳" },
+  { code: "tr", name: "Turkey 🇹🇷" },
+  { code: "ua", name: "Ukraine 🇺🇦" },
   { code: "uy", name: "Uruguay 🇺🇾" },
   { code: "us", name: "USA 🇺🇸" },
+  { code: "ve", name: "Venezuela 🇻🇪" },
 ];
 
 export default function AdminMatches() {
@@ -322,7 +337,7 @@ export default function AdminMatches() {
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">Équipe Domicile</label>
-                  <input className="form-input" value={formData.home_team} onChange={e => setFormData({...formData, home_team: e.target.value})} required placeholder="Ex: Maroc" />
+                  <input className="form-input" value={formData.home_team} onChange={e => setFormData({...formData, home_team: e.target.value})} required placeholder="Ex: Morocco" />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Équipe Extérieur</label>
@@ -352,11 +367,11 @@ export default function AdminMatches() {
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">Stade / Venue</label>
-                  <input className="form-input" value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} required placeholder="Ex: Grand Stade de Casablanca" />
+                  <input className="form-input" value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} required placeholder="Ex: SoFi Stadium" />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Ville</label>
-                  <input className="form-input" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} required placeholder="Ex: Casablanca" />
+                  <input className="form-input" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} required placeholder="Ex: Los Angeles" />
                 </div>
               </div>
 
