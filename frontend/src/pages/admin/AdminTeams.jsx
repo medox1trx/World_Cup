@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import { FiPlus, FiTrash2, FiEdit2, FiSearch, FiStar } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiEdit2, FiSearch, FiStar, FiUsers } from "react-icons/fi";
 import { getTeams, createTeam, updateTeam, deleteTeam } from "../../services/api";
 
 const FD = "'Barlow Condensed', sans-serif";
@@ -22,6 +23,7 @@ const WORLD_CUP_COE_LIST = [
 ];
 
 export default function AdminTeams() {
+  const navigate = useNavigate();
   const { darkMode } = useTheme();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -224,8 +226,9 @@ export default function AdminTeams() {
                       </div>
                     </td>
                     <td>
-                      <button className="btn-icon" onClick={() => handleEdit(t)}><FiEdit2 size={16} /></button>
-                      <button className="btn-icon delete" onClick={() => handleDelete(t.id)}><FiTrash2 size={16} /></button>
+                      <button className="btn-icon" title="Modifier" onClick={() => handleEdit(t)}><FiEdit2 size={16} /></button>
+                      <button className="btn-icon" title="Gérer les joueurs" onClick={() => navigate('/admin/joueurs')}><FiUsers size={16} /></button>
+                      <button className="btn-icon delete" title="Supprimer" onClick={() => handleDelete(t.id)}><FiTrash2 size={16} /></button>
                     </td>
                   </tr>
                 ))}

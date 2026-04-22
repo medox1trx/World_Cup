@@ -37,6 +37,7 @@ import AdminNews from "./pages/admin/AdminNews";
 import AdminFanZones from "./pages/admin/AdminFanZones";
 import AdminTicker from "./pages/admin/AdminTicker";
 import AdminHospitality from "./pages/admin/AdminHospitality";
+import AdminJoueurs from "./pages/admin/AdminJoueurs";
 
 /*
   HEIGHT BUDGET (sticky bars above page content):
@@ -101,6 +102,7 @@ function App() {
                   <Route path="/admin/fanzones" element={<AdminRoute><AdminFanZones /></AdminRoute>} />
                   <Route path="/admin/ticker" element={<AdminRoute><AdminTicker /></AdminRoute>} />
                   <Route path="/admin/hospitality" element={<AdminRoute><AdminHospitality /></AdminRoute>} />
+                  <Route path="/admin/joueurs" element={<AdminRoute><AdminJoueurs /></AdminRoute>} />
                 </Routes>
             </main>
 

@@ -275,7 +275,12 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           
           <Link to="/admin/teams" className={`sidebar-link ${isActive('/admin/teams') ? 'active' : ''}`} onClick={onClose}>
             <FiUsers />
-            <span>Équipes & Joueurs</span>
+            <span>Équipes</span>
+          </Link>
+
+          <Link to="/admin/joueurs" className={`sidebar-link ${isActive('/admin/joueurs') ? 'active' : ''}`} onClick={onClose}>
+            <FiUsers />
+            <span>Joueurs</span>
           </Link>
           
           <Link to="/admin/tickets" className={`sidebar-link ${isActive('/admin/tickets') ? 'active' : ''}`} onClick={onClose}>

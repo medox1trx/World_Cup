@@ -27,10 +27,10 @@ export const deleteNews = (id) => api.delete(`/admin/news/${id}`);
 
 // ── Matches ──────────────────────────────────────────────────
 export const getMatches = (params = {}) => api.get("/matches", { params });
-export const getMatch   = (id)          => api.get(`/matches/${id}`);
-export const createMatch = (data)       => api.post("/admin/matches", data);
-export const updateMatch = (id, data)   => api.put(`/admin/matches/${id}`, data);
-export const deleteMatch = (id)         => api.delete(`/admin/matches/${id}`);
+export const getMatch = (id) => api.get(`/matches/${id}`);
+export const createMatch = (data) => api.post("/admin/matches", data);
+export const updateMatch = (id, data) => api.put(`/admin/matches/${id}`, data);
+export const deleteMatch = (id) => api.delete(`/admin/matches/${id}`);
 
 // ── Highlights ──────────────────────────────────────────────
 export const getHighlights = () => api.get("/highlights");
@@ -64,9 +64,9 @@ export const search = (q) => api.get("/search", { params: { q } });
 
 // ── Auth ─────────────────────────────────────────────────────
 export const registerUser = (data) => api.post("/auth/register", data);
-export const loginUser    = (data) => api.post("/auth/login", data);
-export const logout       = ()     => api.post("/auth/logout");
-export const getAuthUser  = ()     => api.get("/auth/user");
+export const loginUser = (data) => api.post("/auth/login", data);
+export const logout = () => api.post("/auth/logout");
+export const getAuthUser = () => api.get("/auth/user");
 export const updateProfile = (data) => api.put("/auth/profile", data);
 
 // ── Cities & Accommodations ──────────────────────────────────
@@ -100,11 +100,21 @@ export const createHospitality = (data) => api.post("/admin/hospitalities", data
 export const updateHospitality = (id, data) => api.put(`/admin/hospitalities/${id}`, data);
 export const deleteHospitality = (id) => api.delete(`/admin/hospitalities/${id}`);
 
+// c:\Users\HP\Desktop\ProjetSyntese\World_Cup\frontend\src\services\api.js
+
 // ── Teams ───────────────────────────────────────────────────
 export const getTeams = () => api.get("/teams");
 export const getTeam = (id) => api.get(`/teams/${id}`);
 export const createTeam = (data) => api.post("/admin/teams", data);
 export const updateTeam = (id, data) => api.put(`/admin/teams/${id}`, data);
 export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);
+
+// ── Joueurs ──────────────────────────────────────────────────
+export const getJoueurs = () => api.get("/joueurs");
+export const adminGetJoueurs = () => api.get("/admin/joueurs");
+export const createJoueur = (data) => api.post("/admin/joueurs", data);
+export const updateJoueur = (id, data) => api.put(`/admin/joueurs/${id}`, data);
+export const deleteJoueur = (id) => api.delete(`/admin/joueurs/${id}`);
+
 
 export default api;

@@ -12,7 +12,7 @@ class TeamController extends Controller
      */
     public function index()
     {
-        return Team::all();
+        return Team::with('joueurs')->get();
     }
 
     /**
@@ -24,9 +24,13 @@ class TeamController extends Controller
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:10',
             'group_name' => 'required|string|max:255',
-            'rank' => 'nullable|integer',
+            'world_ranking' => 'nullable|integer',
             'key_player' => 'nullable|string|max:255',
             'image_url' => 'nullable|string|max:255',
+            'coach' => 'nullable|string|max:255',
+            'captain' => 'nullable|string|max:255',
+            'world_cup_titles' => 'nullable|integer',
+            'description' => 'nullable|string'
         ]);
 
         $team = Team::create($validated);
@@ -38,7 +42,7 @@ class TeamController extends Controller
      */
     public function show(Team $team)
     {
-        return $team;
+        return $team->load('joueurs');
     }
 
     /**
@@ -50,9 +54,13 @@ class TeamController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'code' => 'sometimes|required|string|max:10',
             'group_name' => 'sometimes|required|string|max:255',
-            'rank' => 'nullable|integer',
+            'world_ranking' => 'nullable|integer',
             'key_player' => 'nullable|string|max:255',
             'image_url' => 'nullable|string|max:255',
+            'coach' => 'nullable|string|max:255',
+            'captain' => 'nullable|string|max:255',
+            'world_cup_titles' => 'nullable|integer',
+            'description' => 'nullable|string'
         ]);
 
         $team->update($validated);

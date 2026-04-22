@@ -143,6 +143,32 @@ export default function TeamDetail() {
             </div>
           </div>
         </div>
+        <div style={{ marginTop: 80 }}>
+          <h2 style={{ fontFamily: FONT.display, fontSize: 32, fontWeight: 900, textTransform: "uppercase", marginBottom: 32 }}>L'Effectif</h2>
+          
+          {!team.joueurs || team.joueurs.length === 0 ? (
+            <p style={{ color: theme.subText }}>Aucun joueur enregistré pour cette équipe.</p>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 24 }}>
+              {team.joueurs.map((player) => (
+                <div key={player.id} style={{ background: theme.card, borderRadius: 24, overflow: "hidden", border: `1px solid ${theme.border}`, display: "flex", alignItems: "center", gap: 20, padding: "16px 20px" }}>
+                  <div style={{ width: 64, height: 64, borderRadius: 16, overflow: "hidden", border: `1px solid ${theme.border}` }}>
+                    <img src={player.photo || "https://www.w3schools.com/howto/img_avatar.png"} alt={player.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 18, fontWeight: 900, textTransform: "uppercase", lineHeight: 1.2 }}>{player.nom}</span>
+                      <span style={{ fontSize: 22, fontWeight: 900, color: theme.accent, opacity: 0.8 }}>#{player.numero}</span>
+                    </div>
+                    <span style={{ display: "block", fontSize: 12, fontWeight: 800, color: theme.subText, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>
+                      {player.poste}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

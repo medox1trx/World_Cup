@@ -7,6 +7,7 @@ use App\Http\Controllers\AccommodationController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TickerController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\JoueurController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -94,6 +95,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/teams', [TeamController::class, 'index']);
     Route::get('/teams/{team}', [TeamController::class, 'show']);
 
+    // Joueurs (Public)
+    Route::get('/joueurs', [JoueurController::class, 'index']);
+    Route::get('/joueurs/{joueur}', [JoueurController::class, 'show']);
+
     // Admin routes (protected)
     Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'user']);
@@ -145,5 +150,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/teams',                   [TeamController::class, 'store']);
         Route::put('/teams/{team}',             [TeamController::class, 'update']);
         Route::delete('/teams/{team}',          [TeamController::class, 'destroy']);
+
+        // Admin Joueurs Management
+        Route::get('/joueurs',                  [JoueurController::class, 'index']);
+        Route::post('/joueurs',                 [JoueurController::class, 'store']);
+        Route::put('/joueurs/{joueur}',         [JoueurController::class, 'update']);
+        Route::delete('/joueurs/{joueur}',      [JoueurController::class, 'destroy']);
     });
 });
