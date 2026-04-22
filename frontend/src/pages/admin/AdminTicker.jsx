@@ -304,7 +304,7 @@ export default function AdminTicker() {
                 <label className="fl">Texte du ticker *</label>
                 <input className="fi" required value={formData.text}
                   onChange={e => setFormData({...formData, text: e.target.value})}
-                  placeholder="Tirage au sort FIFA 2030 : groupes confirmés..." />
+                  placeholder="Tirage au sort FIFA 2026 : groupes confirmés..." />
               </div>
 
               {/* Badge label + color */}

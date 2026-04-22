@@ -316,7 +316,7 @@ export default function Tickets() {
               <FiCheck size={24} />
             </div>
             <h3 style={{ fontFamily: FONT_D, fontSize: 24, fontWeight: 800, textTransform: "uppercase", marginBottom: 16 }}>Support Elite</h3>
-            <p style={{ color: tSubText, fontSize: 14, lineHeight: 1.6 }}>Notre équipe d'assistance mondiale est disponible pour vous aider à chaque étape de votre voyage FIFA 2030.</p>
+            <p style={{ color: tSubText, fontSize: 14, lineHeight: 1.6 }}>Notre équipe d'assistance mondiale est disponible pour vous aider à chaque étape de votre voyage FIFA 2026.</p>
           </div>
         </div>
       </section>

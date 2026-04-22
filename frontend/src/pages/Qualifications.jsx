@@ -32,7 +32,7 @@ export default function Qualifications() {
           <FiGlobe color="#c8102e" />
           <span style={{ color: "#c8102e", fontWeight: 800, textTransform: "uppercase", fontSize: 12, letterSpacing: "0.2em" }}>Statut Mondial des Qualifications</span>
         </div>
-        <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(3.5rem,7vw,6.5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9 }}>Road to 2030</h1>
+        <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(3.5rem,7vw,6.5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9 }}>Road to 2026</h1>
         <p style={{ color: "#666", fontSize: 20, marginTop: 24, maxWidth: 700, margin: "24px auto 0" }}>
           L'état d'avancement des qualifications à travers les six confédérations de la FIFA.
         </p>

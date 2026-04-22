@@ -155,7 +155,7 @@ export default function Hospitality() {
               <span style={{ color: "transparent", WebkitTextStroke: "1.5px rgba(255,255,255,0.6)" }}>Au Sommet</span>
             </h1>
             <p style={{ fontSize: "clamp(16px, 1.2vw, 20px)", color: "rgba(255,255,255,0.5)", maxWidth: 600, lineHeight: 1.6, marginBottom: 48 }}>
-              Vivez la Coupe du Monde 2030 comme jamais auparavant. Des loges privées aux salons gastronomiques, découvrez nos offres exclusives.
+              Vivez la Coupe du Monde 2026 comme jamais auparavant. Des loges privées aux salons gastronomiques, découvrez nos offres exclusives.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
               <a href="#packages" className="btn-shim" style={{ padding: "18px 40px", borderRadius: 10, background: "white", color: "#0d0d0d", fontWeight: 800, textDecoration: "none", fontSize: 14, textTransform: "uppercase", letterSpacing: "0.1em" }}>

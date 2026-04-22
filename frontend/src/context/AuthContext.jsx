@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 import { getAuthUser, logout as apiLogout } from "../services/api";
 
 const AuthContext = createContext(null);
-const STORAGE_KEY = "fifa2030_user";
+const STORAGE_KEY = "fifa2026_user";
 
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(() => {

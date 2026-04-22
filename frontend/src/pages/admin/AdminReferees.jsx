@@ -245,7 +245,7 @@ export default function AdminReferees() {
               }}>Gestion des Arbitres</h1>
             </div>
             <p style={{ fontFamily: FB, fontSize: 13, color: textSecondary, margin: 0 }}>
-              Ajoutez, modifiez et gérez les arbitres officiels de la Coupe du Monde 2030
+              Ajoutez, modifiez et gérez les arbitres officiels de la Coupe du Monde 2026
             </p>
           </div>
 

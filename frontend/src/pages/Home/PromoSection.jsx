@@ -156,10 +156,10 @@ export function PromoSection() {
                 </div>
                 <h3 className="pr-title" style={{ fontFamily: FONT.display }}>{"VIVEZ LE MATCH\nEN DIRECT"}</h3>
                 <p className="pr-desc" style={{ fontFamily: FONT.body }}>
-                  Des places disponibles dans les 6 nations hôtes. Réservez avant rupture de stock.
+                  Des places disponibles dans les 3 nations hôtes. Réservez avant rupture de stock.
                 </p>
                 <div className="pr-stats">
-                  <Stat num="6" label="Nations hôtes" textPrimary="#ffffff" textMuted={textMuted} />
+                  <Stat num="3" label="Nations hôtes" textPrimary="#ffffff" textMuted={textMuted} />
                   <div className="pr-stat-divider" />
                   <Stat num="104" label="Matchs" textPrimary="#ffffff" textMuted={textMuted} />
                   <div className="pr-stat-divider" />
@@ -194,7 +194,7 @@ export function PromoSection() {
                   <div className="pr-stat-divider" />
                   <Stat num="5★" label="Expérience" textPrimary="#ffffff" textMuted={textMuted} />
                   <div className="pr-stat-divider" />
-                  <Stat num="6" label="Stades" textPrimary="#ffffff" textMuted={textMuted} />
+                  <Stat num="16" label="Stades" textPrimary="#ffffff" textMuted={textMuted} />
                 </div>
               </div>
               <div style={{ position: "relative", zIndex: 1 }}>
@@ -532,7 +532,7 @@ export function TournamentSection() {
                 <span style={{
                   fontFamily: FONT.body, fontSize: 8, fontWeight: 600,
                   color: "rgba(255,255,255,0.2)", marginTop: 2, display: "block",
-                }}>Los Angeles</span>
+                }}>New York / NJ</span>
               </div>
 
               <LineConn darkMode={darkMode} />
@@ -562,7 +562,7 @@ export function TournamentSection() {
                 <div style={{
                   fontFamily: FONT.body, fontSize: 9, fontWeight: 600,
                   color: "rgba(255,255,255,0.35)", marginTop: 2,
-                }}>19 Juillet 2026 · Los Angeles</div>
+                }}>19 Juillet 2026 · New York / New Jersey</div>
               </div>
             </div>
           </div>
@@ -575,7 +575,7 @@ export function TournamentSection() {
               { d: "12 Juil", e: "Quarts · J1" },
               { d: "13 Juil", e: "Quarts · J2" },
               { d: "17 Juil", e: "Demi-finales" },
-              { d: "19 Juil", e: "Finale · LA" },
+              { d: "19 Juil", e: "Finale · NY/NJ" },
             ].map((item, i) => (
               <div key={i} className="ts-date-item">
                 <div className="ts-date-d">{item.d}</div>
@@ -720,7 +720,7 @@ export function FanZoneSection() {
               FAITES PARTIE<br />DE L'HISTOIRE
             </h2>
             <p className="fz-body" style={{ fontFamily: FONT.body }}>
-              Concerts, écrans géants, FIFA Gaming, trophy experience — accès gratuit dans les 6 Fan Zones officielles.
+              Concerts, écrans géants, FIFA Gaming, trophy experience — accès gratuit dans les 16 Fan Zones officielles.
             </p>
             <div className="fz-btns">
               {ctaButtons.map(({ href, icon: Icon, label, filled }) => (

@@ -49,15 +49,15 @@ const ACTIVITIES = [
   { Icon:FiCamera,      tag:"Expérience",  title:"Trophy Experience",    desc:"Photos officielles avec la Coupe du Monde FIFA originale. Créneaux limités — réservation obligatoire.",        img: ACT_IMGS.trophy    },
   { Icon:FiMonitor,     tag:"Diffusion",   title:"Match Screening 4K",   desc:"Écran géant LED 4K · 5 000 places · Entrée libre. Chaque match retransmis en direct.",                      img: ACT_IMGS.screening },
   { Icon:FiMusic,       tag:"Musique",     title:"Fan Stage Live",       desc:"Concerts, shows et animations en direct chaque soir. Programme hebdomadaire sur l'app officielle FIFA.",       img: ACT_IMGS.stage     },
-  { Icon:FiShoppingBag, tag:"Shopping",    title:"FIFA Megastore",       desc:"Collection officielle FIFA 2030, maillots personnalisés, éditions limitées. Livraison mondiale disponible.",   img: ACT_IMGS.store     },
+  { Icon:FiShoppingBag, tag:"Shopping",    title:"FIFA Megastore",       desc:"Collection officielle FIFA 2026, maillots personnalisés, éditions limitées. Livraison mondiale disponible.",   img: ACT_IMGS.store     },
 ];
 
 const FAQ = [
-  { q:"L'entrée à la Fan Zone est-elle gratuite ?",      a:"Oui, l'accès est entièrement gratuit. Certaines activités comme le Trophy Experience nécessitent une réservation préalable via l'application officielle FIFA 2030." },
+  { q:"L'entrée à la Fan Zone est-elle gratuite ?",      a:"Oui, l'accès est entièrement gratuit. Certaines activités comme le Trophy Experience nécessitent une réservation préalable via l'application officielle FIFA 2026." },
   { q:"Quels sont les horaires d'ouverture ?",           a:"10h – 00h les jours de match, 12h – 22h les autres jours. Les horaires peuvent varier selon la ville hôte et la phase de la compétition." },
   { q:"Y a-t-il des navettes depuis les stades ?",       a:"Des navettes officielles FIFA circulent entre tous les stades et Fan Zones. Ce service est inclus dans chaque billet de match." },
   { q:"Puis-je apporter ma propre nourriture ?",         a:"Les aliments et boissons extérieurs ne sont pas autorisés. Plus de 80 stands proposent les spécialités culinaires des pays hôtes à l'intérieur." },
-  { q:"Les Fan Zones centenaires sont-elles ouvertes ?", a:"Les Fan Zones de Buenos Aires, Montevideo et Asunción sont actives uniquement le jour de leur match centenaire respectif, avec une programmation spéciale 1930–2030." },
+  { q:"Les Fan Zones sont-elles ouvertes tous les jours ?", a:"Les Fan Zones de Mexico, New York et Toronto sont ouvertes quotidiennement pendant toute la durée du tournoi, avec une programmation spéciale 2026." },
 ];
 
 /* ─── Subcomponents ─────────────────────────────────────────── */
@@ -325,7 +325,7 @@ export default function FanZone() {
           {/* eyebrow */}
           <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:28 }}>
             <div style={{ height:1, width:32, background:"rgba(255,255,255,.25)", flexShrink:0 }} />
-            <span style={{ color:"rgba(255,255,255,.35)", fontFamily:B, fontSize:10, fontWeight:800, letterSpacing:".42em", textTransform:"uppercase" }}>FIFA 2030 · Zone Fan Officielle</span>
+            <span style={{ color:"rgba(255,255,255,.35)", fontFamily:B, fontSize:10, fontWeight:800, letterSpacing:".42em", textTransform:"uppercase" }}>FIFA 2026 · Zone Fan Officielle</span>
           </div>
           {/* headline */}
           <div style={{ marginBottom:26 }}>
@@ -333,9 +333,7 @@ export default function FanZone() {
               <div key={w} style={{ fontFamily:D, fontSize:"clamp(46px,9vw,128px)", fontWeight:900, lineHeight:.87, textTransform:"uppercase", letterSpacing:"-0.02em", color:stroke?"transparent":"white", WebkitTextStroke:stroke?"1.5px rgba(255,255,255,.55)":"none" }}>{w}</div>
             ))}
           </div>
-          <p style={{ color:"rgba(255,255,255,.38)", fontFamily:B, fontSize:"clamp(13px,1.6vw,15px)", lineHeight:1.85, marginBottom:36, maxWidth:420 }}>
-            9 Fan Zones officielles dans 6 pays hôtes. Du Maroc à l'Argentine, des expériences inoubliables au cœur du tournoi du centenaire.
-          </p>
+            16 Fan Zones officielles dans 3 pays hôtes. Du Mexique au Canada, vivez des expériences inoubliables au cœur de la plus grande Coupe du Monde de l'histoire.
           {/* CTAs */}
           <div className="hero-btns" style={{ display:"flex", flexWrap:"wrap", gap:10, marginBottom:44 }}>
             <ShimBtn href="#activities" style={{ boxShadow:"0 4px 24px rgba(0,0,0,.5)" }}>
@@ -347,7 +345,7 @@ export default function FanZone() {
           </div>
           {/* trust pills */}
           <div style={{ display:"flex", flexWrap:"wrap", gap:"clamp(16px,2.5vw,24px)", paddingTop:22, borderTop:"1px solid rgba(255,255,255,.08)" }}>
-            {[[FiMapPin,"9 Fan Zones"],[FiStar,"Entrée gratuite"],[FiGlobe,"6 Pays hôtes"],[FiWifi,"Wi-Fi officiel"]].map(([Icon,label]) => (
+            {[[FiMapPin,"16 Fan Zones"],[FiStar,"Entrée gratuite"],[FiGlobe,"3 Pays hôtes"],[FiWifi,"Wi-Fi officiel"]].map(([Icon,label]) => (
               <div key={label} style={{ display:"flex", alignItems:"center", gap:7, color:"rgba(255,255,255,.28)" }}>
                 <Icon size={12} /><span style={{ fontFamily:B, fontSize:11, fontWeight:600 }}>{label}</span>
               </div>
@@ -362,7 +360,7 @@ export default function FanZone() {
       <div style={{ background:"#111", borderBottom:"1px solid rgba(255,255,255,.06)" }}>
         <div className="hw">
           <div className="stats-grid">
-            {[{v:"9",l:"Fan Zones"},{v:"6",l:"Pays Hôtes"},{v:"5M+",l:"Visiteurs Attendus"},{v:"80+",l:"Activités Gratuites"}].map((s,i) => (
+            {[{v:"16",l:"Fan Zones"},{v:"3",l:"Pays Hôtes"},{v:"10M+",l:"Visiteurs Attendus"},{v:"100+",l:"Activités Gratuites"}].map((s,i) => (
               <div key={i} className="stat-cell">
                 <span style={{ fontFamily:D, fontSize:"clamp(1.9rem,3.5vw,3rem)", fontWeight:900, color:"white", lineHeight:1 }}>{s.v}</span>
                 <span style={{ fontFamily:B, fontSize:9, fontWeight:800, letterSpacing:".2em", textTransform:"uppercase", color:"rgba(255,255,255,.26)", marginTop:7, textAlign:"center" }}>{s.l}</span>
@@ -436,7 +434,7 @@ export default function FanZone() {
         <div className="hw">
           <div className="sh" style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
             <div>
-              <span className="sl">6 Pays · 9 Villes</span>
+              <span className="sl">3 Pays · 16 Villes</span>
               <h2 className="st">Trouvez Votre Fan Zone</h2>
             </div>
             <span style={{ fontFamily:B, fontSize:12, color:"rgba(255,255,255,.25)", paddingBottom:2 }}>Sélectionnez une ville</span>
@@ -490,7 +488,7 @@ export default function FanZone() {
                 </div>
                 {/* City name overlay */}
                 <div style={{ position:"absolute", bottom:18, left:22 }}>
-                  {isCent && <div className="cent-badge" style={{ marginBottom:8 }}>Centenaire 1930–2030</div>}
+                  {isCent && <div className="cent-badge" style={{ marginBottom:8 }}>Centenaire 1930–2026</div>}
                   <span style={{ display:"block", fontFamily:B, fontSize:9, fontWeight:800, letterSpacing:".28em", textTransform:"uppercase", color:"rgba(255,255,255,.38)", marginBottom:5 }}>{city.country}</span>
                   <span style={{ fontFamily:D, fontSize:"clamp(1.8rem,3vw,2.5rem)", fontWeight:900, color:"white", textTransform:"uppercase", letterSpacing:".03em", lineHeight:1 }}>{city.name}</span>
                 </div>
@@ -540,7 +538,7 @@ export default function FanZone() {
                 <span style={{ WebkitTextStroke:"1.5px rgba(255,255,255,.55)", color:"transparent" }}>DANS VOTRE POCHE</span>
               </h2>
               <p style={{ color:"rgba(255,255,255,.38)", fontSize:"clamp(13px,1.5vw,14px)", lineHeight:1.85, marginBottom:30, maxWidth:380, fontFamily:B }}>
-                Scores en temps réel, planificateur Fan Zone, navigation GPS vers les 9 sites, billets digitaux et alertes match personnalisées.
+                Scores en temps réel, planificateur Fan Zone, navigation GPS vers les 16 sites, billets digitaux et alertes match personnalisées.
               </p>
               <div style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
                 {["App Store","Google Play"].map(label => (
@@ -606,7 +604,7 @@ export default function FanZone() {
               <span style={{ WebkitTextStroke:"1.5px rgba(255,255,255,.5)", color:"transparent" }}>L'ACTION</span>
             </h2>
             <p style={{ color:"rgba(255,255,255,.35)", fontSize:14, fontFamily:B, lineHeight:1.8, margin:"0 auto 32px", maxWidth:400 }}>
-              Programmes, offres exclusives et mises à jour pour les 9 Fan Zones, directement dans votre boîte mail.
+              Programmes, offres exclusives et mises à jour pour les 16 Fan Zones, directement dans votre boîte mail.
             </p>
 
             {subscribed ? (

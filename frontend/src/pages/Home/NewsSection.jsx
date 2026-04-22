@@ -7,7 +7,7 @@ import { useNews } from "../../hooks/useWorldCup";
 
 function resolveImg(img, size = "w640") {
   if (!img) return null;
-  if (img.startsWith("http")) return img;
+  if (img.startsWith("http") || img.startsWith("/")) return img;
   return `https://flagcdn.com/${size}/${img.toLowerCase()}.png`;
 }
 
@@ -133,7 +133,7 @@ export function StatsBar({ stats, loading }) {
     { value: "48",  label: "Équipes" },
     { value: "104", label: "Matchs" },
     { value: "16",  label: "Stades" },
-    { value: "12",  label: "Villes hôtes" },
+    { value: "16",  label: "Villes hôtes" },
     { value: "800+", label: "Buts attendus" },
     { value: "3.5M", label: "Spectateurs" },
   ];
@@ -494,29 +494,29 @@ function NewsCard({ article }) {
 const MOCK_NEWS = [
   {
     urlToImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=640",
-    title: "Coupe du Monde 2030 : Le Maroc prêt à accueillir le monde",
-    description: "Le Maroc se prépare à accueillir la plus grande compétition de football avec de nouveaux stades et infrastructures modernes.",
+    title: "Coupe du Monde 2026 : Le Mexique prêt à accueillir le monde",
+    description: "Le Mexique se prépare à accueillir le match d'ouverture au mythique Estadio Azteca, marquant le début d'un tournoi historique.",
     publishedAt: "2026-04-12T10:00:00Z",
     source: { name: "FIFA" }
   },
   {
     urlToImage: "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?w=640",
-    title: "48 équipes participeront à la Coupe du Monde 2030",
-    description: "La FIFA confirme un record historique avec 48 équipes incontourna pour cette édition historique au Maroc, Espagne et Portugal.",
+    title: "48 équipes participeront à la Coupe du Monde 2026",
+    description: "La FIFA confirme un record historique avec 48 équipes pour cette édition exceptionnelle aux USA, Mexique et Canada.",
     publishedAt: "2026-04-11T15:00:00Z",
     source: { name: "Sports" }
   },
   {
     urlToImage: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=640",
-    title: "Stades historiques : Les préparatifs avancent",
-    description: "Les travaux de construction des nouveaux stades avancent selon le calendrier prévu pour le Mondial 2030.",
+    title: "Villes hôtes : Les préparatifs avancent",
+    description: "Les 16 villes hôtes en Amérique du Nord finalisent les infrastructures pour accueillir les millions de fans attendus.",
     publishedAt: "2026-04-10T09:00:00Z",
     source: { name: "Actu Foot" }
   },
   {
     urlToImage: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=640",
     title: "Billets : La demande dépasse les attentes",
-    description: "Plus de 2 millions de demandes de billets enregistrées pour les matchs de la Coupe du Monde 2030.",
+    description: "Plus de 2 millions de demandes de billets enregistrées pour les matchs de la Coupe du Monde FIFA 2026™.",
     publishedAt: "2026-04-09T12:00:00Z",
     source: { name: "FIFA" }
   }
@@ -524,7 +524,7 @@ const MOCK_NEWS = [
 
 export function NewsSection() {
   const { darkMode } = useTheme();
-  const { data: news, loading, error } = useNews({ q: "FIFA World Cup 2026", pageSize: 8 });
+  const { data: news, loading, error } = useNews({ pageSize: 8 });
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
   const card         = darkMode ? "#1c1c1c"                  : "#ffffff";
   const border       = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
@@ -585,9 +585,8 @@ export function NewsSection() {
     <>
       <style>{`
 
-        
         .ns-grid {
-          display: grid; grid-template-columns: 1fr 260px;
+          display: grid; grid-template-columns: 1fr 380px;
           border: 1px solid ${border}; border-radius: 4px; overflow: hidden;
           transition: border-color 0.3s;
         }
@@ -618,7 +617,7 @@ export function NewsSection() {
         @media (max-width: 860px) {
           .ns-grid { grid-template-columns: 1fr; }
           .ns-side { border-left: none; border-top: 1px solid ${border}; flex-direction: row; flex-wrap: wrap; }
-          .ns-side .side-article { flex: 1 1 260px; }
+          .ns-side .side-article { flex: 1 1 380px; }
         }
         @media (max-width: 540px) { 
           .ns-side .side-article { flex: 1 1 100%; } 
@@ -639,7 +638,7 @@ export function NewsSection() {
           <SectionHead eyebrow="Actualités" title="À La Une" action="Toutes les news" href="/news" icon={require("react-icons/fi").FiList} />
           <div className="ns-grid">
             {loading ? (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 260px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 380px" }}>
                 <div style={{ minHeight: 400, background: card }} />
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   {[0,1,2,3].map(i => <div key={i} style={{ flex: 1, borderLeft: `1px solid ${border}`, borderTop: i > 0 ? `1px solid ${border}` : "none" }} />)}
@@ -686,7 +685,7 @@ export function NewsSection() {
 // ─── MORE NEWS ────────────────────────────────────────────────
 export function MoreNewsSection() {
   const { darkMode } = useTheme();
-  const { data: news, loading } = useNews({ q: "FIFA World Cup 2026", pageSize: 9 });
+  const { data: news, loading } = useNews({ pageSize: 9 });
   const surface = darkMode ? "#171717" : "#f5f5f5";
   
   const newsArticles = (news?.articles?.length > 0 ? news.articles : MOCK_NEWS);

@@ -1,15 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const SeasonContext = createContext(null);
-const STORAGE_KEY = "fifa2030_season";
+const STORAGE_KEY = "fifa2026_season";
 const ONE_HOUR_MS = 60 * 60 * 1000;
 
 export const SEASONS = [
-  { id: "2030", label: "Coupe du Monde 2030", host: "Maroc · Espagne · Portugal" },
   { id: "2026", label: "Coupe du Monde 2026", host: "USA · Mexique · Canada" },
-  { id: "2022", label: "Coupe du Monde 2022", host: "Qatar" },
-  { id: "2018", label: "Coupe du Monde 2018", host: "Russie" },
-  { id: "2014", label: "Coupe du Monde 2014", host: "Brésil" },
 ];
 
 function loadSeason() {

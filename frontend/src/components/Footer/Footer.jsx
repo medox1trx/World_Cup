@@ -302,7 +302,7 @@ export default function Footer() {
             color: copy, letterSpacing: "0.03em", whiteSpace: "nowrap",
             transition: "color 0.3s",
           }}>
-            © 1994 – 2030 FIFA. Tous droits réservés.
+            © 1994 – 2026 FIFA. Tous droits réservés.
           </span>
         </div>
       </div>

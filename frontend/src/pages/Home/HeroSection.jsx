@@ -543,7 +543,7 @@ export function HeroSection() {
 
             <div className="hero-ey" style={s(0.05)}>
               <div className="hero-ey-line" />
-              <span className="hero-ey-txt">Coupe du Monde FIFA 2030™</span>
+              <span className="hero-ey-txt">Coupe du Monde FIFA 2026™</span>
             </div>
 
             {/* Words — each fills its own full width */}
@@ -554,8 +554,8 @@ export function HeroSection() {
             </div>
 
             <p className="hero-sub" style={s(0.38)}>
-              11 juin – 19 juillet 2030<br />
-              Six nations hôtes · 48 équipes<br />
+              11 juin – 19 juillet 2026<br />
+              USA · Mexique · Canada · 48 équipes<br />
               Un seul champion du monde
             </p>
 
@@ -586,16 +586,16 @@ export function HeroSection() {
               </div>
               <div className="mc-teams">
                 <div className="mc-team">
-                  <img className="mc-flag" src="https://flagcdn.com/w80/fr.png" alt="France" />
-                  <span className="mc-code">FRA</span>
+                  <img className="mc-flag" src="https://flagcdn.com/w80/mx.png" alt="Mexique" />
+                  <span className="mc-code">MEX</span>
                 </div>
                 <div className="mc-vs">
                   <span className="mc-vs-t">VS</span>
-                  <span className="mc-time">11 juin · 18h00</span>
+                  <span className="mc-time">11 juin · 19h00</span>
                 </div>
                 <div className="mc-team">
-                  <img className="mc-flag" src="https://flagcdn.com/w80/br.png" alt="Brésil" />
-                  <span className="mc-code">BRÉ</span>
+                  <img className="mc-flag" src="https://flagcdn.com/w80/ec.png" alt="Équateur" />
+                  <span className="mc-code">ECU</span>
                 </div>
               </div>
               <a href="/matches" className="mc-btn">
