@@ -8,8 +8,8 @@ import {
 } from "../../services/api";
 import toast from "react-hot-toast";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 const BLANK = {
   tier: "",

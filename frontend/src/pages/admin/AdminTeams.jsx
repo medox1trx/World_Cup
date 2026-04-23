@@ -4,8 +4,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiSearch, FiStar, FiUsers } from "react-icons/fi";
 import { getTeams, createTeam, updateTeam, deleteTeam } from "../../services/api";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 const WORLD_CUP_COE_LIST = [
   { code: "dz", name: "Algérie" }, { code: "de", name: "Allemagne" }, { code: "gb", name: "Angleterre" },
@@ -111,7 +111,7 @@ export default function AdminTeams() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         .admin-page {
           background: ${bg}; min-height: calc(100vh - 102px);
           padding: clamp(24px,5vw,48px);
@@ -160,7 +160,7 @@ export default function AdminTeams() {
           display: inline-flex; align-items: center; justify-content: center;
           transition: 0.2s; margin-right: 8px;
         }
-        .btn-icon:hover { background: #c8102e; color: white; border-color: #c8102e; }
+        .btn-icon:hover { background: ${accent}; color: ${accentContrast}; border-color: ${accent}; }
         
         .modal-overlay {
           position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
@@ -174,8 +174,16 @@ export default function AdminTeams() {
         }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
-        .form-input { width: 100%; padding: 14px 18px; border-radius: 12px; background: ${surface}; border: 1px solid ${border}; color: ${textPrimary}; outline: none; }
-        .form-input:focus { border-color: #c8102e; }
+        .form-input { 
+          width: 100%; padding: 14px 18px; border-radius: 12px; 
+          background: ${surface}; border: 1px solid ${border}; 
+          color: ${textPrimary}; outline: none; transition: all 0.25s ease;
+        }
+        .form-input:focus { 
+          background: #0a0a0a; color: #ffffff; 
+          border-color: ${accent}; box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
+        }
+        .form-input:focus::placeholder { color: rgba(255,255,255,0.4); }
       `}</style>
 
       <div className="admin-page">
@@ -266,7 +274,12 @@ export default function AdminTeams() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Groupe</label>
-                  <input className="form-input" value={formData.group_name} onChange={e => setFormData({...formData, group_name: e.target.value})} required placeholder="Ex: Groupe A" />
+                  <select className="form-input" value={formData.group_name} onChange={e => setFormData({...formData, group_name: e.target.value})} required>
+                    <option value="">Sélectionner</option>
+                    {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'].map(g => (
+                      <option key={g} value={`Groupe ${g}`}>Groupe {g}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

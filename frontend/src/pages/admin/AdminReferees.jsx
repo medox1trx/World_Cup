@@ -3,8 +3,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { getReferees, createReferee, updateReferee, deleteReferee } from "../../services/api";
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiSave, FiFlag, FiUser, FiAward, FiShield } from "react-icons/fi";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 const ROLES = [
   { value: "main",      label: "Principal" },
@@ -141,7 +141,14 @@ export default function AdminReferees() {
     width: "100%", padding: "11px 14px", borderRadius: 8, fontSize: 13,
     fontFamily: FB, color: textPrimary, background: inputBg,
     border: `1px solid ${border}`, outline: "none",
-    transition: "border-color 0.2s",
+    transition: "all 0.25s ease",
+  };
+
+  const inputFocusStyle = {
+    background: "#0a0a0a",
+    color: "#ffffff",
+    borderColor: accent,
+    boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
   };
 
   const labelStyle = {
@@ -153,7 +160,7 @@ export default function AdminReferees() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         .ar-page {
           background: ${bg}; min-height: calc(100vh - 102px);
           padding: clamp(24px,5vw,48px); transition: background 0.3s;
@@ -228,6 +235,15 @@ export default function AdminReferees() {
           animation: slideIn 0.3s ease both;
         }
         @keyframes slideIn { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+        .ar-modal input:focus, .ar-modal select:focus, .ar-modal textarea:focus {
+          background: #0a0a0a !important;
+          color: #ffffff !important;
+          border-color: ${accent} !important;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+        }
+        .ar-modal input:focus::placeholder {
+          color: rgba(255,255,255,0.4) !important;
+        }
       `}</style>
 
       {toast && <div className="toast-pop">✓ {toast}</div>}

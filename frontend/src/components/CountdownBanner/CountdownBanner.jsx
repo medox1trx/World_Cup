@@ -35,7 +35,7 @@ export default function CountdownBanner() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
 
         :root {
           --cdb-red: #c8102e;
@@ -50,7 +50,7 @@ export default function CountdownBanner() {
           justify-content: center;
           position: relative;
           overflow: hidden;
-          font-family: 'Barlow Condensed', sans-serif;
+          font-family: 'Bebas Neue', sans-serif;
         }
 
         /* CENTER: countdown */
@@ -65,7 +65,7 @@ export default function CountdownBanner() {
         }
         .cdb-num {
           color: #fff;
-          font-family: 'Barlow Condensed', sans-serif;
+          font-family: 'Bebas Neue', sans-serif;
           font-weight: 900;
           font-size: 1.45rem;
           line-height: 1;
@@ -76,7 +76,7 @@ export default function CountdownBanner() {
         .cdb-num.tick { transform: translateY(-1px); }
         .cdb-unit-label {
           color: rgba(255,255,255,0.45);
-          font-family: 'Barlow', sans-serif;
+          font-family: 'DM Sans', sans-serif;
           font-size: 7.5px; font-weight: 700;
           letter-spacing: 0.18em; text-transform: uppercase;
         }
@@ -86,7 +86,7 @@ export default function CountdownBanner() {
           padding-bottom: 12px; margin: 0 1px;
           line-height: 1; user-select: none;
           transition: opacity 0.35s;
-          font-family: 'Barlow Condensed', sans-serif;
+          font-family: 'Bebas Neue', sans-serif;
         }
 
         /* ── RESPONSIVE ── */

@@ -22,8 +22,8 @@ const IMG = {
   jet:       "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=700&q=80&fit=crop",
 };
 
-const FONT_D = "'Barlow Condensed', sans-serif";
-const FONT_B = "'Barlow', sans-serif";
+const FONT_D = "'Bebas Neue', sans-serif";
+const FONT_B = "'DM Sans', sans-serif";
 
 const EXPERIENCES = [
   { num: "01", title: "Accueil Personnalisé",   desc: "Un agent FIFA dédié vous accompagne du début à la fin. Zéro attente, priorité absolue.",              img: IMG.champagne },
@@ -96,7 +96,7 @@ export default function Hospitality() {
   return (
     <div style={{ fontFamily: FONT_B, background: "#0d0d0d", color: "white", opacity: mounted ? 1 : 0, transition: "opacity 0.4s" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         @keyframes bgz  { from{transform:scale(1);}    to{transform:scale(1.06);}    }

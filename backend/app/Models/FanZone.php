@@ -2,29 +2,35 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FanZone extends Model
 {
+    use HasFactory;
+
+    protected $table = 'fan_zones';
+
     protected $fillable = [
-        'city_name',
-        'country',
-        'country_code',
-        'stadium_name',
-        'capacity',
-        'matches_count',
-        'zone_name',
+        'ville_id',
+        'stade',
+        'capacite',
+        'nb_matchs',
+        'adresse',
+        'zone_label',
         'description',
         'image_url',
-        'opening_hours',
-        'is_centenary',
-        'group_label',
-        'sort_order',
-        'is_active',
+        'groupe',
+        'statut',
     ];
 
-    protected $casts = [
-        'is_centenary' => 'boolean',
-        'is_active' => 'boolean',
-    ];
+    public function ville()
+    {
+        return $this->belongsTo(Ville::class, 'ville_id');
+    }
+
+    public function pays()
+    {
+        return $this->hasOneThrough(Pays::class, Ville::class, 'id', 'id', 'ville_id', 'pays_id');
+    }
 }

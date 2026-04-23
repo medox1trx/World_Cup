@@ -11,8 +11,8 @@ export const C = {
 
 // ─── FONTS ────────────────────────────────────────────────────
 export const FONT = {
-  display: "'Barlow Condensed', sans-serif",
-  body:    "'Barlow', sans-serif",
+  display: "'Bebas Neue', sans-serif",
+  body:    "'DM Sans', sans-serif",
 };
 
 // ─── COUNTRY CODES ────────────────────────────────────────────
@@ -144,6 +144,15 @@ export function getTimeLeft() {
 
 export function getCode(team) {
   if (!team) return null;
+  // If team is an object (relational data), try to get the name or flag directly
+  if (typeof team === 'object') {
+    if (team.flag) return team.flag;
+    if (team.name) team = team.name;
+    else return null;
+  }
+  
+  if (typeof team !== 'string') return null;
+  
   const normalized = team.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   return CODES[team] || CODES[normalized] || null;
 }

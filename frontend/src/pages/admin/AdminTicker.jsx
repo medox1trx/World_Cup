@@ -9,8 +9,8 @@ import {
 } from "../../services/api";
 import toast from "react-hot-toast";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 const BLANK = {
   text: "",
@@ -119,7 +119,7 @@ export default function AdminTicker() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
 
         .at-page { background:${bg}; min-height:calc(100vh - 102px); padding:clamp(24px,5vw,48px); transition:background 0.3s; }
         .at-inner { max-width:1100px; margin:0 auto; }

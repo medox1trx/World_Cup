@@ -135,7 +135,7 @@ export default function Header({ onOpenAdminSidebar }) {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
 
         :root {
           --hh: 62px;
@@ -143,8 +143,8 @@ export default function Header({ onOpenAdminSidebar }) {
           --hborder: rgba(255,255,255,0.07);
           --hmuted: rgba(255,255,255,0.42);
           --hhover: rgba(255,255,255,0.07);
-          --hfont: 'Barlow Condensed', sans-serif;
-          --hbody: 'Barlow', sans-serif;
+          --hfont: 'Bebas Neue', sans-serif;
+          --hbody: 'DM Sans', sans-serif;
         }
 
         .hdr {

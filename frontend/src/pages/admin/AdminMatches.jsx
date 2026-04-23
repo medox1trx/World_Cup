@@ -3,55 +3,21 @@ import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiCalendar, FiMapPin, FiClock, FiActivity } from "react-icons/fi";
 import { getMatches, createMatch, updateMatch, deleteMatch } from "../../services/api";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
-
-const WORLD_CUP_TEAMS = [
-  { code: "", name: "Sélectionner un pays" },
-  { code: "dz", name: "Algérie 🇩🇿" },
-  { code: "de", name: "Allemagne 🇩🇪" },
-  { code: "gb", name: "Angleterre 🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-  { code: "sa", name: "Arabie Saoudite 🇸🇦" },
-  { code: "ar", name: "Argentine 🇦🇷" },
-  { code: "au", name: "Australie 🇦🇺" },
-  { code: "be", name: "Belgique 🇧🇪" },
-  { code: "br", name: "Brésil 🇧🇷" },
-  { code: "cm", name: "Cameroun 🇨🇲" },
-  { code: "ca", name: "Canada 🇨🇦" },
-  { code: "co", name: "Colombie 🇨🇴" },
-  { code: "kr", name: "Corée du Sud 🇰🇷" },
-  { code: "hr", name: "Croatie 🇭🇷" },
-  { code: "dk", name: "Danemark 🇩🇰" },
-  { code: "eg", name: "Égypte 🇪🇬" },
-  { code: "ec", name: "Équateur 🇪🇨" },
-  { code: "es", name: "Espagne 🇪🇸" },
-  { code: "fr", name: "France 🇫🇷" },
-  { code: "ir", name: "Iran 🇮🇷" },
-  { code: "it", name: "Italie 🇮🇹" },
-  { code: "jp", name: "Japon 🇯🇵" },
-  { code: "ma", name: "Maroc 🇲🇦" },
-  { code: "mx", name: "Mexique 🇲🇽" },
-  { code: "ng", name: "Nigeria 🇳🇬" },
-  { code: "nl", name: "Pays-Bas 🇳🇱" },
-  { code: "pl", name: "Pologne 🇵🇱" },
-  { code: "pt", name: "Portugal 🇵🇹" },
-  { code: "qa", name: "Qatar 🇶🇦" },
-  { code: "sn", name: "Sénégal 🇸🇳" },
-  { code: "rs", name: "Serbie 🇷🇸" },
-  { code: "ch", name: "Suisse 🇨🇭" },
-  { code: "tn", name: "Tunisie 🇹🇳" },
-  { code: "uy", name: "Uruguay 🇺🇾" },
-  { code: "us", name: "USA 🇺🇸" },
-];
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 export default function AdminMatches() {
   const { darkMode } = useTheme();
   const [matches, setMatches] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
-    home_team: "",
+    home_team_id: "",
+    away_team_id: "",
+    home_team: "", // Keep for backward compatibility if needed, but we'll use ID
+    away_team: "",
     home_flag: "",
     away_flag: "",
     venue: "",
@@ -81,17 +47,20 @@ export default function AdminMatches() {
   const accentContrast= darkMode ? "#0d0d0d"                 : "#ffffff";
 
   useEffect(() => {
-    fetchMatches();
+    fetchData();
   }, []);
 
-  const fetchMatches = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const data = await getMatches();
-      // Handle pagination if return object
-      setMatches(data.data || data);
+      const [mRes, tRes] = await Promise.all([
+        getMatches(),
+        fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/v1/teams`).then(r => r.json())
+      ]);
+      setMatches(mRes.data || mRes);
+      setTeams(tRes);
     } catch (err) {
-      console.error("Error fetching admin matches:", err);
+      console.error("Error fetching admin matches data:", err);
     } finally {
       setLoading(false);
     }
@@ -100,14 +69,26 @@ export default function AdminMatches() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Find team names for the display fields if needed by backend (though we use IDs now)
+      const home = teams.find(t => t.id == formData.home_team_id);
+      const away = teams.find(t => t.id == formData.away_team_id);
+      
+      const payload = {
+        ...formData,
+        home_team: home?.name || formData.home_team,
+        away_team: away?.name || formData.away_team,
+        home_flag: home?.flag || formData.home_flag,
+        away_flag: away?.flag || formData.away_flag,
+      };
+
       if (editId) {
-        await updateMatch(editId, formData);
+        await updateMatch(editId, payload);
       } else {
-        await createMatch(formData);
+        await createMatch(payload);
       }
       setShowModal(false);
       resetForm();
-      fetchMatches();
+      fetchData();
     } catch (err) {
       const msg = err.errors ? Object.values(err.errors).flat().join("\n") : (err.message || "Erreur inconnue");
       alert("Erreur lors de l'enregistrement :\n" + msg);
@@ -116,6 +97,7 @@ export default function AdminMatches() {
 
   const resetForm = () => {
     setFormData({
+      home_team_id: "", away_team_id: "", 
       home_team: "", away_team: "", home_flag: "", away_flag: "", venue: "", city: "",
       match_date: "", match_time: "", stage: "group", group_name: "",
       status: "upcoming", home_score: 0, away_score: 0,
@@ -128,6 +110,8 @@ export default function AdminMatches() {
   const handleEdit = (m) => {
     setEditId(m.id);
     setFormData({
+      home_team_id: m.home_team_id || "",
+      away_team_id: m.away_team_id || "",
       home_team: m.home_team,
       away_team: m.away_team,
       venue: m.venue,
@@ -155,7 +139,7 @@ export default function AdminMatches() {
     if (!window.confirm("Supprimer ce match ?")) return;
     try {
       await deleteMatch(id);
-      fetchMatches();
+      fetchData();
     } catch (err) {
       alert("Erreur lors de la suppression");
     }
@@ -164,7 +148,7 @@ export default function AdminMatches() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         .admin-page {
           background: ${bg}; min-height: calc(100vh - 102px);
           padding: clamp(24px,5vw,48px);
@@ -231,8 +215,16 @@ export default function AdminMatches() {
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
-        .form-input { width: 100%; padding: 14px 18px; border-radius: 12px; background: ${surface}; border: 1px solid ${border}; color: ${textPrimary}; outline: none; }
-        .form-input:focus { border-color: #c8102e; }
+        .form-input { 
+          width: 100%; padding: 14px 18px; border-radius: 12px; 
+          background: ${surface}; border: 1px solid ${border}; 
+          color: ${textPrimary}; outline: none; transition: all 0.25s ease;
+        }
+        .form-input:focus { 
+          background: #0a0a0a; color: #ffffff; 
+          border-color: ${accent}; box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
+        }
+        .form-input:focus::placeholder { color: rgba(255,255,255,0.4); }
       `}</style>
 
       <div className="admin-page">
@@ -322,28 +314,19 @@ export default function AdminMatches() {
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">Équipe Domicile</label>
-                  <input className="form-input" value={formData.home_team} onChange={e => setFormData({...formData, home_team: e.target.value})} required placeholder="Ex: Maroc" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Équipe Extérieur</label>
-                  <input className="form-input" value={formData.away_team} onChange={e => setFormData({...formData, away_team: e.target.value})} required placeholder="Ex: France" />
-                </div>
-              </div>
-
-              <div className="form-grid">
-                <div className="form-group">
-                  <label className="form-label">Drapeau Domicile</label>
-                  <select className="form-input" value={formData.home_flag} onChange={e => setFormData({...formData, home_flag: e.target.value})}>
-                    {WORLD_CUP_TEAMS.map(t => (
-                      <option key={`home-${t.code}`} value={t.code}>{t.name}</option>
+                  <select className="form-input" value={formData.home_team_id} onChange={e => setFormData({...formData, home_team_id: e.target.value})} required>
+                    <option value="">Sélectionner une équipe</option>
+                    {teams.map(t => (
+                      <option key={`home-${t.id}`} value={t.id}>{t.name}</option>
                     ))}
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Drapeau Extérieur</label>
-                  <select className="form-input" value={formData.away_flag} onChange={e => setFormData({...formData, away_flag: e.target.value})}>
-                    {WORLD_CUP_TEAMS.map(t => (
-                      <option key={`away-${t.code}`} value={t.code}>{t.name}</option>
+                  <label className="form-label">Équipe Extérieur</label>
+                  <select className="form-input" value={formData.away_team_id} onChange={e => setFormData({...formData, away_team_id: e.target.value})} required>
+                    <option value="">Sélectionner une équipe</option>
+                    {teams.map(t => (
+                      <option key={`away-${t.id}`} value={t.id}>{t.name}</option>
                     ))}
                   </select>
                 </div>

@@ -3,8 +3,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiVideo, FiClock, FiTag, FiImage, FiSettings } from "react-icons/fi";
 import { getHighlights, createHighlight, updateHighlight, deleteHighlight } from "../../services/api";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 export default function AdminHighlights() {
   const { darkMode } = useTheme();
@@ -94,7 +94,7 @@ export default function AdminHighlights() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         .admin-page {
           background: ${bg}; min-height: calc(100vh - 102px);
           padding: clamp(24px,5vw,48px);
@@ -181,12 +181,16 @@ export default function AdminHighlights() {
           display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; 
           color: ${textSecondary}; margin-bottom: 8px; text-transform: uppercase; 
         }
-        .form-input {
+        .form-input { 
           width: 100%; padding: 14px 18px; border-radius: 12px; 
-          background: ${surface}; border: 1px solid ${border};
-          color: ${textPrimary}; font-family: ${FB}; font-size: 15px; outline: none;
+          background: ${surface}; border: 1px solid ${border}; 
+          color: ${textPrimary}; outline: none; transition: all 0.25s ease;
         }
-        .form-input:focus { border-color: #c8102e; }
+        .form-input:focus { 
+          background: #0a0a0a; color: #ffffff; 
+          border-color: ${accent}; box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
+        }
+        .form-input:focus::placeholder { color: rgba(255,255,255,0.4); }
       `}</style>
 
       <div className="admin-page">

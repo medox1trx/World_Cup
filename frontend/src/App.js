@@ -38,6 +38,8 @@ import AdminFanZones from "./pages/admin/AdminFanZones";
 import AdminTicker from "./pages/admin/AdminTicker";
 import AdminHospitality from "./pages/admin/AdminHospitality";
 import AdminJoueurs from "./pages/admin/AdminJoueurs";
+import AdminPays from "./pages/admin/AdminPays";
+import AdminVilles from "./pages/admin/AdminVilles";
 
 /*
   HEIGHT BUDGET (sticky bars above page content):
@@ -103,6 +105,8 @@ function App() {
                   <Route path="/admin/ticker" element={<AdminRoute><AdminTicker /></AdminRoute>} />
                   <Route path="/admin/hospitality" element={<AdminRoute><AdminHospitality /></AdminRoute>} />
                   <Route path="/admin/joueurs" element={<AdminRoute><AdminJoueurs /></AdminRoute>} />
+                  <Route path="/admin/pays" element={<AdminRoute><AdminPays /></AdminRoute>} />
+                  <Route path="/admin/villes" element={<AdminRoute><AdminVilles /></AdminRoute>} />
                 </Routes>
             </main>
 

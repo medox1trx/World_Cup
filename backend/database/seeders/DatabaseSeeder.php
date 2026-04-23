@@ -14,10 +14,11 @@ class DatabaseSeeder extends Seeder
             WorldCupSeeder::class,
             CitiesSeeder::class,
             NewsArticleSeeder::class,
-            FanZoneSeeder::class,
+            FanZoneDynamicSeeder::class,
             HospitalitySeeder::class,
             TicketSeeder::class,
             TeamSeeder::class,
+            MatchesSeeder::class,
         ]);
     }
 }

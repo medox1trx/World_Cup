@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiShield, FiMapPin, FiRadio, FiStar } from 'react-icons/fi';
+import { FiX, FiVideo, FiCalendar, FiUsers, FiFileText, FiPieChart, FiShield, FiMapPin, FiRadio, FiStar, FiGlobe } from 'react-icons/fi';
 import { useTheme } from '../context/ThemeContext';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
@@ -68,7 +68,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         }
 
         .sidebar-title {
-          font-family: 'Barlow Condensed', sans-serif;
+          font-family: 'Bebas Neue', sans-serif;
           font-size: 26px;
           font-weight: 900;
           color: var(--as-text);
@@ -78,7 +78,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         }
 
         .sidebar-subtitle {
-          font-family: 'Barlow', sans-serif;
+          font-family: 'DM Sans', sans-serif;
           font-size: 11px;
           font-weight: 700;
           color: var(--as-accent);
@@ -116,7 +116,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         }
 
         .sidebar-group-label {
-          font-family: 'Barlow Condensed', sans-serif;
+          font-family: 'Bebas Neue', sans-serif;
           font-size: 11px;
           font-weight: 800;
           color: var(--as-muted);
@@ -132,7 +132,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           padding: 14px 18px;
           color: var(--as-text);
           text-decoration: none;
-          font-family: 'Barlow', sans-serif;
+          font-family: 'DM Sans', sans-serif;
           font-size: 15px;
           font-weight: 600;
           border-radius: 12px;
@@ -215,7 +215,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           font-size: 15px;
           font-weight: 800;
           color: var(--as-text);
-          font-family: 'Barlow Condensed', sans-serif;
+          font-family: 'Bebas Neue', sans-serif;
           text-transform: uppercase;
         }
 
@@ -296,6 +296,16 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           <Link to="/admin/fanzones" className={`sidebar-link ${isActive('/admin/fanzones') ? 'active' : ''}`} onClick={onClose}>
             <FiMapPin />
             <span>Fan Zones</span>
+          </Link>
+
+          <Link to="/admin/pays" className={`sidebar-link ${isActive('/admin/pays') ? 'active' : ''}`} onClick={onClose}>
+            <FiGlobe />
+            <span>Pays</span>
+          </Link>
+
+          <Link to="/admin/villes" className={`sidebar-link ${isActive('/admin/villes') ? 'active' : ''}`} onClick={onClose}>
+            <FiMapPin />
+            <span>Villes</span>
           </Link>
 
           <Link to="/admin/referees" className={`sidebar-link ${isActive('/admin/referees') ? 'active' : ''}`} onClick={onClose}>

@@ -6,7 +6,7 @@ import { useTheme } from "../../context/ThemeContext";
 export function GlobalFonts() {
   return (
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       .font-display { font-family: ${FONT.display}; }
       .font-body    { font-family: ${FONT.body}; }

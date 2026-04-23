@@ -8,6 +8,9 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TickerController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\JoueurController;
+use App\Http\Controllers\Api\V1\PaysController;
+use App\Http\Controllers\Api\V1\VilleController;
+use App\Http\Controllers\Api\V1\FanZoneController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -85,8 +88,23 @@ Route::prefix('v1')->group(function () {
     Route::get('/referees', [ApiController::class, 'indexReferees']);
     Route::get('/referees/{referee}', [ApiController::class, 'showReferee']);
 
-    // Fan Zones (Public)
-    Route::get('/fan-zones', [ApiController::class, 'indexFanZones']);
+    // Fan Zones, Cities & Countries (New Dynamic System)
+    Route::get('/pays', [PaysController::class, 'index']);
+    Route::post('/pays', [PaysController::class, 'store']);
+    Route::put('/pays/{id}', [PaysController::class, 'update']);
+    Route::delete('/pays/{id}', [PaysController::class, 'destroy']);
+
+    Route::get('/villes', [VilleController::class, 'index']);
+    Route::post('/villes', [VilleController::class, 'store']);
+    Route::put('/villes/{id}', [VilleController::class, 'update']);
+    Route::delete('/villes/{id}', [VilleController::class, 'destroy']);
+
+    Route::get('/fan-zones', [FanZoneController::class, 'index']);
+    Route::get('/fan-zones/{id}', [FanZoneController::class, 'show']);
+    Route::post('/fan-zones', [FanZoneController::class, 'store']);
+    Route::put('/fan-zones/{id}', [FanZoneController::class, 'update']);
+    Route::delete('/fan-zones/{id}', [FanZoneController::class, 'destroy']);
+
 
     // Hospitalities (Public)
     Route::get('/hospitalities', [ApiController::class, 'indexHospitalities']);
@@ -96,8 +114,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/teams/{team}', [TeamController::class, 'show']);
 
     // Joueurs (Public)
-    Route::get('/joueurs', [JoueurController::class, 'index']);
-    Route::get('/joueurs/{joueur}', [JoueurController::class, 'show']);
+    Route::get('/joueurs/top-scorers',      [JoueurController::class, 'topScorers']);
+    Route::get('/joueurs',                  [JoueurController::class, 'index']);
+    Route::get('/joueurs/{joueur}',         [JoueurController::class, 'show']);
 
     // Admin routes (protected)
     Route::middleware(['auth:web', AdminMiddleware::class])->prefix('admin')->group(function () {
@@ -124,11 +143,8 @@ Route::prefix('v1')->group(function () {
         Route::put('/matches/{id}',   [ApiController::class, 'updateMatch']);
         Route::delete('/matches/{id}',[ApiController::class, 'destroyMatch']);
 
-        // Admin Fan Zones Management
-        Route::get('/fan-zones-all',    [ApiController::class, 'indexAllFanZones']);
-        Route::post('/fan-zones',        [ApiController::class, 'storeFanZone']);
-        Route::put('/fan-zones/{fanZone}', [ApiController::class, 'updateFanZone']);
-        Route::delete('/fan-zones/{fanZone}', [ApiController::class, 'destroyFanZone']);
+        // Admin Fan Zones Management (Now handled by top-level routes for simplicity as per request)
+
 
         // Admin Hospitalities Management
         Route::post('/hospitalities',        [ApiController::class, 'storeHospitality']);

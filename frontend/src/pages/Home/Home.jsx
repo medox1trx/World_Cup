@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <div style={{
-      fontFamily: "'Barlow', sans-serif",
+      fontFamily: "'DM Sans', sans-serif",
       background: bg,
       opacity: mounted ? 1 : 0,
       transition: "opacity 0.4s, background 0.3s",

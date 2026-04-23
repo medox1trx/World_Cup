@@ -7,8 +7,8 @@ import { getMatches, bookTicket } from "../services/api";
 import { getCode } from "./Home/constants";
 import toast from "react-hot-toast";
 
-const FONT_D = "'Barlow Condensed', sans-serif";
-const FONT_B = "'Barlow', sans-serif";
+const FONT_D = "'Bebas Neue', sans-serif";
+const FONT_B = "'DM Sans', sans-serif";
 
 export default function Tickets() {
   const { darkMode } = useTheme();
@@ -113,8 +113,8 @@ export default function Tickets() {
   if (searchTerm.trim()) {
     const s = searchTerm.toLowerCase();
     filteredMatches = filteredMatches.filter(m => 
-        m.home_team.toLowerCase().includes(s) || 
-        m.away_team.toLowerCase().includes(s) ||
+        (m.home_team?.name || m.home_team).toLowerCase().includes(s) || 
+        (m.away_team?.name || m.away_team).toLowerCase().includes(s) ||
         m.city.toLowerCase().includes(s) ||
         m.venue.toLowerCase().includes(s)
     );
@@ -125,8 +125,8 @@ export default function Tickets() {
   }
 
   const getFlag = (team) => {
-    const code = getCode(team);
-    return code ? `https://flagcdn.com/${code}.svg` : "https://flagcdn.com/un.svg";
+    const code = (typeof team === 'object' ? team?.flag : null) || getCode(team);
+    return code ? `https://flagcdn.com/w80/${code.toLowerCase()}.png` : "https://flagcdn.com/un.svg";
   };
 
   const tBg = darkMode ? "#0d0d0d" : "#fdfdfd";
@@ -145,7 +145,7 @@ export default function Tickets() {
   return (
     <div style={{ fontFamily: FONT_B, background: tBg, color: tText, opacity: mounted ? 1 : 0, transition: "background-color 0.4s, color 0.4s, opacity 0.4s", minHeight: "100vh" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .hw { max-width: 1380px; margin: 0 auto; padding: 0 clamp(16px,3vw,48px); }
         .pkg { border-radius:12px; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.22s ease, box-shadow 0.22s ease; background: ${tCardBg}; border: 1px solid ${tBorder}; }
@@ -243,13 +243,13 @@ export default function Tickets() {
                   
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", gap: 20, marginBottom: 24 }}>
                     <div style={{ textAlign: "center", flex: 1 }}>
-                      <img src={getFlag(m.home_team)} alt={m.home_team} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.home_team}</div>
+                      <img src={getFlag(m.home_team)} alt={m.home_team?.name || m.home_team} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
+                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.home_team?.name || m.home_team}</div>
                     </div>
                     <div style={{ fontFamily: FONT_D, fontSize: 24, fontWeight: 900, opacity: 0.2 }}>VS</div>
                     <div style={{ textAlign: "center", flex: 1 }}>
-                      <img src={getFlag(m.away_team)} alt={m.away_team} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.away_team}</div>
+                      <img src={getFlag(m.away_team)} alt={m.away_team?.name || m.away_team} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
+                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.away_team?.name || m.away_team}</div>
                     </div>
                   </div>
 

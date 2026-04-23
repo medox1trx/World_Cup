@@ -149,7 +149,7 @@ class ApiController extends Controller
     // ── GET /api/v1/matches ──────────────────────────────────
     public function matches(Request $request): JsonResponse
     {
-        $query = FootballMatch::with('tickets');
+        $query = FootballMatch::with(['tickets', 'homeTeam', 'awayTeam']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -169,7 +169,7 @@ class ApiController extends Controller
     // ── GET /api/v1/matches/{id} ─────────────────────────────
     public function match(int $id): JsonResponse
     {
-        $match = FootballMatch::with('tickets')->findOrFail($id);
+        $match = FootballMatch::with(['tickets', 'homeTeam', 'awayTeam'])->findOrFail($id);
         return response()->json($match);
     }
 
@@ -177,8 +177,10 @@ class ApiController extends Controller
     public function storeMatch(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'home_team'  => 'required|string|max:100',
-            'away_team'  => 'required|string|max:100',
+            'home_team_id' => 'required|exists:teams,id',
+            'away_team_id' => 'required|exists:teams,id',
+            'home_team'  => 'nullable|string|max:100',
+            'away_team'  => 'nullable|string|max:100',
             'home_flag'  => 'nullable|string',
             'away_flag'  => 'nullable|string',
             'venue'      => 'required|string|max:150',
@@ -197,7 +199,7 @@ class ApiController extends Controller
         ]);
 
         $match = FootballMatch::create($validated);
-        return response()->json($match, 201);
+        return response()->json($match->load(['homeTeam', 'awayTeam']), 201);
     }
 
     // ── PUT /api/v1/matches/{id} ─────────────────────────────
@@ -206,6 +208,8 @@ class ApiController extends Controller
         $match = FootballMatch::findOrFail($id);
 
         $validated = $request->validate([
+            'home_team_id' => 'sometimes|required|exists:teams,id',
+            'away_team_id' => 'sometimes|required|exists:teams,id',
             'home_team'  => 'sometimes|string|max:100',
             'away_team'  => 'sometimes|string|max:100',
             'home_flag'  => 'nullable|string',
@@ -228,7 +232,7 @@ class ApiController extends Controller
         ]);
 
         $match->update($validated);
-        return response()->json($match);
+        return response()->json($match->load(['homeTeam', 'awayTeam']));
     }
 
     // ── DELETE /api/v1/matches/{id} ──────────────────────────

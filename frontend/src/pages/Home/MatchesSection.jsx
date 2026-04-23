@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FiCalendar, FiClock, FiAward,
   FiChevronRight, FiArrowRight,
   FiZap, FiMapPin, FiTrendingUp,
 } from "react-icons/fi";
-import { FONT, STAGE_LABEL, TOP_SCORERS, getCode } from "./constants";
+import { FONT, STAGE_LABEL, getCode } from "./constants";
 import { Flag, SectionHead, Spinner } from "./ui";
 import { useTheme } from "../../context/ThemeContext";
 import { useMatches } from "../../hooks/useWorldCup";
+import { getTopScorers } from "../../services/api";
 
 function useHover() {
   const [h, setH] = useState(false);
@@ -154,14 +155,18 @@ function FeaturedMatch({ match }) {
             onMouseEnter={e => e.currentTarget.style.background = teamBgHov}
             onMouseLeave={e => e.currentTarget.style.background = teamBg}
           >
-            <BigFlag code={getCode(match.home_team)} alt={match.home_team} size={clamp(52, 72)} />
+            <BigFlag
+              code={match.home_team?.flag || getCode(match.home_team)}
+              alt={match.home_team?.name || match.home_team}
+              size={clamp(52, 72)}
+            />
             <span style={{
               fontFamily: FONT.display,
               fontSize: "clamp(0.85rem,3vw,1.15rem)",
               fontWeight: 900, letterSpacing: "0.06em",
               color: textPrimary, textAlign: "center", textTransform: "uppercase",
               lineHeight: 1.1,
-            }}>{match.home_team}</span>
+            }}>{match.home_team?.name || (typeof match.home_team === 'string' ? match.home_team : "TBD")}</span>
           </div>
 
           {/* Score / Time */}
@@ -216,14 +221,18 @@ function FeaturedMatch({ match }) {
             onMouseEnter={e => e.currentTarget.style.background = teamBgHov}
             onMouseLeave={e => e.currentTarget.style.background = teamBg}
           >
-            <BigFlag code={getCode(match.away_team)} alt={match.away_team} size={clamp(52, 72)} />
+            <BigFlag
+              code={match.away_team?.flag || getCode(match.away_team)}
+              alt={match.away_team?.name || match.away_team}
+              size={clamp(52, 72)}
+            />
             <span style={{
               fontFamily: FONT.display,
               fontSize: "clamp(0.85rem,3vw,1.15rem)",
               fontWeight: 900, letterSpacing: "0.06em",
               color: textPrimary, textAlign: "center", textTransform: "uppercase",
               lineHeight: 1.1,
-            }}>{match.away_team}</span>
+            }}>{match.away_team?.name || (typeof match.away_team === 'string' ? match.away_team : "TBD")}</span>
           </div>
         </div>
 
@@ -300,13 +309,16 @@ function MatchRow({ m }) {
             {formatShort(m.match_date)}
           </span>
         }
+        <div style={{ fontSize: 8, color: textMuted, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700 }}>
+          {m.city}
+        </div>
       </div>
 
       {/* Home team — flag + name */}
       <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
         <img
-          src={`https://flagcdn.com/w40/${getCode(m.home_team) || "un"}.png`}
-          alt={m.home_team}
+          src={`https://flagcdn.com/w40/${m.home_team?.flag || getCode(m.home_team) || "un"}.png`}
+          alt={m.home_team?.name || m.home_team}
           loading="lazy"
           style={{ width: 28, height: 19, objectFit: "cover", borderRadius: 3, flexShrink: 0, border: "0.5px solid rgba(128,128,128,0.2)", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}
         />
@@ -314,7 +326,7 @@ function MatchRow({ m }) {
           fontSize: 12, fontWeight: 700, color: textPrimary,
           fontFamily: FONT.body, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           transition: "color 0.3s",
-        }}>{m.home_team}</span>
+        }}>{m.home_team?.name || (typeof m.home_team === 'string' ? m.home_team : "TBD")}</span>
       </div>
 
       {/* Score / Time */}
@@ -343,10 +355,10 @@ function MatchRow({ m }) {
           fontSize: 12, fontWeight: 700, color: textPrimary,
           fontFamily: FONT.body, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           textAlign: "right", transition: "color 0.3s",
-        }}>{m.away_team}</span>
+        }}>{m.away_team?.name || (typeof m.away_team === 'string' ? m.away_team : "TBD")}</span>
         <img
-          src={`https://flagcdn.com/w40/${getCode(m.away_team) || "un"}.png`}
-          alt={m.away_team}
+          src={`https://flagcdn.com/w40/${m.away_team?.flag || getCode(m.away_team) || "un"}.png`}
+          alt={m.away_team?.name || m.away_team}
           loading="lazy"
           style={{ width: 28, height: 19, objectFit: "cover", borderRadius: 3, flexShrink: 0, border: "0.5px solid rgba(128,128,128,0.2)", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}
         />
@@ -359,11 +371,12 @@ function MatchRow({ m }) {
       />
     </div>
   );
-}
-
-// ─── TOP SCORERS ──────────────────────────────────────────────
+}// ─── TOP SCORERS (DYNAMIC) ────────────────────────────────────
 function TopScorers() {
   const { darkMode } = useTheme();
+  const [scorers, setScorers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const card = darkMode ? "#141414" : "#ffffff";
   const border = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)";
   const borderSub = darkMode ? "rgba(255,255,255,0.06)" : "#ececec";
@@ -372,12 +385,21 @@ function TopScorers() {
   const textMuted = darkMode ? "rgba(255,255,255,0.28)" : "#aaaaaa";
   const rowHov = darkMode ? "rgba(255,255,255,0.05)" : "#f6f6f6";
 
+  useEffect(() => {
+    getTopScorers().then(data => {
+      setScorers(data);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{ padding: 20, textAlign: "center" }}><Spinner /></div>;
+  if (scorers.length === 0) return null;
+
   return (
     <div style={{
       border: `1px solid ${border}`, borderRadius: 8, overflow: "hidden",
       transition: "border-color 0.3s",
     }}>
-      {/* Header */}
       <div style={{
         background: "#0d0d0d", padding: "11px 16px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -389,7 +411,7 @@ function TopScorers() {
             letterSpacing: "0.2em", textTransform: "uppercase", fontFamily: FONT.body,
           }}>Meilleurs Buteurs</span>
         </div>
-        <a href="/standings" style={{
+        <a href="/joueurs" style={{
           display: "flex", alignItems: "center", gap: 3,
           color: "rgba(255,255,255,0.4)", fontSize: 8, fontWeight: 800,
           textTransform: "uppercase", letterSpacing: "0.12em",
@@ -402,57 +424,48 @@ function TopScorers() {
         </a>
       </div>
 
-      {TOP_SCORERS.map((p, i) => (
-        <div key={i} style={{
+      {scorers.map((p, i) => (
+        <div key={p.id} style={{
           display: "flex", alignItems: "center", gap: 10,
           padding: "11px 14px",
-          borderBottom: i < TOP_SCORERS.length - 1 ? `1px solid ${borderSub}` : "none",
+          borderBottom: i < scorers.length - 1 ? `1px solid ${borderSub}` : "none",
           background: card, cursor: "pointer",
           transition: "background 0.2s",
         }}
           onMouseEnter={e => e.currentTarget.style.background = rowHov}
           onMouseLeave={e => e.currentTarget.style.background = card}
         >
-          {/* Rank */}
           <span style={{
             fontSize: 10, fontWeight: 900, color: textMuted,
             width: 16, textAlign: "center", fontFamily: FONT.body, flexShrink: 0,
           }}>{i + 1}</span>
 
-          {/* Flag — larger now */}
           <img
-            src={`https://flagcdn.com/w40/${p.code || "un"}.png`}
-            alt={p.team}
+            src={`https://flagcdn.com/w40/${p.team?.flag || getCode(p.team?.name) || "un"}.png`}
+            alt={p.team?.name}
             loading="lazy"
             style={{
-              width: 32, height: 22,
-              objectFit: "cover", borderRadius: 3, flexShrink: 0,
-              border: "0.5px solid rgba(128,128,128,0.2)",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
+              width: 32, height: 22, objectFit: "cover", borderRadius: 3, flexShrink: 0,
+              border: "0.5px solid rgba(128,128,128,0.2)", boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
             }}
           />
 
-          {/* Name + team */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{
               fontSize: 12, fontWeight: 700, color: textPrimary,
-              fontFamily: FONT.body, overflow: "hidden",
-              textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0,
-              transition: "color 0.3s",
-            }}>{p.player}</p>
+              fontFamily: FONT.body, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0,
+            }}>{p.nom}</p>
             <p style={{
               fontSize: 9, color: textSecondary, fontFamily: FONT.body,
-              fontWeight: 600, margin: "2px 0 0", transition: "color 0.3s",
-            }}>{p.team}</p>
+              fontWeight: 600, margin: "2px 0 0",
+            }}>{p.team?.name}</p>
           </div>
 
-          {/* Goals */}
           <div style={{ display: "flex", alignItems: "baseline", gap: 3, flexShrink: 0 }}>
             <span style={{
               fontFamily: FONT.display, fontWeight: 900,
               fontSize: "1.4rem", color: textPrimary, lineHeight: 1,
-              transition: "color 0.3s",
-            }}>{p.goals}</span>
+            }}>{p.buts}</span>
             <span style={{
               fontSize: 8, color: textSecondary, textTransform: "uppercase",
               letterSpacing: "0.1em", fontWeight: 700, fontFamily: FONT.body,
@@ -463,6 +476,7 @@ function TopScorers() {
     </div>
   );
 }
+
 
 // ─── FILTER TAB ───────────────────────────────────────────────
 function FilterTab({ label, active, dot, icon: Icon, onClick }) {
@@ -522,9 +536,9 @@ export function MatchesSection({ matchFilter, setMatchFilter }) {
   const accentHover = darkMode ? "#e8e8e8" : "#333333";
   const headerBg = darkMode ? "#111111" : "#f0f0f0";
 
-  const allMatches = matches || [];
-  const featuredMatch = allMatches[0] || null;
-  const restMatches = allMatches.slice(1);
+  const displayMatches = matches || [];
+  const featuredMatch = displayMatches[0] || null;
+  const restMatches = displayMatches.slice(1);
 
   const FILTERS = [
     { k: "upcoming", l: "À venir", icon: FiClock },
@@ -542,7 +556,7 @@ export function MatchesSection({ matchFilter, setMatchFilter }) {
 
         .ms-grid {
           display: grid;
-          grid-template-columns: 1fr 252px;
+          grid-template-columns: 1fr 280px;
           gap: 16px;
           align-items: start;
         }
@@ -579,7 +593,10 @@ export function MatchesSection({ matchFilter, setMatchFilter }) {
         background: surface, padding: "clamp(28px,5vw,48px) 0",
         transition: "background 0.3s",
       }}>
-        <div className="layout-container">
+        <div style={{
+          width: "100%", maxWidth: "1600px", margin: "0 auto", padding: "0 var(--section-pad-x)",
+          boxSizing: "border-box",
+        }}>
 
           <SectionHead eyebrow="Calendrier" title="Matchs" action="Tous les matchs" href="/matches" />
 
@@ -604,7 +621,7 @@ export function MatchesSection({ matchFilter, setMatchFilter }) {
             }}>
               <Spinner />
             </div>
-          ) : error || !allMatches.length ? (
+          ) : error || !displayMatches.length ? (
             <div style={{
               background: card, border: `1px solid ${border}`, borderRadius: 8,
               padding: "48px 24px", display: "flex", flexDirection: "column",
@@ -618,8 +635,6 @@ export function MatchesSection({ matchFilter, setMatchFilter }) {
             </div>
           ) : (
             <div className="ms-grid">
-
-              {/* Left column */}
               <div className="ms-left">
                 {featuredMatch && <FeaturedMatch match={featuredMatch} />}
 

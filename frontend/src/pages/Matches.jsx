@@ -57,10 +57,10 @@ export default function Matches() {
     }}>
       <style>{`
         .matches-hero { padding: clamp(28px, 5vh, 80px) clamp(10px, 2vw, 24px); max-width: 1380px; margin: 0 auto; }
-        .match-list { display: flex; flexDirection: column; gap: 10px; width: 100%; }
+        .match-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; }
         .match-row-card {
            background: #ffffff; border: 1px solid #eee; borderRadius: 12px; padding: clamp(14px, 2.5vw, 24px);
-           display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: clamp(10px, 2vw, 20px); 
+           display: flex; flex-direction: column; gap: 24px; 
            box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;
         }
         .match-team-block { display: flex; align-items: center; gap: clamp(6px, 1.5vw, 16px); flex: 1; minWidth: 0; }
@@ -138,7 +138,7 @@ export default function Matches() {
             onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.02)"; }}
             >
               
-              <div className="match-info-side" style={{ flex: "1 1 250px" }}>
+              <div className="match-info-side" style={{ width: "100%", borderBottom: "1px solid #eee", paddingBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                   <span style={{ color: "#c8102e", fontSize: 11, fontWeight: 900, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                     {m.group_name || m.stage}
@@ -156,10 +156,10 @@ export default function Matches() {
                 </div>
               </div>
 
-              <div className="match-teams-side" style={{ flex: "2 1 350px", display: "flex", justifyContent: "center", alignItems: "center", gap: clampValue(16, 40) }}>
+              <div className="match-teams-side" style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
                 <div className="match-team-block" style={{ textAlign: "right", justifyContent: "flex-end" }}>
-                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.home_team}</span>
-                  <Flag code={m.home_flag || getCode(m.home_team)} size={28} />
+                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.home_team?.name || (typeof m.home_team === 'string' ? m.home_team : "TBD")}</span>
+                  <Flag code={m.home_team?.flag || getCode(m.home_team)} size={28} />
                 </div>
 
                 <div className="match-vs-block">
@@ -167,12 +167,12 @@ export default function Matches() {
                 </div>
 
                 <div className="match-team-block" style={{ textAlign: "left", justifyContent: "flex-start" }}>
-                  <Flag code={m.away_flag || getCode(m.away_team)} size={28} />
-                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.away_team}</span>
+                  <Flag code={m.away_team?.flag || getCode(m.away_team)} size={28} />
+                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.away_team?.name || (typeof m.away_team === 'string' ? m.away_team : "TBD")}</span>
                 </div>
               </div>
 
-              <div className="match-actions-side" style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", gap: 8 }}>
+              <div className="match-actions-side" style={{ width: "100%", display: "flex", flexDirection: "row", gap: 8 }}>
                 {m.video_url && (
                     <a href={m.video_url} target="_blank" rel="noreferrer" 
                       onClick={(e) => e.stopPropagation()}
@@ -180,7 +180,7 @@ export default function Matches() {
                       style={{
                       padding: "10px 20px", borderRadius: 100, 
                       fontSize: 10, fontWeight: 800, textDecoration: "none", textTransform: "uppercase", 
-                      letterSpacing: "0.05em", transition: "0.2s", display: "inline-flex", alignItems: "center", gap: 6
+                      letterSpacing: "0.05em", transition: "0.2s", display: "inline-flex", alignItems: "center", gap: 6, flex: 1, justifyContent: "center"
                     }}>
                       <FiPlayCircle size={14} /> Résumé
                     </a>
@@ -190,7 +190,7 @@ export default function Matches() {
                   style={{
                   background: "#0d0d0d", color: "white", padding: "10px 24px", borderRadius: 100, 
                   fontSize: 11, fontWeight: 800, textDecoration: "none", textTransform: "uppercase", 
-                  letterSpacing: "0.05em", transition: "0.2s", display: "inline-block", textAlign: "center"
+                  letterSpacing: "0.05em", transition: "0.2s", display: "inline-block", textAlign: "center", flex: 1
                 }}>
                   Billets
                 </Link>
@@ -246,12 +246,12 @@ export default function Matches() {
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, marginBottom: 24, flexWrap: "wrap" }}>
                 <div style={{ flex: 1, textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, minWidth: 120 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.home_team}</span>
-                    <Flag code={selectedMatch.home_flag || getCode(selectedMatch.home_team)} size={36} />
+                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.home_team?.name || (typeof selectedMatch.home_team === 'string' ? selectedMatch.home_team : "TBD")}</span>
+                    <Flag code={selectedMatch.home_team?.flag || getCode(selectedMatch.home_team)} size={36} />
                   </div>
                   {/* Form */}
                   <div style={{ display: "flex", gap: 4 }}>
-                    {getRecentForm(selectedMatch.home_team).map((res, idx) => (
+                    {getRecentForm(selectedMatch.home_team?.name || selectedMatch.home_team).map((res, idx) => (
                       <span key={idx} style={{ background: getFormColor(res), color: "white", fontSize: 9, fontWeight: 800, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 3 }}>
                         {res}
                       </span>
@@ -269,12 +269,12 @@ export default function Matches() {
 
                 <div style={{ flex: 1, textAlign: "left", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10, minWidth: 120 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <Flag code={selectedMatch.away_flag || getCode(selectedMatch.away_team)} size={36} />
-                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.away_team}</span>
+                    <Flag code={selectedMatch.away_team?.flag || getCode(selectedMatch.away_team)} size={36} />
+                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.away_team?.name || (typeof selectedMatch.away_team === 'string' ? selectedMatch.away_team : "TBD")}</span>
                   </div>
                   {/* Form */}
                   <div style={{ display: "flex", gap: 4 }}>
-                    {getRecentForm(selectedMatch.away_team).map((res, idx) => (
+                    {getRecentForm(selectedMatch.away_team?.name || selectedMatch.away_team).map((res, idx) => (
                       <span key={idx} style={{ background: getFormColor(res), color: "white", fontSize: 9, fontWeight: 800, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 3 }}>
                         {res}
                       </span>

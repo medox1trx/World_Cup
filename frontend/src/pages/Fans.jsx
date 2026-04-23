@@ -8,8 +8,8 @@ import {
 } from "react-icons/fi";
 
 const API_BASE_URL = "http://localhost:8000/api/v1";
-const D = "'Barlow Condensed', sans-serif";
-const B = "'Barlow', sans-serif";
+const D = "'Bebas Neue', sans-serif";
+const B = "'DM Sans', sans-serif";
 
 /* ─── All city images: unique, tested URLs ─────────────────── */
 const CITY_IMGS = {
@@ -149,8 +149,30 @@ export default function FanZone() {
     const fetchFanZones = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/fan-zones`);
-        setGroups(res.data);
-        if (res.data.length > 0 && res.data[0].cities && res.data[0].cities.length > 0) {
+        const data = res.data;
+        
+        const grouped = data.reduce((acc, fz) => {
+          const g = fz.groupe || 'Autres';
+          if (!acc[g]) acc[g] = [];
+          acc[g].push({
+            key:      fz.id,
+            name:     fz.ville.nom,
+            country:  fz.pays.nom,
+            code:     fz.pays.code_iso,
+            stadium:  fz.stade,
+            cap:      fz.capacite,
+            matches:  fz.nb_matchs,
+            zone:     fz.zone_label,
+            desc:     fz.description,
+            img:      fz.image_url,
+            is_centenary: fz.statut === 'centenaire'
+          });
+          return acc;
+        }, {});
+
+        const groupsArray = Object.entries(grouped).map(([label, cities]) => ({ label, cities }));
+        setGroups(groupsArray);
+        if (groupsArray.length > 0 && groupsArray[0].cities.length > 0) {
           setActiveIdx(0);
         }
       } catch (err) {
@@ -179,7 +201,7 @@ export default function FanZone() {
   return (
     <div style={{ fontFamily:B, background:"#0d0d0d", color:"white", opacity: mounted ? 1 : 0, transition:"opacity 0.45s" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
         html { scroll-behavior: smooth; }
 
@@ -192,8 +214,8 @@ export default function FanZone() {
         .hw { max-width:1380px; margin:0 auto; padding:0 clamp(16px,3.5vw,52px); }
 
         .sl { display:block; font-size:9px; font-weight:800; letter-spacing:.3em;
-              text-transform:uppercase; color:rgba(255,255,255,.32); margin-bottom:10px; font-family:'Barlow',sans-serif; }
-        .st { font-family:'Barlow Condensed',sans-serif; font-size:clamp(1.9rem,3.5vw,2.9rem);
+              text-transform:uppercase; color:rgba(255,255,255,.32); margin-bottom:10px; font-family:'DM Sans',sans-serif; }
+        .st { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.9rem,3.5vw,2.9rem);
               font-weight:900; letter-spacing:.03em; color:white; line-height:1; }
         .sh { margin-bottom:48px; padding-bottom:22px; border-bottom:1px solid rgba(255,255,255,.08); }
 
@@ -228,14 +250,14 @@ export default function FanZone() {
         .cr.on::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:white; }
 
         .clabel {
-          padding:9px 18px 7px; font-family:'Barlow',sans-serif; font-size:8px; font-weight:800;
+          padding:9px 18px 7px; font-family:'DM Sans',sans-serif; font-size:8px; font-weight:800;
           letter-spacing:.28em; text-transform:uppercase; color:rgba(255,255,255,.22);
           border-bottom:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02);
         }
 
         .cent-badge {
           display:inline-flex; align-items:center; gap: 6px;
-          color:rgb(234,179,8); font-family:'Barlow',sans-serif; font-size:10px;
+          color:rgb(234,179,8); font-family:'DM Sans',sans-serif; font-size:10px;
           font-weight:700; letter-spacing:.1em; text-transform:uppercase;
         }
         .cent-badge::before {

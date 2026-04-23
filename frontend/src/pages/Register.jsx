@@ -4,8 +4,8 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { registerUser } from "../services/api";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 function GoogleIcon() {
   return (
@@ -158,7 +158,7 @@ export default function Register() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
         body { background: ${bg}; margin: 0; transition: background 0.3s; }
         .register-wrap {
@@ -190,7 +190,11 @@ export default function Register() {
           font-family: ${FB}; font-size: 13px; transition: border-color 0.3s, background 0.3s, color 0.3s; outline: none;
         }
         .field-input::placeholder { color: ${textMuted}; }
-        .field-input:focus { border-color: ${darkMode ? "rgba(255,255,255,.3)" : "rgba(0,0,0,.3)"}; background: ${hover}; }
+        .field-input:focus { 
+          background: #0a0a0a; color: #ffffff; 
+          border-color: ${textPrimary}; box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
+        }
+        .field-input:focus::placeholder { color: rgba(255,255,255,0.4); }
         .field-input.has-error { border-color: rgba(248,113,113,.5); }
         .pass-wrap { position: relative; }
         .pass-wrap .field-input { padding-right: 42px; }

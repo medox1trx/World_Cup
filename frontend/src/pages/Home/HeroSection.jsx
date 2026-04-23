@@ -299,7 +299,8 @@ export function HeroSection() {
   font-weight: 900; line-height: 0.9;
   text-transform: uppercase; letter-spacing: -.02em; margin: 0;
   display: block; width: 100%; overflow: visible;
-  font-size: clamp(80px, 12vw, 160px);
+  font-size: clamp(50px, 7.5vw, 110px);
+  white-space: nowrap;
 }
         .hero-h1:last-child { padding-bottom: 0.06em; }
 
@@ -466,7 +467,7 @@ export function HeroSection() {
         @media (max-width: 1024px) {
           .hero-wrap { grid-template-columns: 1fr auto; gap: 20px; }
           .match-card { width: clamp(140px, 14vw, 180px); }
-          .hero-h1 { font-size: clamp(70px, 11vw, 130px); }
+          .hero-h1 { font-size: clamp(45px, 7vw, 90px); }
         }
 
         @media (max-width: 860px) {
@@ -481,7 +482,7 @@ export function HeroSection() {
               rgba(0,0,0,0.65) 50%,
               rgba(0,0,0,0.25) 100%);
           }
-          .hero-h1  { font-size: clamp(48px, 12vw, 100px); }
+          .hero-h1  { font-size: clamp(40px, 8vw, 75px); }
           .hero-sub { max-width: 42ch; font-size: clamp(13px, 1.5vw, 16px); }
           .hero-cta { flex-direction: row; flex-wrap: wrap; gap: 10px; }
           .btn-buy  { flex: 1 1 auto; min-width: 140px; justify-content: center; }
@@ -492,7 +493,7 @@ export function HeroSection() {
         @media (max-width: 600px) {
           .hero-root { min-height: 100svh; }
           .hero-wrap { padding: 40px 12px 50px; }
-          .hero-h1   { font-size: clamp(40px, 13vw, 72px); }
+          .hero-h1   { font-size: clamp(32px, 8vw, 55px); }
           .hero-sub  { font-size: 13px; max-width: 100%; line-height: 1.5; margin: 12px 0 16px; }
           .hero-ey-txt { font-size: 9px; letter-spacing: .15em; }
           .hero-cta { flex-direction: column; align-items: stretch; gap: 8px; width: 100%; }
@@ -503,7 +504,7 @@ export function HeroSection() {
         }
 
         @media (max-width: 380px) {
-          .hero-h1  { font-size: clamp(32px, 11vw, 54px); }
+          .hero-h1  { font-size: clamp(28px, 9vw, 42px); }
           .hero-sub { font-size: 12px; }
           .btn-buy  { font-size: 11px; padding: 11px 12px; }
           .btn-watch{ padding: 11px 12px; font-size: 11px; }

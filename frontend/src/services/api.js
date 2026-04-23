@@ -75,12 +75,23 @@ export const getCity = (slug) => api.get(`/cities/${slug}`);
 export const getAccommodation = (id) => api.get(`/accommodations/${id}`);
 export const getAccommodations = (slug, params = {}) => api.get(`/cities/${slug}/accommodations`, { params });
 
-// ── Fan Zones ───────────────────────────────────────────────
+// ── Fan Zones, Cities & Countries (New Dynamic System) ────────────────
 export const getFanZones = () => api.get("/fan-zones");
-export const adminGetFanZones = () => api.get("/fan-zones-all");
-export const createFanZone = (data) => api.post("/admin/fan-zones", data);
-export const updateFanZone = (id, data) => api.put(`/admin/fan-zones/${id}`, data);
-export const deleteFanZone = (id) => api.delete(`/admin/fan-zones/${id}`);
+export const getFanZone = (id) => api.get(`/fan-zones/${id}`);
+export const createFanZone = (data) => api.post("/fan-zones", data);
+export const updateFanZone = (id, data) => api.put(`/fan-zones/${id}`, data);
+export const deleteFanZone = (id) => api.delete(`/fan-zones/${id}`);
+
+export const getPays = () => api.get("/pays");
+export const createPays = (data) => api.post("/pays", data);
+export const updatePays = (id, data) => api.put(`/pays/${id}`, data);
+export const deletePays = (id) => api.delete(`/pays/${id}`);
+
+export const getVilles = (params = {}) => api.get("/villes", { params });
+export const createVille = (data) => api.post("/villes", data);
+export const updateVille = (id, data) => api.put(`/villes/${id}`, data);
+export const deleteVille = (id) => api.delete(`/villes/${id}`);
+
 
 // ── Reservations (Protected) ────────────────────────────────────
 export const storeReservation = (data) => api.post("/reservations", data);
@@ -111,6 +122,7 @@ export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);
 
 // ── Joueurs ──────────────────────────────────────────────────
 export const getJoueurs = () => api.get("/joueurs");
+export const getTopScorers = () => api.get("/joueurs/top-scorers");
 export const adminGetJoueurs = () => api.get("/admin/joueurs");
 export const createJoueur = (data) => api.post("/admin/joueurs", data);
 export const updateJoueur = (id, data) => api.put(`/admin/joueurs/${id}`, data);

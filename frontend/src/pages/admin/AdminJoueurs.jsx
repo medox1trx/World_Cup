@@ -3,8 +3,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiSearch, FiUsers, FiStar } from "react-icons/fi";
 import { adminGetJoueurs, createJoueur, updateJoueur, deleteJoueur, getTeams } from "../../services/api";
 
-const FD = "'Barlow Condensed', sans-serif";
-const FB = "'Barlow', sans-serif";
+const FD = "'Bebas Neue', sans-serif";
+const FB = "'DM Sans', sans-serif";
 
 const POSTES = ["Gardien", "Défenseur", "Milieu", "Attaquant"];
 
@@ -91,7 +91,7 @@ export default function AdminJoueurs() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         .admin-page {
           background: ${bg}; min-height: calc(100vh - 102px);
           padding: clamp(24px,5vw,48px);
@@ -135,7 +135,7 @@ export default function AdminJoueurs() {
           display: inline-flex; align-items: center; justify-content: center;
           transition: 0.2s; margin-right: 8px;
         }
-        .btn-icon:hover { background: #c8102e; color: white; border-color: #c8102e; }
+        .btn-icon:hover { background: ${accent}; color: ${accentContrast}; border-color: ${accent}; }
         
         .modal-overlay {
           position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
@@ -147,10 +147,18 @@ export default function AdminJoueurs() {
           padding: 32px; border: 1px solid ${border}; 
           box-shadow: 0 40px 100px rgba(0,0,0,0.6);
         }
+        .form-input { 
+          width: 100%; padding: 14px 18px; border-radius: 12px; 
+          background: ${surface}; border: 1px solid ${border}; 
+          color: ${textPrimary}; outline: none; transition: all 0.25s ease;
+        }
+        .form-input:focus { 
+          background: #0a0a0a; color: #ffffff; 
+          border-color: ${accent}; box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
+        }
+        .form-input:focus::placeholder { color: rgba(255,255,255,0.4); }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
-        .form-input { width: 100%; padding: 14px 18px; border-radius: 12px; background: ${surface}; border: 1px solid ${border}; color: ${textPrimary}; outline: none; }
-        .form-input:focus { border-color: #c8102e; }
         .player-img-mini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: ${surface}; }
       `}</style>
 
@@ -159,7 +167,7 @@ export default function AdminJoueurs() {
           <div className="admin-header">
             <div>
               <h1 className="admin-title">Gestion des Joueurs</h1>
-              <p className="admin-sub">Gérer les athlètes participant à la Coupe du Monde 2030</p>
+              <p className="admin-sub">Gérer les athlètes participant à la Coupe du Monde 2026</p>
             </div>
             <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
               <FiPlus /> Ajouter un joueur

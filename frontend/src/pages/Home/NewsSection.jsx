@@ -377,7 +377,7 @@ function SideArticle({ article, last, className = "", active = false, onClick, t
       if (onClick) onClick();
     }}>
       <div style={{
-        width: 80, flexShrink: 0, background: surface, position: "relative", overflow: "hidden",
+        width: 140, flexShrink: 0, background: surface, position: "relative", overflow: "hidden",
         transition: "background 0.3s",
       }}>
         <ArticleImg
@@ -390,7 +390,7 @@ function SideArticle({ article, last, className = "", active = false, onClick, t
         />
       </div>
       <div style={{
-        flex: 1, padding: "12px 14px", display: "flex", flexDirection: "column",
+        flex: 1, padding: "16px 24px", display: "flex", flexDirection: "column",
         justifyContent: "center", gap: 4,
         borderLeft: hovered ? `2px solid ${accent}` : "2px solid transparent",
         transition: "border-color 0.3s ease",
@@ -586,7 +586,7 @@ export function NewsSection() {
       <style>{`
 
         .ns-grid {
-          display: grid; grid-template-columns: 1fr 380px;
+          display: grid; grid-template-columns: 1fr 480px;
           border: 1px solid ${border}; border-radius: 4px; overflow: hidden;
           transition: border-color 0.3s;
         }
@@ -617,7 +617,7 @@ export function NewsSection() {
         @media (max-width: 860px) {
           .ns-grid { grid-template-columns: 1fr; }
           .ns-side { border-left: none; border-top: 1px solid ${border}; flex-direction: row; flex-wrap: wrap; }
-          .ns-side .side-article { flex: 1 1 380px; }
+          .ns-side .side-article { flex: 1 1 480px; }
         }
         @media (max-width: 540px) { 
           .ns-side .side-article { flex: 1 1 100%; } 

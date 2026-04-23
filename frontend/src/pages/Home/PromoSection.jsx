@@ -609,7 +609,7 @@ export function FanZoneSection() {
   const inputBorderFocus = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)";
   const inputBg = darkMode ? "rgba(255,255,255,0.05)" : "#ffffff";
   const legalColor = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)";
-  const successGreen = "#22c55e";
+  const successGreen = "#ffffff";
 
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);

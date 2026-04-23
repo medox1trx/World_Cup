@@ -1,7 +1,7 @@
 import { useTheme } from "../../context/ThemeContext";
 
 // ─── Inlined constants ────────────────────────────────────────
-const FONT = { display: "'Barlow Condensed', sans-serif", body: "'Barlow', sans-serif" };
+const FONT = { display: "'Bebas Neue', sans-serif", body: "'DM Sans', sans-serif" };
 
 // ─── Social icons ─────────────────────────────────────────────
 const SOCIALS = [
