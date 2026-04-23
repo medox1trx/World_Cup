@@ -1,6 +1,7 @@
 import { FiChevronRight, FiRefreshCw } from "react-icons/fi";
 import { FONT } from "./constants";
 import { useTheme } from "../../context/ThemeContext";
+import { getImageUrl } from "../../services/api";
 
 // ─── GLOBAL FONTS ─────────────────────────────────────────────
 export function GlobalFonts() {
@@ -41,16 +42,19 @@ export function Flag({ code, alt = "", size = 28 }) {
   
   const baseSize = getResponsiveSize();
 
-  // If it's a full URL
-  if (code.startsWith('http')) {
+  // If it's a full URL or local storage path
+  if (code.startsWith('http') || code.startsWith('/storage/')) {
+     const src = getImageUrl(code);
      return (
        <img 
-         src={code} 
+         src={src} 
          alt={alt} 
          loading="lazy" 
          decoding="async"
+         onError={(e) => { e.target.src = "https://flagcdn.com/w80/un.png"; }}
          style={{ 
            width: "auto", height: baseSize,
+           maxHeight: baseSize,
            maxWidth: baseSize * 1.5,
            objectFit: "cover", 
            borderRadius: 2,

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Joueur;
 use Illuminate\Http\Request;
+use App\Traits\HandlesImages;
 
 class JoueurController extends Controller
 {
+    use HandlesImages;
+
     public function index()
     {
         return Joueur::with('team')->get();
@@ -19,11 +22,21 @@ class JoueurController extends Controller
             'numero' => 'required|integer',
             'poste' => 'required|string|max:255',
             'buts' => 'nullable|integer|min:0',
-            'photo' => 'nullable|string|max:255',
+            'photo' => 'nullable|sometimes',
             'team_id' => 'required|exists:teams,id',
         ]);
 
-        $joueur = Joueur::create($validated);
+        if ($request->hasFile('photo')) {
+            $request->validate(['photo' => 'image|mimes:jpg,jpeg,png|max:2048']);
+        } elseif ($request->filled('photo')) {
+            // Flexible check for URL or string
+            $request->validate(['photo' => 'nullable']);
+        }
+
+        $data = $validated;
+        $data['photo'] = $this->handleImage($request, 'photo', 'players');
+
+        $joueur = Joueur::create($data);
         return response()->json($joueur, 201);
     }
 
@@ -39,11 +52,22 @@ class JoueurController extends Controller
             'numero' => 'sometimes|required|integer',
             'poste' => 'sometimes|required|string|max:255',
             'buts' => 'nullable|integer|min:0',
-            'photo' => 'nullable|string|max:255',
+            'photo' => 'nullable|sometimes',
             'team_id' => 'sometimes|required|exists:teams,id',
         ]);
 
-        $joueur->update($validated);
+        if ($request->hasFile('photo')) {
+            $request->validate(['photo' => 'image|mimes:jpg,jpeg,png|max:2048']);
+        } elseif ($request->filled('photo')) {
+            $request->validate(['photo' => 'nullable']);
+        }
+
+        $data = $validated;
+        if ($request->hasFile('photo') || $request->filled('photo')) {
+            $data['photo'] = $this->handleImage($request, 'photo', 'players', $joueur->photo);
+        }
+
+        $joueur->update($data);
         return response()->json($joueur);
     }
 

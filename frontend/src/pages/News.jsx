@@ -67,28 +67,29 @@ export default function News() {
     }
   };
 
-  const tBg = darkMode ? "#0d0d0d" : "#fdfdfd";
-  const tText = darkMode ? "white" : "#0d0d0d";
-  const tCardBg = darkMode ? "#111111" : "#ffffff";
-  const tBorder = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
-  const tBorderHov = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";
-  const tSubText = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)";
-  const tStroke = darkMode ? "1.5px rgba(255,255,255,0.6)" : "1.5px rgba(0,0,0,0.2)";
-  const tGradTop = darkMode ? "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0) 100%)" : "linear-gradient(to top, #fdfdfd 0%, rgba(253,253,253,0) 100%)";
+  const tText = "var(--text-main)";
+  const tBtnBg = "var(--btn-bg)";
+  const tBtnText = "var(--btn-text)";
   const tInputBg = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)";
-  const tDot = darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.05)";
-  const tCardGrad = darkMode ? "linear-gradient(to top, rgba(17,17,17,0.95) 0%, transparent 60%)" : "linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 60%)";
-  const tBtnBg = darkMode ? "white" : "#0d0d0d";
-  const tBtnText = darkMode ? "#0d0d0d" : "white";
+  const tCardGrad = darkMode 
+    ? "linear-gradient(to top, rgba(13,13,13,0.5) 0%, transparent 100%)" 
+    : "linear-gradient(to top, rgba(253,253,253,0.2) 0%, transparent 100%)";
 
   return (
-    <div style={{ fontFamily: FONT_B, background: tBg, color: tText, opacity: mounted ? 1 : 0, transition: "background-color 0.4s, color 0.4s, opacity 0.4s", minHeight: "100vh" }}>
+    <div style={{ 
+      fontFamily: FONT_B, 
+      background: "var(--main-bg)", 
+      color: "var(--text-main)", 
+      opacity: mounted ? 1 : 0, 
+      transition: "background-color 0.4s, color 0.4s, opacity 0.4s", 
+      minHeight: "100vh" 
+    }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .hw { max-width: 1380px; margin: 0 auto; padding: 0 clamp(16px,3vw,48px); }
-        .pkg { border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.22s ease, box-shadow 0.22s ease; background: ${tCardBg}; border: 1px solid ${tBorder}; }
-        .pkg:hover { transform:translateY(-5px); border-color: ${tBorderHov}; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .pkg { border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.22s ease, box-shadow 0.22s ease; background: var(--card-bg); border: 1px solid var(--border-main); }
+        .pkg:hover { transform:translateY(-5px); border-color: var(--border-hover); box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
         .btn-shim { position:relative; overflow:hidden; }
         .btn-shim .sh { position:absolute; top:0; left:-80%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent); pointer-events:none; }
         .btn-shim:hover .sh { animation:shim 0.5s ease forwards; }
@@ -100,26 +101,30 @@ export default function News() {
 
       {/* HERO SECTION */}
       <section style={{ position: "relative", minHeight: "50vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(${tDot} 1px,transparent 1px)`, backgroundSize: "32px 32px", zIndex: 1 }} />
-        <div style={{ position: "absolute", inset: 0, background: tGradTop, zIndex: 1 }} />
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(var(--text-muted) 1px,transparent 1px)`, backgroundSize: "32px 32px", zIndex: 1, opacity: 0.1 }} />
+        <div style={{ 
+          position: "absolute", inset: 0, 
+          background: darkMode ? "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0) 100%)" : "linear-gradient(to top, #fdfdfd 0%, rgba(253,253,253,0) 100%)", 
+          zIndex: 1 
+        }} />
         
         <div className="hw" style={{ position: "relative", zIndex: 2, width: "100%", padding: "clamp(120px,15vh,180px) clamp(16px,3vw,48px) 48px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 26 }}>
-            <div style={{ height: 1, width: 36, background: tBorderHov, flexShrink: 0 }} />
-            <span style={{ color: tSubText, fontFamily: FONT_B, fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>Le Hub Officiel</span>
+            <div style={{ height: 1, width: 36, background: "var(--border-hover)", flexShrink: 0 }} />
+            <span style={{ color: "var(--text-muted)", fontFamily: FONT_B, fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>Le Hub Officiel</span>
           </div>
           
           <div style={{ marginBottom: 40 }}>
             <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px,8vw,110px)", fontWeight: 900, lineHeight: 0.85, textTransform: "uppercase", letterSpacing: "-0.02em", margin: 0 }}>
-              ACTUALITÉS <span style={{ color: "transparent", WebkitTextStroke: tStroke }}>MONDIALES</span>
+              ACTUALITÉS <span style={{ color: "transparent", WebkitTextStroke: darkMode ? "1.5px rgba(255,255,255,0.6)" : "1.5px rgba(0,0,0,0.2)" }}>MONDIALES</span>
             </h1>
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
-            <form onSubmit={handleSearch} style={{ display: "flex", background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
+            <form onSubmit={handleSearch} style={{ display: "flex", background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", border: `1px solid var(--border-main)`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
               <input type="text" placeholder="Chercher un sujet..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                style={{ background: "transparent", border: "none", outline: "none", color: tText, padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
-              <button type="submit" style={{ background: tBtnBg, color: tBtnText, border: "none", padding: "0 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                style={{ background: "transparent", border: "none", outline: "none", color: "var(--text-main)", padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
+              <button type="submit" style={{ background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", padding: "0 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <FiSearch size={16} />
               </button>
             </form>
@@ -134,14 +139,14 @@ export default function News() {
             const isSel = filter === cat.query;
             return (
               <button key={cat.label} onClick={() => setFilter(cat.query)} style={{
-                background: isSel ? tBtnBg : "transparent",
-                color: isSel ? tBtnText : tSubText,
-                border: isSel ? `1px solid ${tBtnBg}` : `1px solid ${tBorder}`,
+                background: isSel ? "var(--btn-bg)" : "transparent",
+                color: isSel ? "var(--btn-text)" : "var(--text-muted)",
+                border: isSel ? `1px solid var(--btn-bg)` : `1px solid var(--border-main)`,
                 padding: "10px 22px", borderRadius: 100, fontSize: 12, fontWeight: 800,
                 cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s",
                 textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: FONT_B
-              }} onMouseOver={e => !isSel && (e.currentTarget.style.borderColor = tSubText)}
-                 onMouseOut={e => !isSel && (e.currentTarget.style.borderColor = tBorder)}>
+              }} onMouseOver={e => !isSel && (e.currentTarget.style.borderColor = "var(--text-muted)")}
+                 onMouseOut={e => !isSel && (e.currentTarget.style.borderColor = "var(--border-main)")}>
                 {cat.label}
               </button>
             )
@@ -178,20 +183,20 @@ export default function News() {
                 </div>
                 <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                    <span style={{ color: tSubText, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    <span style={{ color: "var(--text-muted)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                       {item.source?.name || item.tag || "FIFA 2026"}
                     </span>
-                    <span style={{ display: "flex", alignItems: "center", gap: 5, color: tSubText, fontSize: 11, fontWeight: 600 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 5, color: "var(--text-muted)", fontSize: 11, fontWeight: 600 }}>
                       <FiCalendar size={14} /> {formatDate(item.publishedAt || item.date)}
                     </span>
                   </div>
                   <h3 style={{ fontFamily: FONT_D, fontSize: 24, fontWeight: 800, lineHeight: 1.1, textTransform: "uppercase", letterSpacing: "0.02em", margin: "0 0 12px" }}>
                     {item.title}
                   </h3>
-                  <p style={{ color: tSubText, fontSize: 13, lineHeight: 1.6, fontFamily: FONT_B, flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.6, fontFamily: FONT_B, flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {item.description || item.desc}
                   </p>
-                  <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 6, color: tText, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 6, color: "var(--text-main)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                     Lire l'article <FiArrowRight size={14} />
                   </div>
                 </div>
@@ -203,13 +208,13 @@ export default function News() {
       
       {/* Newsletter */}
       <section className="hw" style={{ paddingBottom: 100 }}>
-        <div style={{ background: tCardBg, borderRadius: 10, border: `1px solid ${tBorder}`, padding: "clamp(40px,6vw,60px)", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: darkMode ? "none" : "0 20px 40px rgba(0,0,0,0.04)" }}>
-          <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(${tDot} 1px,transparent 1px)`, backgroundSize: "20px 20px" }} />
-          <h2 style={{ fontFamily: FONT_D, position: "relative", fontSize: "clamp(2rem,4vw,3.5rem)", fontWeight: 800, textTransform: "uppercase", margin: "0 0 16px", color: tText }}>Restez Connectés</h2>
-          <p style={{ color: tSubText, fontFamily: FONT_B, fontSize: 14, maxWidth: 500, margin: "0 auto 32px", position: "relative" }}>Abonnez-vous à notre newsletter pour recevoir les exclusivités sur la préparation de la Coupe du Monde 2026.</p>
+        <div style={{ background: "var(--card-bg)", borderRadius: 10, border: `1px solid var(--border-main)`, padding: "clamp(40px,6vw,60px)", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: darkMode ? "none" : "0 20px 40px rgba(0,0,0,0.04)" }}>
+          <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(var(--text-muted) 1px,transparent 1px)`, opacity: 0.05, backgroundSize: "20px 20px" }} />
+          <h2 style={{ fontFamily: FONT_D, position: "relative", fontSize: "clamp(2rem,4vw,3.5rem)", fontWeight: 800, textTransform: "uppercase", margin: "0 0 16px", color: "var(--text-main)" }}>Restez Connectés</h2>
+          <p style={{ color: "var(--text-muted)", fontFamily: FONT_B, fontSize: 14, maxWidth: 500, margin: "0 auto 32px", position: "relative" }}>Abonnez-vous à notre newsletter pour recevoir les exclusivités sur la préparation de la Coupe du Monde 2026.</p>
           <div style={{ display: "flex", justifyContent: "center", gap: 10, maxWidth: 400, margin: "0 auto", position: "relative" }}>
-            <input type="email" placeholder="votre@email.com" style={{ flex: 1, background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, padding: "0 20px", color: tText, fontFamily: FONT_B, fontSize: 14, outline: "none" }} />
-            <button className="btn-shim" style={{ background: tBtnBg, color: tBtnText, border: "none", padding: "14px 24px", borderRadius: 100, display: "flex", alignItems: "center", gap: 8, fontFamily: FONT_B, fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer" }}>
+            <input type="email" placeholder="votre@email.com" style={{ flex: 1, background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", border: `1px solid var(--border-main)`, borderRadius: 100, padding: "0 20px", color: "var(--text-main)", fontFamily: FONT_B, fontSize: 14, outline: "none" }} />
+            <button className="btn-shim" style={{ background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", padding: "14px 24px", borderRadius: 100, display: "flex", alignItems: "center", gap: 8, fontFamily: FONT_B, fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer" }}>
               <span className="sh" style={{ background: `linear-gradient(90deg,transparent,${darkMode?"rgba(255,255,255,.45)":"rgba(0,0,0,.15)"},transparent)` }} /> S'inscrire
             </button>
           </div>

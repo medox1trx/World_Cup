@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiSearch, FiUsers, FiStar } from "react-icons/fi";
-import { adminGetJoueurs, createJoueur, updateJoueur, deleteJoueur, getTeams } from "../../services/api";
+import { adminGetJoueurs, createJoueur, updateJoueur, deleteJoueur, getTeams, getImageUrl } from "../../services/api";
+import ImageUpload from "../../components/ImageUpload.jsx";
+import toast from "react-hot-toast";
 
 const FD = "'Bebas Neue', sans-serif";
 const FB = "'DM Sans', sans-serif";
@@ -15,6 +17,7 @@ export default function AdminJoueurs() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [imageData, setImageData] = useState({ type: 'url', value: '' });
   const [formData, setFormData] = useState({
     nom: "", numero: "", poste: "Attaquant", photo: "", team_id: ""
   });
@@ -47,22 +50,45 @@ export default function AdminJoueurs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const isFile = imageData.type === 'file' && imageData.value;
+    let payload;
+
+    if (isFile) {
+      payload = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (key !== 'photo') {
+          payload.append(key, formData[key]);
+        }
+      });
+      payload.append('photo', imageData.value);
+      if (editId) payload.append('_method', 'PUT');
+    } else {
+      payload = {
+        ...formData,
+        photo: imageData.value
+      };
+    }
+
     try {
       if (editId) {
-        await updateJoueur(editId, formData);
+        await updateJoueur(editId, payload);
+        toast.success("Joueur mis à jour !");
       } else {
-        await createJoueur(formData);
+        await createJoueur(payload);
+        toast.success("Joueur créé !");
       }
       setShowModal(false);
       resetForm();
       fetchData();
     } catch (err) {
-      alert("Erreur lors de l'enregistrement");
+      toast.error(err.message || "Erreur lors de l'enregistrement");
     }
   };
 
   const resetForm = () => {
     setFormData({ nom: "", numero: "", poste: "Attaquant", photo: "", team_id: "" });
+    setImageData({ type: 'url', value: '' });
     setEditId(null);
   };
 
@@ -75,6 +101,7 @@ export default function AdminJoueurs() {
       photo: j.photo || "",
       team_id: j.team_id
     });
+    setImageData({ type: 'url', value: j.photo || '' });
     setShowModal(true);
   };
 
@@ -82,9 +109,10 @@ export default function AdminJoueurs() {
     if (!window.confirm("Supprimer ce joueur ?")) return;
     try {
       await deleteJoueur(id);
+      toast.success("Joueur supprimé");
       fetchData();
     } catch (err) {
-      alert("Erreur lors de la suppression");
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -144,7 +172,7 @@ export default function AdminJoueurs() {
         }
         .modal-content {
           background: ${bg}; width: 100%; max-width: 600px; border-radius: 24px;
-          padding: 32px; border: 1px solid ${border}; 
+          max-height: 90vh; overflow-y: auto; padding: 32px; border: 1px solid ${border}; 
           box-shadow: 0 40px 100px rgba(0,0,0,0.6);
         }
         .form-input { 
@@ -159,15 +187,15 @@ export default function AdminJoueurs() {
         .form-input:focus::placeholder { color: rgba(255,255,255,0.4); }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
-        .player-img-mini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: ${surface}; }
+        .player-img-mini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: ${surface}; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
       `}</style>
 
       <div className="admin-page">
         <div className="admin-inner">
           <div className="admin-header">
             <div>
-              <h1 className="admin-title">Gestion des Joueurs</h1>
-              <p className="admin-sub">Gérer les athlètes participant à la Coupe du Monde 2026</p>
+              <h1 className="admin-title">Effectifs</h1>
+              <p className="admin-sub">Gérer les {joueurs.length} joueurs de la compétition</p>
             </div>
             <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
               <FiPlus /> Ajouter un joueur
@@ -178,41 +206,43 @@ export default function AdminJoueurs() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Joueur</th>
-                  <th>Numéro</th>
-                  <th>Poste</th>
-                  <th>Équipe</th>
-                  <th>Actions</th>
+                  <th>JOUEUR</th>
+                  <th>NUMÉRO</th>
+                  <th>POSTE</th>
+                  <th>NATION</th>
+                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="5" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
+                  <tr><td colSpan="5" style={{ textAlign: "center", padding: 60 }}>Chargement des joueurs...</td></tr>
                 ) : joueurs.length === 0 ? (
-                  <tr><td colSpan="5" style={{ textAlign: "center", padding: 40 }}>Aucun joueur trouvé</td></tr>
+                  <tr><td colSpan="5" style={{ textAlign: "center", padding: 60 }}>Aucun joueur trouvé</td></tr>
                 ) : joueurs.map((j) => (
                   <tr key={j.id}>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <img className="player-img-mini" src={j.photo || "https://www.w3schools.com/howto/img_avatar.png"} alt={j.nom} />
+                        <img className="player-img-mini" src={getImageUrl(j.photo)} alt={j.nom} />
                         <span style={{ fontWeight: 800, fontSize: 16 }}>{j.nom}</span>
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 800, fontSize: 18, color: accent }}>#{j.numero}</span>
+                      <span style={{ fontWeight: 900, fontSize: 18, color: accent }}>#{j.numero}</span>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 600 }}>{j.poste}</span>
+                      <span style={{ fontWeight: 700, textTransform: "uppercase", fontSize: 12, color: textSecondary }}>{j.poste}</span>
                     </td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                         {j.team?.flag && <img src={`https://flagcdn.com/w40/${j.team.flag}.png`} width="20" style={{borderRadius: 2}} />}
-                         <span style={{ fontWeight: 700 }}>{j.team?.name || "N/A"}</span>
+                         <img src={getImageUrl(j.team?.flag)} width="24" style={{ borderRadius: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                         <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase" }}>{j.team?.name || "N/A"}</span>
                       </div>
                     </td>
                     <td>
-                      <button className="btn-icon" onClick={() => handleEdit(j)}><FiEdit2 size={16} /></button>
-                      <button className="btn-icon delete" onClick={() => handleDelete(j.id)}><FiTrash2 size={16} /></button>
+                      <div style={{ display: "flex" }}>
+                        <button className="btn-icon" onClick={() => handleEdit(j)}><FiEdit2 size={14} /></button>
+                        <button className="btn-icon delete" onClick={() => handleDelete(j.id)}><FiTrash2 size={14} /></button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -225,9 +255,18 @@ export default function AdminJoueurs() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2 style={{ fontFamily: FD, fontSize: 24, fontWeight: 900, textTransform: "uppercase", marginBottom: 24, color: textPrimary }}>
-              {editId ? "Modifier le joueur" : "Nouveau joueur"}
-            </h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
+              <h2 style={{ fontFamily: FD, fontSize: 24, fontWeight: 900, textTransform: "uppercase", margin: 0, color: textPrimary }}>
+                {editId ? "Modifier le profil" : "Nouveau joueur"}
+              </h2>
+              <button 
+                onClick={() => setShowModal(false)}
+                style={{ background: surface, border: "none", color: textSecondary, padding: 8, borderRadius: 8, cursor: "pointer" }}
+              >
+                Fermer
+              </button>
+            </div>
+
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label">Nom Complet</label>
@@ -248,21 +287,31 @@ export default function AdminJoueurs() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Équipe</label>
+                <label className="form-label">Sélection Nationale</label>
                 <select className="form-input" value={formData.team_id} onChange={e => setFormData({...formData, team_id: e.target.value})} required>
                   <option value="">Sélectionner une équipe</option>
                   {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">URL Photo du joueur (optionnel)</label>
-                <input className="form-input" value={formData.photo} onChange={e => setFormData({...formData, photo: e.target.value})} placeholder="https://..." />
-              </div>
+              <ImageUpload 
+                label="Photo du joueur"
+                defaultValue={formData.photo}
+                onChange={setImageData}
+                darkMode={darkMode}
+                folder="players"
+              />
 
-              <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
-                <button type="submit" className="admin-btn-primary" style={{ flex: 1, justifyContent: "center" }}>Sauvegarder</button>
-                <button type="button" className="admin-btn-primary" style={{ background: surface, color: textPrimary, border: `1px solid ${border}` }} onClick={() => setShowModal(false)}>Annuler</button>
+              <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
+                <button type="submit" className="admin-btn-primary" style={{ flex: 2, justifyContent: "center", padding: '14px 0' }}>Enregistrer</button>
+                <button 
+                  type="button" 
+                  className="admin-btn-primary" 
+                  style={{ flex: 1, background: surface, color: textSecondary, border: `1px solid ${border}`, justifyContent: "center" }}
+                  onClick={() => setShowModal(false)}
+                >
+                  Annuler
+                </button>
               </div>
             </form>
           </div>

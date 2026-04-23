@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
-import { getTeam } from "../services/api";
+import { getTeam, getImageUrl } from "../services/api";
 import { FONT, C } from "./Home/constants";
 import { Flag } from "./Home/ui";
 import { FiArrowLeft, FiStar, FiAward, FiShield } from "react-icons/fi";
@@ -79,13 +79,16 @@ export default function TeamDetail() {
           <div style={{ position: "relative" }}>
             <div style={{ borderRadius: 32, overflow: "hidden", boxShadow: "0 30px 60px rgba(0,0,0,0.2)", border: `1px solid ${theme.border}` }}>
               <img 
-                src={team.image_url || "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80"} 
+                src={getImageUrl(team.hero_image || team.image_url)} 
                 alt={team.name}
+                onError={(e) => {
+                  e.target.src = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80";
+                }}
                 style={{ width: "100%", height: 500, objectFit: "cover" }}
               />
             </div>
             <div style={{ position: "absolute", bottom: -24, right: 32, background: "white", padding: "12px 20px", borderRadius: 16, boxShadow: "0 10px 30px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", gap: 12 }}>
-              <Flag code={team.code} size={32} />
+              <Flag code={team.flag} size={32} />
               <span style={{ fontWeight: 900, fontSize: 14, color: "#000" }}>{team.code.toUpperCase()}</span>
             </div>
           </div>
@@ -100,11 +103,11 @@ export default function TeamDetail() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 40 }}>
               <div style={{ background: theme.card, padding: 24, borderRadius: 24, border: `1px solid ${theme.border}` }}>
                 <span style={{ display: "block", fontSize: 11, fontWeight: 800, color: theme.subText, textTransform: "uppercase", marginBottom: 4 }}>Groupe</span>
-                <span style={{ fontSize: 24, fontWeight: 900 }}>{team.group_name}</span>
+                <span style={{ fontSize: 24, fontWeight: 900 }}>{team.group?.name || "N/A"}</span>
               </div>
               <div style={{ background: theme.card, padding: 24, borderRadius: 24, border: `1px solid ${theme.border}` }}>
-                <span style={{ display: "block", fontSize: 11, fontWeight: 800, color: theme.subText, textTransform: "uppercase", marginBottom: 4 }}>Rang FIFA</span>
-                <span style={{ fontSize: 24, fontWeight: 900 }}>#{team.world_ranking}</span>
+                <span style={{ display: "block", fontSize: 11, fontWeight: 800, color: theme.subText, textTransform: "uppercase", marginBottom: 4 }}>Confédération</span>
+                <span style={{ fontSize: 24, fontWeight: 900 }}>{team.confederation || "N/A"}</span>
               </div>
             </div>
 
@@ -123,8 +126,8 @@ export default function TeamDetail() {
                   <span style={{ fontSize: 20, fontWeight: 900 }}>{team.coach || "N/A"}</span>
                 </div>
                 <div>
-                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Titres mondiaux</span>
-                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.world_cup_titles}</span>
+                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Rang FIFA</span>
+                  <span style={{ fontSize: 20, fontWeight: 900 }}>#{team.world_ranking || 0}</span>
                 </div>
               </div>
               
@@ -153,7 +156,7 @@ export default function TeamDetail() {
               {team.joueurs.map((player) => (
                 <div key={player.id} style={{ background: theme.card, borderRadius: 24, overflow: "hidden", border: `1px solid ${theme.border}`, display: "flex", alignItems: "center", gap: 20, padding: "16px 20px" }}>
                   <div style={{ width: 64, height: 64, borderRadius: 16, overflow: "hidden", border: `1px solid ${theme.border}` }}>
-                    <img src={player.photo || "https://www.w3schools.com/howto/img_avatar.png"} alt={player.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={getImageUrl(player.photo)} alt={player.nom} onError={(e) => { e.target.src = "https://www.w3schools.com/howto/img_avatar.png"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>

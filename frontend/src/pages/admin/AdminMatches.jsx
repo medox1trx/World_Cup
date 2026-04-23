@@ -6,6 +6,59 @@ import { getMatches, createMatch, updateMatch, deleteMatch } from "../../service
 const FD = "'Bebas Neue', sans-serif";
 const FB = "'DM Sans', sans-serif";
 
+const WORLD_CUP_TEAMS = [
+  { code: "", name: "Select a country" },
+  { code: "al", name: "Albania 🇦🇱" },
+  { code: "dz", name: "Algeria 🇩🇿" },
+  { code: "ar", name: "Argentina 🇦🇷" },
+  { code: "au", name: "Australia 🇦🇺" },
+  { code: "be", name: "Belgium 🇧🇪" },
+  { code: "bo", name: "Bolivia 🇧🇴" },
+  { code: "br", name: "Brazil 🇧🇷" },
+  { code: "cm", name: "Cameroon 🇨🇲" },
+  { code: "ca", name: "Canada 🇨🇦" },
+  { code: "cl", name: "Chile 🇨🇱" },
+  { code: "co", name: "Colombia 🇨🇴" },
+  { code: "cr", name: "Costa Rica 🇨🇷" },
+  { code: "hr", name: "Croatia 🇭🇷" },
+  { code: "dk", name: "Denmark 🇩🇰" },
+  { code: "ec", name: "Ecuador 🇪🇨" },
+  { code: "eg", name: "Egypt 🇪🇬" },
+  { code: "gb", name: "England 🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+  { code: "fr", name: "France 🇫🇷" },
+  { code: "de", name: "Germany 🇩🇪" },
+  { code: "gh", name: "Ghana 🇬🇭" },
+  { code: "hn", name: "Honduras 🇭🇳" },
+  { code: "ir", name: "Iran 🇮🇷" },
+  { code: "it", name: "Italy 🇮🇹" },
+  { code: "ci", name: "Ivory Coast 🇨🇮" },
+  { code: "jm", name: "Jamaica 🇯🇲" },
+  { code: "jp", name: "Japan 🇯🇵" },
+  { code: "mx", name: "Mexico 🇲🇽" },
+  { code: "ma", name: "Morocco 🇲🇦" },
+  { code: "nl", name: "Netherlands 🇳🇱" },
+  { code: "nz", name: "New Zealand 🇳🇿" },
+  { code: "ng", name: "Nigeria 🇳🇬" },
+  { code: "pa", name: "Panama 🇵🇦" },
+  { code: "py", name: "Paraguay 🇵🇾" },
+  { code: "pe", name: "Peru 🇵🇪" },
+  { code: "pl", name: "Poland 🇵🇱" },
+  { code: "pt", name: "Portugal 🇵🇹" },
+  { code: "qa", name: "Qatar 🇶🇦" },
+  { code: "sa", name: "Saudi Arabia 🇸🇦" },
+  { code: "sn", name: "Senegal 🇸🇳" },
+  { code: "rs", name: "Serbia 🇷🇸" },
+  { code: "kr", name: "South Korea 🇰🇷" },
+  { code: "es", name: "Spain 🇪🇸" },
+  { code: "ch", name: "Switzerland 🇨🇭" },
+  { code: "tn", name: "Tunisia 🇹🇳" },
+  { code: "tr", name: "Turkey 🇹🇷" },
+  { code: "ua", name: "Ukraine 🇺🇦" },
+  { code: "uy", name: "Uruguay 🇺🇾" },
+  { code: "us", name: "USA 🇺🇸" },
+  { code: "ve", name: "Venezuela 🇻🇪" },
+];
+
 export default function AdminMatches() {
   const { darkMode } = useTheme();
   const [matches, setMatches] = useState([]);
@@ -335,11 +388,11 @@ export default function AdminMatches() {
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">Stade / Venue</label>
-                  <input className="form-input" value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} required placeholder="Ex: Grand Stade de Casablanca" />
+                  <input className="form-input" value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} required placeholder="Ex: SoFi Stadium" />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Ville</label>
-                  <input className="form-input" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} required placeholder="Ex: Casablanca" />
+                  <input className="form-input" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} required placeholder="Ex: Los Angeles" />
                 </div>
               </div>
 
