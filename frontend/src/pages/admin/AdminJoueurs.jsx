@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiSearch, FiUsers, FiStar } from "react-icons/fi";
 import { adminGetJoueurs, createJoueur, updateJoueur, deleteJoueur, getTeams, getImageUrl } from "../../services/api";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload from "../../components/ImageUpload.jsx";
 import toast from "react-hot-toast";
 
 const FD = "'Barlow Condensed', sans-serif";

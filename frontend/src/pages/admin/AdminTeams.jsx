@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiSearch, FiStar, FiUsers, FiCheck } from "react-icons/fi";
 import { getTeams, createTeam, updateTeam, deleteTeam, getGroups, getImageUrl } from "../../services/api";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload from "../../components/ImageUpload.jsx";
 import toast from "react-hot-toast";
 
 const FD = "'Barlow Condensed', sans-serif";
