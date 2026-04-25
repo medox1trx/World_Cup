@@ -20,11 +20,11 @@ export function GlobalFonts() {
 function convertEmojiToCode(emoji) {
   if (!emoji || emoji.length < 4) return null; // Emojis are multiple bytes
   const codePts = [...emoji].map(c => c.codePointAt(0));
-  if (codePts.length === 2 && 
-      codePts[0] >= 0x1F1E6 && codePts[0] <= 0x1F1FF && 
-      codePts[1] >= 0x1F1E6 && codePts[1] <= 0x1F1FF) {
-    return String.fromCharCode(codePts[0] - 0x1F1E6 + 97) + 
-           String.fromCharCode(codePts[1] - 0x1F1E6 + 97);
+  if (codePts.length === 2 &&
+    codePts[0] >= 0x1F1E6 && codePts[0] <= 0x1F1FF &&
+    codePts[1] >= 0x1F1E6 && codePts[1] <= 0x1F1FF) {
+    return String.fromCharCode(codePts[0] - 0x1F1E6 + 97) +
+      String.fromCharCode(codePts[1] - 0x1F1E6 + 97);
   }
   return null;
 }
@@ -39,29 +39,29 @@ export function Flag({ code, alt = "", size = 28 }) {
     if (match) return parseFloat(match[2]);
     return parseFloat(size) || 28;
   };
-  
+
   const baseSize = getResponsiveSize();
 
   // If it's a full URL or local storage path
   if (code.startsWith('http') || code.startsWith('/storage/')) {
-     const src = getImageUrl(code);
-     return (
-       <img 
-         src={src} 
-         alt={alt} 
-         loading="lazy" 
-         decoding="async"
-         onError={(e) => { e.target.src = "https://flagcdn.com/w80/un.png"; }}
-         style={{ 
-           width: "auto", height: baseSize,
-           maxHeight: baseSize,
-           maxWidth: baseSize * 1.5,
-           objectFit: "cover", 
-           borderRadius: 2,
-           display: "block"
-         }} 
-       />
-     );
+    const src = getImageUrl(code);
+    return (
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onError={(e) => { e.target.src = "https://flagcdn.com/w80/un.png"; }}
+        style={{
+          width: "auto", height: baseSize,
+          maxHeight: baseSize,
+          maxWidth: baseSize * 1.5,
+          objectFit: "cover",
+          borderRadius: 2,
+          display: "block"
+        }}
+      />
+    );
   }
 
   // Check if it's an emoji flag
@@ -124,7 +124,7 @@ export function Spinner() {
 // ─── SECTION HEAD ─────────────────────────────────────────────
 export function SectionHead({ eyebrow, title, action, href }) {
   const { darkMode } = useTheme();
-  const textPrimary   = darkMode ? "#ffffff"               : "#0d0d0d";
+  const textPrimary = darkMode ? "#ffffff" : "#0d0d0d";
   const textSecondary = darkMode ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)";
 
   return (

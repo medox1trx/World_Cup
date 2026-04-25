@@ -24,6 +24,15 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// ── Request interceptor — remove Content-Type for FormData so the browser
+//    can set the correct multipart/form-data boundary automatically ────────
+api.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  return config;
+});
+
 // ── Response interceptor — centralised error handling ────────
 api.interceptors.response.use(
   (res) => res.data,
@@ -136,7 +145,10 @@ export const getTeams = (params = {}) => api.get("/teams", { params });
 export const getTeam = (id) => api.get(`/teams/${id}`);
 export const createTeam = (data) => api.post("/admin/teams", data);
 export const updateTeam = (id, data) => {
-  if (data instanceof FormData) return api.post(`/admin/teams/${id}`, data);
+  if (data instanceof FormData) {
+    // Laravel method-spoofing: _method=PUT is already appended by the caller
+    return api.post(`/admin/teams/${id}`, data);
+  }
   return api.put(`/admin/teams/${id}`, data);
 };
 export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);
@@ -150,7 +162,10 @@ export const getTopScorers = () => api.get("/joueurs/top-scorers");
 export const adminGetJoueurs = () => api.get("/admin/joueurs");
 export const createJoueur = (data) => api.post("/admin/joueurs", data);
 export const updateJoueur = (id, data) => {
-  if (data instanceof FormData) return api.post(`/admin/joueurs/${id}`, data);
+  if (data instanceof FormData) {
+    // Laravel method-spoofing: _method=PUT is already appended by the caller
+    return api.post(`/admin/joueurs/${id}`, data);
+  }
   return api.put(`/admin/joueurs/${id}`, data);
 };
 export const deleteJoueur = (id) => api.delete(`/admin/joueurs/${id}`);

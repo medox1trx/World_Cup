@@ -4,19 +4,23 @@ import { getImageUrl } from '../services/api';
 
 const ImageUpload = ({ defaultValue, onChange, label, folder = 'teams', darkMode = false }) => {
   const [mode, setMode] = useState('url'); // 'url' or 'upload'
-  const [url, setUrl] = useState(defaultValue && defaultValue.startsWith('http') ? defaultValue : '');
+  const [url, setUrl] = useState(defaultValue || '');
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(defaultValue || '');
 
   useEffect(() => {
     if (defaultValue) {
       setPreview(defaultValue);
-      if (defaultValue.startsWith('http')) {
-        setMode('url');
-        setUrl(defaultValue);
-      } else {
-        setMode('upload');
-      }
+      // Always start in URL mode when editing an existing value.
+      // The parent form state already tracks this as { type:'url', value }.
+      // The user can switch to 'upload' mode manually if they want to replace
+      // the image with a new file from their computer.
+      setMode('url');
+      setUrl(defaultValue);
+    } else {
+      setPreview('');
+      setUrl('');
+      setMode('url');
     }
   }, [defaultValue]);
 
