@@ -521,7 +521,7 @@ function FilterTab({ label, active, dot, icon: Icon, onClick }) {
 }
 
 // ─── MAIN SECTION ─────────────────────────────────────────────
-export function MatchesSection({ matchFilter, setMatchFilter }) {
+export default function MatchesSection({ matchFilter, setMatchFilter }) {
   const { darkMode } = useTheme();
   const { data: matches, loading, error } = useMatches({ status: matchFilter, limit: 8 });
 

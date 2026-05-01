@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FiCalendar, FiArrowRight, FiArrowUpRight, FiClock, FiImage } from "react-icons/fi";
+import { FiCalendar, FiArrowRight, FiArrowUpRight, FiClock, FiImage, FiList } from "react-icons/fi";
 import { FONT, NEWS_FEATURED, NEWS_SIDE, NEWS_MORE } from "./constants";
-import { SectionHead } from "./ui";
+import { SectionHead, Spinner } from "./ui";
 import { useTheme } from "../../context/ThemeContext";
 import { useNews } from "../../hooks/useWorldCup";
 
@@ -522,7 +522,7 @@ const MOCK_NEWS = [
   }
 ];
 
-export function NewsSection() {
+export default function NewsSection() {
   const { darkMode } = useTheme();
   const { data: news, loading, error } = useNews({ pageSize: 8 });
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -635,14 +635,11 @@ export function NewsSection() {
         transition: "background 0.3s",
       }}>
         <div className="layout-container">
-          <SectionHead eyebrow="Actualités" title="À La Une" action="Toutes les news" href="/news" icon={require("react-icons/fi").FiList} />
+          <SectionHead eyebrow="Actualités" title="À La Une" action="Toutes les news" href="/news" icon={FiList} />
           <div className="ns-grid">
             {loading ? (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 380px" }}>
-                <div style={{ minHeight: 400, background: card }} />
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {[0,1,2,3].map(i => <div key={i} style={{ flex: 1, borderLeft: `1px solid ${border}`, borderTop: i > 0 ? `1px solid ${border}` : "none" }} />)}
-                </div>
+              <div style={{ minHeight: 400, display: "flex", alignItems: "center", justifyContent: "center", gridColumn: "1 / -1" }}>
+                <Spinner />
               </div>
             ) : (
                <>
@@ -703,7 +700,7 @@ export function MoreNewsSection() {
         transition: "background 0.3s",
       }}>
         <div className="layout-container">
-          <SectionHead eyebrow="Plus d'actualités" title="Dernières Nouvelles" action="Toutes" href="/news" icon={require("react-icons/fi").FiList} />
+          <SectionHead eyebrow="Plus d'actualités" title="Dernières Nouvelles" action="Toutes" href="/news" icon={FiList} />
           <div className="mn-grid">
             {loading || newsArticles.length === 0 ? (
               Array.from({ length: 3 }).map((_, i) => (

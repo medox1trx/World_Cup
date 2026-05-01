@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  FiSearch, FiGlobe, FiUser, FiX,
+  FiUser,
   FiChevronDown, FiShoppingCart,
   FiLogOut, FiFileText, FiUsers,
   FiSun, FiMoon, FiCalendar,
@@ -10,7 +10,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useSeason } from "../../context/SeasonContext";
 import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
+
 
 // ─── Navigation structure ─────────────────────────────────────
 const NAV = [
@@ -47,18 +47,14 @@ const NAV = [
   },
 ];
 
-const LANGS = ["FR", "EN", "ES", "AR", "PT", "DE"];
+
 
 export default function Header({ onOpenAdminSidebar }) {
 
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
   const [openDrop, setOpenDrop] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(null);
-  const [query, setQuery] = useState("");
-  const [lang, setLang] = useState((i18n.language || "en").toUpperCase());
   const [scrolled, setScrolled] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [seasonOpen, setSeasonOpen] = useState(false);
@@ -68,18 +64,15 @@ export default function Header({ onOpenAdminSidebar }) {
   const { season, selectSeason, clearSeason, seasons } = useSeason();
   const navigate = useNavigate();
 
-  const searchRef = useRef(null);
-  const langRef = useRef(null);
   const navRef = useRef(null);
   const userRef = useRef(null);
   const seasonRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
-    setMenuOpen(false); setSearchOpen(false);
-    setLangOpen(false); setOpenDrop(null);
+    setMenuOpen(false); setOpenDrop(null);
     setUserOpen(false); setSeasonOpen(false);
-    setMobileOpen(null); setQuery("");
+    setMobileOpen(null);
   }, [location]);
 
   useEffect(() => {
@@ -88,16 +81,7 @@ export default function Header({ onOpenAdminSidebar }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  useEffect(() => {
-    if (searchOpen) setTimeout(() => searchRef.current?.focus(), 80);
-  }, [searchOpen]);
 
-  useEffect(() => {
-    if (!langOpen) return;
-    const fn = (e) => { if (!langRef.current?.contains(e.target)) setLangOpen(false); };
-    document.addEventListener("mousedown", fn);
-    return () => document.removeEventListener("mousedown", fn);
-  }, [langOpen]);
 
   useEffect(() => {
     if (!openDrop) return;
@@ -422,14 +406,14 @@ export default function Header({ onOpenAdminSidebar }) {
 
         .hdr-season-btn {
           display: flex; align-items: center; gap: 5px;
-          background: none; border: 1px solid rgba(255,255,255,0.1);
+          background: none; border: 1px solid rgba(255,255,255,0.25);
           color: var(--hmuted); cursor: pointer;
           font-family: var(--hfont); font-size: 12px; font-weight: 800; letter-spacing: 0.12em;
           padding: 0 9px; height: 32px; border-radius: 3px; flex-shrink: 0;
           transition: all 0.15s; white-space: nowrap;
         }
         .hdr-season-btn:hover { border-color: rgba(255,255,255,0.35); color: white; }
-        .hdr-season-btn.active-season { border-color: #c8102e; color: white; }
+        .hdr-season-btn.active-season { border-color: #ffffff; color: white; }
         .hdr-season-btn .schev { transition: transform 0.2s; }
         .hdr-season-btn.open .schev { transform: rotate(180deg); }
 
@@ -453,22 +437,14 @@ export default function Header({ onOpenAdminSidebar }) {
         }
         .hdr-season-opt:last-child { border-bottom: none; }
         .hdr-season-opt:hover { background: rgba(255,255,255,0.06); color: white; }
-        .hdr-season-opt.sel { color: white; background: rgba(200,16,46,0.12); }
+        .hdr-season-opt.sel { color: white; background: rgba(255,255,255,0.08); }
         .hdr-season-opt-host {
           font-size: 10px; color: rgba(255,255,255,0.3);
           margin-top: 2px; font-weight: 400;
         }
         .hdr-season-opt.sel .hdr-season-opt-host { color: rgba(255,255,255,0.5); }
 
-        .hdr-season-clear {
-          display: block; width: 100%; text-align: left;
-          padding: 10px 16px; border: none; background: transparent; cursor: pointer;
-          font-family: var(--hfont); font-size: 11px; font-weight: 700;
-          color: #ef4444; letter-spacing: 0.1em; text-transform: uppercase;
-          transition: background 0.1s;
-          border-top: 1px solid rgba(255,255,255,0.06);
-        }
-        .hdr-season-clear:hover { background: rgba(239,68,68,0.1); }
+
 
         /* ── SEARCH PANEL ── */
         .hdr-search {
@@ -581,16 +557,16 @@ export default function Header({ onOpenAdminSidebar }) {
           :root {
             --hbg: #ffffff;
             --hborder: rgba(0,0,0,0.08);
-            --hmuted: rgba(0,0,0,0.45);
-            --hhover: rgba(0,0,0,0.05);
+            --hmuted: #000000;
+            --hhover: rgba(0,0,0,0.08);
           }
           .hdr.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
           .hdr-ham span               { background: #0d0d0d; }
-          .hdr-link                   { color: rgba(0,0,0,0.5); }
-          .hdr-link:hover             { color: #0d0d0d; }
+          .hdr-link                   { color: #000000; opacity: 0.7; }
+          .hdr-link:hover             { color: #000000; opacity: 1; }
           .hdr-link::after            { background: #0d0d0d; }
-          .hdr-link.act               { color: #0d0d0d; }
-          .hdr-link.grp               { color: rgba(0,0,0,0.72); }
+          .hdr-link.act               { color: #000000; }
+          .hdr-link.grp               { color: #000000; }
           .hdr-link.admin-link        { color: #dc2626; }
           .hdr-link.admin-link::after { background: #dc2626; }
           .hdr-link.admin-link:hover  { color: #ef4444; }
@@ -639,17 +615,16 @@ export default function Header({ onOpenAdminSidebar }) {
           .hdr-user-item              { color: rgba(0,0,0,0.5); border-bottom-color: rgba(0,0,0,0.04); }
           .hdr-user-item:hover        { background: rgba(0,0,0,0.04); color: #0d0d0d; }
           .hdr-user-divider           { background: rgba(0,0,0,0.06); }
-          .hdr-season-btn             { border-color: rgba(0,0,0,0.12); color: rgba(0,0,0,0.5); }
+          .hdr-season-btn             { border-color: rgba(0,0,0,0.25); color: rgba(0,0,0,0.5); }
           .hdr-season-btn:hover       { border-color: rgba(0,0,0,0.35); color: #0d0d0d; }
-          .hdr-season-btn.active-season { border-color: #c8102e; color: #0d0d0d; }
+          .hdr-season-btn.active-season { border-color: #000000; color: #0d0d0d; }
           .hdr-season-drop            { background: #fafafa; border-color: rgba(0,0,0,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
           .hdr-season-opt             { color: rgba(0,0,0,0.5); border-bottom-color: rgba(0,0,0,0.04); }
           .hdr-season-opt:hover       { background: rgba(0,0,0,0.04); color: #0d0d0d; }
-          .hdr-season-opt.sel         { color: #0d0d0d; background: rgba(200,16,46,0.08); }
+          .hdr-season-opt.sel         { color: #0d0d0d; background: rgba(0,0,0,0.05); }
           .hdr-season-opt-host        { color: rgba(0,0,0,0.35); }
           .hdr-season-opt.sel .hdr-season-opt-host { color: rgba(0,0,0,0.5); }
-          .hdr-season-clear           { color: #dc2626; }
-          .hdr-season-clear:hover     { background: rgba(220,38,38,0.06); }
+
         ` : ''}
       `}</style>
 
@@ -722,12 +697,7 @@ export default function Header({ onOpenAdminSidebar }) {
           </nav>
 
           <div className="hdr-right">
-            <button
-              className={`hdr-btn${searchOpen ? " is-open" : ""}`}
-              onClick={() => setSearchOpen(o => !o)}
-              aria-label="Rechercher">
-              {searchOpen ? <FiX size={17} /> : <FiSearch size={17} />}
-            </button>
+
 
             {/* Dark / Light toggle */}
             <button
@@ -739,27 +709,7 @@ export default function Header({ onOpenAdminSidebar }) {
               {darkMode ? <FiSun size={17} /> : <FiMoon size={17} />}
             </button>
 
-            <div className="hdr-lang-wrap" ref={langRef}>
-              <button className={`hdr-lang-btn${langOpen ? " open" : ""}`}
-                onClick={() => setLangOpen(o => !o)} aria-label="Langue">
-                <FiGlobe size={14} />
-                {lang}
-                <FiChevronDown size={12} className="lchev" />
-              </button>
-              <div className={`hdr-lang-drop${langOpen ? " open" : ""}`}>
-                {LANGS.map(l => (
-                  <button key={l}
-                    className={`hdr-lang-opt${lang === l ? " sel" : ""}`}
-                    onClick={() => {
-                      setLang(l);
-                      i18n.changeLanguage(l.toLowerCase());
-                      setLangOpen(false);
-                    }}>
-                    {l}
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             {/* Season selector */}
             <div className="hdr-season-wrap" ref={seasonRef}>
@@ -778,12 +728,7 @@ export default function Header({ onOpenAdminSidebar }) {
                     <span className="hdr-season-opt-host">{s.host}</span>
                   </button>
                 ))}
-                {season && (
-                  <button className="hdr-season-clear"
-                    onClick={() => { clearSeason(); setSeasonOpen(false); }}>
-                    <X size={12} /> {t('reset') || "Réinitialiser"}
-                  </button>
-                )}
+
               </div>
             </div>
 
@@ -830,25 +775,7 @@ export default function Header({ onOpenAdminSidebar }) {
           </div>
         </div>
 
-        <div className={`hdr-search${searchOpen ? " open" : " closed"}`}>
-          <div className="hdr-search-inner">
-            <FiSearch size={15} color="rgba(255,255,255,0.22)" style={{ flexShrink: 0 }} />
-            <input
-              ref={searchRef}
-              className="hdr-search-input"
-              placeholder="Rechercher matchs, équipes, joueurs…"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              onKeyDown={e => e.key === "Escape" && setSearchOpen(false)}
-            />
-            {query && (
-              <button onClick={() => setQuery("")}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.3)", padding: 4 }}>
-                <FiX size={15} />
-              </button>
-            )}
-          </div>
-        </div>
+
 
         <nav className={`hdr-mob${menuOpen ? " open" : " closed"}`} aria-hidden={!menuOpen}>
           {NAV.map((item) => {
@@ -919,13 +846,7 @@ export default function Header({ onOpenAdminSidebar }) {
                   <span className="hdr-msub-badge">{s.host}</span>
                 </button>
               ))}
-              {season && (
-                <button className="hdr-msub-link"
-                  style={{ background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left", color: "#ef4444" }}
-                  onClick={() => { clearSeason(); setMobileOpen(null); }}>
-                  Réinitialiser
-                </button>
-              )}
+
             </div>
           </div>
 
@@ -943,11 +864,7 @@ export default function Header({ onOpenAdminSidebar }) {
 
 
           <div className="hdr-mfooter">
-            <button className="hdr-btn"
-              style={{ color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.06)", borderRadius: 3 }}
-              aria-label="Langue">
-              <FiGlobe size={17} />
-            </button>
+
             <button className="hdr-btn"
               onClick={() => { if (!user) { navigate("/login"); return; } navigate("/profile"); }}
               style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}

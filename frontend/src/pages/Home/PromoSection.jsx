@@ -29,7 +29,7 @@ function Stat({ num, label, textPrimary, textMuted }) {
 }
 
 // ─── PROMO SECTION ────────────────────────────────────────────
-export function PromoSection() {
+export default function PromoSection() {
   const { darkMode } = useTheme();
   const sectionBg = darkMode ? "#0d0d0d" : "#f0f0f0";
   const cardBg = darkMode ? "#1c1c1c" : "#0d0d0d";

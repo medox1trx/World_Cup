@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { GlobalFonts } from "./ui";
-import { NewsTicker, HeroSection } from "./HeroSection";
-import { StatsBar, NewsSection, MoreNewsSection } from "./NewsSection";
-import { MatchesSection } from "./MatchesSection";
-import { StandingsSection, CitiesSection } from "./StandingsSection";
-import { PromoSection, TournamentSection, FanZoneSection } from "./PromoSection";
+import HeroSection, { NewsTicker } from "./HeroSection";
+import NewsSection, { StatsBar, MoreNewsSection } from "./NewsSection";
+import MatchesSection from "./MatchesSection";
+import StandingsSection, { CitiesSection } from "./StandingsSection";
+import PromoSection, { TournamentSection, FanZoneSection } from "./PromoSection";
 import { useStats, useMatches } from "../../hooks/useWorldCup";
 
 

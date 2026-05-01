@@ -100,7 +100,7 @@ function GroupTable({ group }) {
   );
 }
 
-export function StandingsSection() {
+export default function StandingsSection() {
   const { darkMode } = useTheme();
   const bg          = darkMode ? "#0d0d0d" : "#ffffff";
   const accent      = darkMode ? "#ffffff" : "#0d0d0d";
