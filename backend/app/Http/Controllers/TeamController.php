@@ -64,7 +64,7 @@ class TeamController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Team::with('group');
+        $query = Team::with(['group', 'country']);
 
         if ($request->has('confederation')) {
             $query->where('confederation', $request->confederation);

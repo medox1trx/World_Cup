@@ -9,15 +9,17 @@ class Pays extends Model
 {
     use HasFactory;
 
-    protected $table = 'pays';
+    protected $table = 'countries';
 
     protected $fillable = [
-        'nom',
-        'code_iso',
+        'name',
+        'code',
+        'flag_url',
     ];
 
     public function villes()
     {
         return $this->hasMany(Ville::class, 'pays_id');
     }
+
 }

@@ -16,8 +16,8 @@ class GroupSeeder extends Seeder
         
         foreach ($groups as $name) {
             Group::updateOrCreate(
-                ['name' => "Groupe $name"],
-                ['name' => "Groupe $name"]
+                ['name' => "Group $name"],
+                ['name' => "Group $name"]
             );
         }
     }

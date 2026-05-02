@@ -13,7 +13,7 @@ class TicketController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(Ticket::with('match')->latest()->get());
+        return response()->json(Ticket::with(['match.team1', 'match.team2'])->latest()->get());
     }
 
     /**

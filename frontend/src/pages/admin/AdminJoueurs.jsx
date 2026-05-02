@@ -19,7 +19,7 @@ export default function AdminJoueurs() {
   const [editId, setEditId] = useState(null);
   const [imageData, setImageData] = useState({ type: 'url', value: '' });
   const [formData, setFormData] = useState({
-    nom: "", numero: "", poste: "Attaquant", photo: "", team_id: ""
+    nom: "", numero: "", poste: "Attaquant", photo: "", team_id: "", goals: 0
   });
 
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -87,7 +87,7 @@ export default function AdminJoueurs() {
   };
 
   const resetForm = () => {
-    setFormData({ nom: "", numero: "", poste: "Attaquant", photo: "", team_id: "" });
+    setFormData({ nom: "", numero: "", poste: "Attaquant", photo: "", team_id: "", goals: 0 });
     setImageData({ type: 'url', value: '' });
     setEditId(null);
   };
@@ -99,7 +99,8 @@ export default function AdminJoueurs() {
       numero: j.numero,
       poste: j.poste,
       photo: j.photo || "",
-      team_id: j.team_id
+      team_id: j.team_id,
+      goals: j.goals || 0
     });
     setImageData({ type: 'url', value: j.photo || '' });
     setShowModal(true);
@@ -209,6 +210,7 @@ export default function AdminJoueurs() {
                   <th>JOUEUR</th>
                   <th>NUMÉRO</th>
                   <th>POSTE</th>
+                  <th>BUTS</th>
                   <th>NATION</th>
                   <th>ACTIONS</th>
                 </tr>
@@ -231,6 +233,9 @@ export default function AdminJoueurs() {
                     </td>
                     <td>
                       <span style={{ fontWeight: 700, textTransform: "uppercase", fontSize: 12, color: textSecondary }}>{j.poste}</span>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: 900, fontSize: 16 }}>{j.goals || 0}</span>
                     </td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -273,9 +278,9 @@ export default function AdminJoueurs() {
                 <input className="form-input" value={formData.nom} onChange={e => setFormData({...formData, nom: e.target.value})} required placeholder="Ex: Hakim Ziyech" />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 15 }}>
                 <div className="form-group">
-                  <label className="form-label">Numéro de maillot</label>
+                  <label className="form-label">Numéro</label>
                   <input type="number" className="form-input" value={formData.numero} onChange={e => setFormData({...formData, numero: e.target.value})} required placeholder="Ex: 7" />
                 </div>
                 <div className="form-group">
@@ -283,6 +288,10 @@ export default function AdminJoueurs() {
                   <select className="form-input" value={formData.poste} onChange={e => setFormData({...formData, poste: e.target.value})} required>
                     {POSTES.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Buts</label>
+                  <input type="number" className="form-input" value={formData.goals} onChange={e => setFormData({...formData, goals: e.target.value})} required placeholder="0" />
                 </div>
               </div>
 

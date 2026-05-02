@@ -128,7 +128,7 @@ function FaqItem({ q, a }) {
         }}>+</span>
       </button>
       <div style={{ overflow:"hidden", maxHeight: open ? 300 : 0, transition:"max-height 0.3s ease" }}>
-        <p style={{ color:"rgba(255,255,255,0.45)", fontFamily:B, fontSize:13, lineHeight:1.85, paddingBottom:20 }}>{a}</p>
+        <p style={{ color:"rgba(255,255,255,0.8)", fontFamily:B, fontSize:13, lineHeight:1.85, paddingBottom:20 }}>{a}</p>
       </div>
     </div>
   );
@@ -210,11 +210,17 @@ export default function FanZone() {
 
         .shbtn-shine { animation: none !important; }
         a:hover .shbtn-shine, button:hover .shbtn-shine { animation: shim 0.5s ease forwards !important; }
+        
+        /* ── RESET VISITED LINKS (TEXT WHITE) ── */
+        a, a:visited {
+          color: white !important;
+          text-decoration: none !important;
+        }
 
         .hw { max-width:1380px; margin:0 auto; padding:0 clamp(16px,3.5vw,52px); }
 
         .sl { display:block; font-size:9px; font-weight:800; letter-spacing:.3em;
-              text-transform:uppercase; color:rgba(255,255,255,.32); margin-bottom:10px; font-family:'DM Sans',sans-serif; }
+              text-transform:uppercase; color:rgba(255,255,255,.7); margin-bottom:10px; font-family:'DM Sans',sans-serif; }
         .st { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.9rem,3.5vw,2.9rem);
               font-weight:900; letter-spacing:.03em; color:white; line-height:1; }
         .sh { margin-bottom:48px; padding-bottom:22px; border-bottom:1px solid rgba(255,255,255,.08); }
@@ -347,7 +353,7 @@ export default function FanZone() {
           {/* eyebrow */}
           <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:28 }}>
             <div style={{ height:1, width:32, background:"rgba(255,255,255,.25)", flexShrink:0 }} />
-            <span style={{ color:"rgba(255,255,255,.35)", fontFamily:B, fontSize:10, fontWeight:800, letterSpacing:".42em", textTransform:"uppercase" }}>FIFA 2026 · Zone Fan Officielle</span>
+            <span style={{ color:"rgba(255,255,255,.8)", fontFamily:B, fontSize:10, fontWeight:800, letterSpacing:".42em", textTransform: "uppercase" }}>FIFA 2026 · Zone Fan Officielle</span>
           </div>
           {/* headline */}
           <div style={{ marginBottom:26 }}>
@@ -368,7 +374,7 @@ export default function FanZone() {
           {/* trust pills */}
           <div style={{ display:"flex", flexWrap:"wrap", gap:"clamp(16px,2.5vw,24px)", paddingTop:22, borderTop:"1px solid rgba(255,255,255,.08)" }}>
             {[[FiMapPin,"16 Fan Zones"],[FiStar,"Entrée gratuite"],[FiGlobe,"3 Pays hôtes"],[FiWifi,"Wi-Fi officiel"]].map(([Icon,label]) => (
-              <div key={label} style={{ display:"flex", alignItems:"center", gap:7, color:"rgba(255,255,255,.28)" }}>
+              <div key={label} style={{ display:"flex", alignItems:"center", gap:7, color:"rgba(255,255,255,.7)" }}>
                 <Icon size={12} /><span style={{ fontFamily:B, fontSize:11, fontWeight:600 }}>{label}</span>
               </div>
             ))}
@@ -436,7 +442,7 @@ export default function FanZone() {
                   </div>
                   <div style={{ padding:"18px 20px 22px", flex:1, display:"flex", flexDirection:"column", gap:9 }}>
                     <h3 style={{ fontFamily:D, fontSize:18, fontWeight:900, color:"white", letterSpacing:".04em", textTransform:"uppercase", lineHeight:1 }}>{a.title}</h3>
-                    <p style={{ color:"rgba(255,255,255,.42)", fontSize:13, lineHeight:1.75, fontFamily:B, flex:1 }}>{a.desc}</p>
+                    <p style={{ color:"rgba(255,255,255,.85)", fontSize:13, lineHeight:1.75, fontFamily:B, flex:1 }}>{a.desc}</p>
                     <div style={{ display:"flex", alignItems:"center", gap:6, color:hov?"white":"rgba(255,255,255,.38)", marginTop:4, transition:"color .2s" }}>
                       <span style={{ fontFamily:B, fontSize:11, fontWeight:700, letterSpacing:".08em", textTransform:"uppercase" }}>En savoir plus</span>
                       <FiArrowRight size={12} style={{ transform:hov?"translateX(4px)":"none", transition:"transform .2s" }} />
@@ -511,14 +517,14 @@ export default function FanZone() {
                 {/* City name overlay */}
                 <div style={{ position:"absolute", bottom:18, left:22 }}>
                   {isCent && <div className="cent-badge" style={{ marginBottom:8 }}>Centenaire 1930–2026</div>}
-                  <span style={{ display:"block", fontFamily:B, fontSize:9, fontWeight:800, letterSpacing:".28em", textTransform:"uppercase", color:"rgba(255,255,255,.38)", marginBottom:5 }}>{city.country}</span>
+                  <span style={{ display:"block", fontFamily:B, fontSize:9, fontWeight:800, letterSpacing:".28em", textTransform:"uppercase", color:"rgba(255,255,255,.8)", marginBottom:5 }}>{city.country}</span>
                   <span style={{ fontFamily:D, fontSize:"clamp(1.8rem,3vw,2.5rem)", fontWeight:900, color:"white", textTransform:"uppercase", letterSpacing:".03em", lineHeight:1 }}>{city.name}</span>
                 </div>
               </div>
 
               {/* Description */}
               <div style={{ padding:"14px 22px 14px", borderBottom:"1px solid rgba(255,255,255,.06)" }}>
-                <p style={{ fontFamily:B, fontSize:13, lineHeight:1.78, color:"rgba(255,255,255,.44)" }}>{city.desc}</p>
+                <p style={{ fontFamily:B, fontSize:13, lineHeight:1.78, color:"rgba(255,255,255,.9)" }}>{city.desc}</p>
               </div>
 
               {/* Stats table */}
@@ -559,7 +565,7 @@ export default function FanZone() {
                 TOUT LE TOURNOI<br />
                 <span style={{ WebkitTextStroke:"1.5px rgba(255,255,255,.55)", color:"transparent" }}>DANS VOTRE POCHE</span>
               </h2>
-              <p style={{ color:"rgba(255,255,255,.38)", fontSize:"clamp(13px,1.5vw,14px)", lineHeight:1.85, marginBottom:30, maxWidth:380, fontFamily:B }}>
+              <p style={{ color:"rgba(255,255,255,.8)", fontSize:"clamp(13px,1.5vw,14px)", lineHeight:1.85, marginBottom:30, maxWidth:380, fontFamily:B }}>
                 Scores en temps réel, planificateur Fan Zone, navigation GPS vers les 16 sites, billets digitaux et alertes match personnalisées.
               </p>
               <div style={{ display:"flex", flexWrap:"wrap", gap:10 }}>

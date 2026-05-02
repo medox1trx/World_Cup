@@ -132,8 +132,14 @@ export default function Hospitality() {
           .photo-band{display:none!important;}
         }
         
+        /* ── RESET VISITED LINKS (TEXT WHITE) ── */
+        a, a:visited {
+          color: white !important;
+          text-decoration: none !important;
+        }
+        
         .section-head { margin-bottom: 56px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 24px; }
-        .eyebrow { display: block; font-size: 10px; font-weight: 800; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 12px; }
+        .eyebrow { display: block; font-size: 10px; font-weight: 800; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-bottom: 12px; }
         .title { font-family: ${FONT_D}; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; color: white; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em; }
       `}</style>
 
@@ -154,7 +160,7 @@ export default function Hospitality() {
               L'Excellence <br />
               <span style={{ color: "transparent", WebkitTextStroke: "1.5px rgba(255,255,255,0.6)" }}>Au Sommet</span>
             </h1>
-            <p style={{ fontSize: "clamp(16px, 1.2vw, 20px)", color: "rgba(255,255,255,0.5)", maxWidth: 600, lineHeight: 1.6, marginBottom: 48 }}>
+            <p style={{ fontSize: "clamp(16px, 1.2vw, 20px)", color: "rgba(255,255,255,0.85)", maxWidth: 600, lineHeight: 1.6, marginBottom: 48 }}>
               Vivez la Coupe du Monde 2026 comme jamais auparavant. Des loges privées aux salons gastronomiques, découvrez nos offres exclusives.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
@@ -200,7 +206,7 @@ export default function Hospitality() {
                 </div>
                 <div>
                   <h3 style={{ fontFamily: FONT_D, fontSize: 20, fontWeight: 800, marginBottom: 10, textTransform: "uppercase" }}>{exp.title}</h3>
-                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14, lineHeight: 1.6 }}>{exp.desc}</p>
+                  <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, lineHeight: 1.6 }}>{exp.desc}</p>
                 </div>
               </div>
             ))}
@@ -236,12 +242,12 @@ export default function Hospitality() {
                   </div>
                   <div style={{ padding: 24, flex: 1, display: "flex", flexDirection: "column" }}>
                     <div style={{ marginBottom: 20 }}>
-                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>À partir de</span>
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.05em" }}>À partir de</span>
                       <div style={{ fontFamily: FONT_D, fontSize: 32, fontWeight: 900, color: "white" }}>{pkg.price} € <span style={{ fontSize: 14, color: "rgba(255,255,255,0.3)", fontWeight: 400 }}>/ match</span></div>
                     </div>
-                    <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, marginBottom: 24 }}>{pkg.description}</p>
+                    <p style={{ fontSize: 14, color: "rgba(255,255,255,0.85)", lineHeight: 1.6, marginBottom: 24 }}>{pkg.description}</p>
                     <div style={{ flex: 1 }}>
-                      <label style={{ display: "block", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.25)", marginBottom: 12 }}>Services Inclus</label>
+                      <label style={{ display: "block", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>Services Inclus</label>
                       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
                         {pkg.perks?.slice(0, 5).map((perk, j) => (
                           <li key={j} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
@@ -295,7 +301,7 @@ export default function Hospitality() {
             <div style={{ position: "sticky", top: 140 }}>
               <span className="eyebrow">Support</span>
               <h2 className="title" style={{ marginBottom: 24, fontSize: "2.6rem" }}>Questions <br /> Fréquentes</h2>
-              <p style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.7, marginBottom: 32 }}>Vous avez besoin d'aide pour choisir votre package ? Nos experts sont là pour vous.</p>
+              <p style={{ color: "rgba(255,255,255,0.8)", lineHeight: 1.7, marginBottom: 32 }}>Vous avez besoin d'aide pour choisir votre package ? Nos experts sont là pour vous.</p>
               <a href="#contact" style={{ display: "inline-flex", alignItems: "center", gap: 10, color: "white", fontWeight: 700, fontSize: 14, textDecoration: "none", padding: "12px 24px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.15)", transition: "all 0.3s" }}
                  onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
                  onMouseOut={e => e.currentTarget.style.background = "transparent"}>

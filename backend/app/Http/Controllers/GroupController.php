@@ -11,7 +11,7 @@ class GroupController extends Controller
      */
     public function index()
     {
-        return \App\Models\Group::with('teams')->get();
+        return \App\Models\Group::with('teams.country')->get();
     }
 
     /**

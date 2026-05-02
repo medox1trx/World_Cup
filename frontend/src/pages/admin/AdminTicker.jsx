@@ -14,7 +14,7 @@ const FB = "'DM Sans', sans-serif";
 
 const BLANK = {
   text: "",
-  label: "En Direct",
+  label: "EN DIRECT",
   label_color: "#c8102e",
   url: "",
   active: true,
@@ -22,12 +22,7 @@ const BLANK = {
 };
 
 const BADGE_PRESETS = [
-  { label: "En Direct",  color: "#c8102e" },
-  { label: "Officiel",   color: "#2563eb" },
-  { label: "Billetterie",color: "#16a34a" },
-  { label: "Médias",     color: "#9333ea" },
-  { label: "Info",       color: "#ea580c" },
-  { label: "Flash",      color: "#eab308" },
+  { label: "EN DIRECT",  color: "#c8102e" },
 ];
 
 export default function AdminTicker() {
@@ -192,9 +187,9 @@ export default function AdminTicker() {
               </p>
               <div className="ticker-preview">
                 <div className="ticker-badge">
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeItems[0].label_color ?? "#c8102e", flexShrink: 0 }} />
-                  <span style={{ color: activeItems[0].label_color ?? "#c8102e", fontSize: 11, fontWeight: 700, letterSpacing: ".05em", textTransform: "uppercase", fontFamily: FB, whiteSpace: "nowrap" }}>
-                    {activeItems[0].label}
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8102e", flexShrink: 0 }} />
+                  <span style={{ color: "#c8102e", fontSize: 11, fontWeight: 700, letterSpacing: ".05em", textTransform: "uppercase", fontFamily: FB, whiteSpace: "nowrap" }}>
+                    EN DIRECT
                   </span>
                 </div>
                 <div style={{ width: 1, height: 16, background: border, flexShrink: 0 }} />
@@ -240,12 +235,12 @@ export default function AdminTicker() {
                     <td>
                       <span style={{
                         display: "inline-flex", alignItems: "center", gap: 6,
-                        color: item.label_color,
+                        color: "#c8102e",
                         fontSize: 12, fontWeight: 700, letterSpacing: ".02em",
                         textTransform: "uppercase", fontFamily: FB,
                       }}>
-                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: item.label_color, flexShrink: 0 }} />
-                        {item.label}
+                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#c8102e", flexShrink: 0 }} />
+                        EN DIRECT
                       </span>
                     </td>
 
@@ -307,41 +302,7 @@ export default function AdminTicker() {
                   placeholder="Tirage au sort FIFA 2026 : groupes confirmés..." />
               </div>
 
-              {/* Badge label + color */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                <div className="fg">
-                  <label className="fl">Label badge</label>
-                  <input className="fi" value={formData.label}
-                    onChange={e => setFormData({...formData, label: e.target.value})}
-                    placeholder="En Direct" />
-                </div>
-                <div className="fg">
-                  <label className="fl">Couleur</label>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <input type="color" value={formData.label_color}
-                      onChange={e => setFormData({...formData, label_color: e.target.value})}
-                      style={{ width: 44, height: 44, borderRadius: 8, border: `1px solid ${border}`, cursor: "pointer", padding: 2, background: surface }} />
-                    <input className="fi" style={{ flex: 1 }} value={formData.label_color}
-                      onChange={e => setFormData({...formData, label_color: e.target.value})}
-                      placeholder="#c8102e" />
-                  </div>
-                </div>
-              </div>
 
-              {/* Quick presets */}
-              <div className="fg">
-                <label className="fl">Présets rapides</label>
-                <div className="presets">
-                  {BADGE_PRESETS.map(p => (
-                    <button type="button" key={p.label} onClick={() => setFormData({...formData, label: p.label, label_color: p.color})}
-                      className="preset-btn"
-                      style={{ background: p.color + "22", color: p.color, borderColor: formData.label === p.label ? p.color : "transparent" }}>
-                      <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: p.color, verticalAlign: "middle", marginRight: 5 }} />
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* URL */}
               <div className="fg">

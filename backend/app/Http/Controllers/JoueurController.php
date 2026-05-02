@@ -21,7 +21,7 @@ class JoueurController extends Controller
             'nom' => 'required|string|max:255',
             'numero' => 'required|integer',
             'poste' => 'required|string|max:255',
-            'buts' => 'nullable|integer|min:0',
+            'goals' => 'nullable|integer|min:0',
             'photo' => 'nullable|sometimes',
             'team_id' => 'required|exists:teams,id',
         ]);
@@ -51,7 +51,7 @@ class JoueurController extends Controller
             'nom' => 'sometimes|required|string|max:255',
             'numero' => 'sometimes|required|integer',
             'poste' => 'sometimes|required|string|max:255',
-            'buts' => 'nullable|integer|min:0',
+            'goals' => 'nullable|integer|min:0',
             'photo' => 'nullable|sometimes',
             'team_id' => 'sometimes|required|exists:teams,id',
         ]);
@@ -80,8 +80,8 @@ class JoueurController extends Controller
     public function topScorers()
     {
         return Joueur::with('team')
-            ->where('buts', '>', 0)
-            ->orderBy('buts', 'desc')
+            ->where('goals', '>', 0)
+            ->orderBy('goals', 'desc')
             ->limit(5)
             ->get();
     }

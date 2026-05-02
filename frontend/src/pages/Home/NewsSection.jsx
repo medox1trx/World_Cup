@@ -1,14 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiCalendar, FiArrowRight, FiArrowUpRight, FiClock, FiImage, FiList } from "react-icons/fi";
 import { FONT, NEWS_FEATURED, NEWS_SIDE, NEWS_MORE } from "./constants";
-import { SectionHead, Spinner } from "./ui";
+import { SectionHead, Spinner, Flag } from "./ui";
 import { useTheme } from "../../context/ThemeContext";
-import { useNews } from "../../hooks/useWorldCup";
+import { getImageUrl } from "../../services/api";
+import { useNews, useTeams } from "../../hooks/useWorldCup";
 
-function resolveImg(img, size = "w640") {
-  if (!img) return null;
-  if (img.startsWith("http") || img.startsWith("/")) return img;
-  return `https://flagcdn.com/${size}/${img.toLowerCase()}.png`;
+const FALLBACK_IMAGES = [
+  "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=1000",
+  "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=1000",
+  "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?auto=format&fit=crop&q=80&w=1000",
+  "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&q=80&w=1000",
+  "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=1000"
+];
+
+function resolveImg(img, index = 0) {
+  if (!img) return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
+  
+  // If it's a flagcdn code (legacy), handle it
+  if (img.length <= 3 && !img.includes(".") && !img.includes("/")) {
+    return `https://flagcdn.com/w640/${img.toLowerCase()}.png`;
+  }
+  
+  const url = getImageUrl(img);
+  // If getImageUrl returned NO_IMAGE (svg), use fallback
+  if (url.startsWith("data:image/svg")) {
+     return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
+  }
+  return url;
 }
 
 function useHover() {
@@ -44,43 +63,61 @@ function ArticleImg({ src, style, onLoad, transition = false, isEntering = false
   const patternB = darkMode ? "#141414" : "#ebebeb";
   const iconFaint = darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)";
 
-  const [ok, setOk] = useState(!!src);
+  const [useFallback, setUseFallback] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
 
-  useEffect(() => { setOk(!!src); }, [src]);
+  useEffect(() => { 
+    setUseFallback(false);
+    setErrorCount(0);
+  }, [src]);
 
-  if (!src || !ok) {
-    return (
-      <div style={{
-        position: "absolute", inset: 0,
-        display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center", gap: 6,
-        background: `repeating-linear-gradient(45deg,${patternA} 0,${patternA} 1px,${patternB} 0,${patternB} 50%)`,
-        backgroundSize: "10px 10px",
-        transition: "background 0.3s",
-      }}>
-        <FiImage size={24} color={iconFaint} />
-      </div>
-    );
-  }
+  // Use a stable fallback if primary fails. 
+  // We use a specific ID from Unsplash that is historically extremely stable.
+  const STABLE_FALLBACK = "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=1000";
+  const finalSrc = useFallback ? STABLE_FALLBACK : src;
 
   return (
-    <img
-      src={src}
-      alt=""
-      onError={() => setOk(false)}
-      onLoad={onLoad}
-      style={{ 
-        position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
-        opacity: transition ? 0 : 1,
-        transform: transition 
-          ? "translateX(-30px) scale(1.08)" 
-          : isEntering 
-            ? "translateX(40px) scale(0.95)" 
-            : "translateX(0) scale(1)",
-        transition: "opacity 0.18s ease-out, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        ...style 
-      }}
-    />
+    <div style={{
+      position: "absolute", inset: 0,
+      background: `repeating-linear-gradient(45deg,${patternA} 0,${patternA} 1px,${patternB} 0,${patternB} 50%)`,
+      backgroundSize: "10px 10px",
+      transition: "background 0.3s",
+      overflow: "hidden"
+    }}>
+      {(!finalSrc || errorCount > 1) && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <FiImage size={24} color={iconFaint} />
+        </div>
+      )}
+      
+      {finalSrc && errorCount <= 1 && (
+        <img
+          key={finalSrc} // FORCE REMOUNT ON SRC CHANGE
+          src={finalSrc}
+          alt=""
+          onError={() => {
+            if (!useFallback) {
+              setUseFallback(true);
+              setErrorCount(prev => prev + 1);
+            } else {
+              setErrorCount(prev => prev + 1);
+            }
+          }}
+          onLoad={onLoad}
+          style={{ 
+            position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+            opacity: transition ? 0 : 1,
+            transform: transition 
+              ? "translateX(-30px) scale(1.08)" 
+              : isEntering 
+                ? "translateX(40px) scale(0.95)" 
+                : "translateX(0) scale(1)",
+            transition: "opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            ...style 
+          }}
+        />
+      )}
+    </div>
   );
 }
 
@@ -119,40 +156,35 @@ function StatCell({ value, label, started, index }) {
   );
 }
 
-// ─── STATS BAR ────────────────────────────────────────────────
-export function StatsBar({ stats, loading }) {
+// ─── TEAM FLAG TICKER (formerly StatsBar) ────────────────────
+export function StatsBar() {
   const { darkMode } = useTheme();
+  const { data: teams, loading } = useTeams();
 
-  const bg            = darkMode ? "#0a0a0a"                  : "#f8f8f8";
-  const textPrimary   = darkMode ? "#ffffff"                   : "#0d0d0d";
-  const textMuted     = darkMode ? "rgba(255,255,255,0.65)"   : "rgba(0,0,0,0.65)";
+  const bg            = darkMode ? "#0a0a0a" : "#f8f8f8";
+  const textPrimary   = darkMode ? "#ffffff" : "#0d0d0d";
+  const textMuted     = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
+  const divider       = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
 
-
+  // If no teams yet, or still loading, show a placeholder track
+  const teamList = (teams && teams.length > 0) ? teams : [];
   
-  const items = [
-    { value: "48",  label: "Équipes" },
-    { value: "104", label: "Matchs" },
-    { value: "16",  label: "Stades" },
-    { value: "16",  label: "Villes hôtes" },
-    { value: "800+", label: "Buts attendus" },
-    { value: "3.5M", label: "Spectateurs" },
-  ];
-
-  const displayItems = [...items, ...items];
+  // Duplicate the list for infinite scroll (need enough to cover the screen width twice)
+  const displayTeams = [...teamList, ...teamList, ...teamList];
 
   return (
     <>
       <style>{`
-        @keyframes sb-scroll {
+        @keyframes flag-scroll {
           0% { transform: translateX(0); }
-          100% { transform: translateX(-1080px); }
+          100% { transform: translateX(-50%); }
         }
         
         .sb-root { 
           background: ${bg}; 
           border-top: 1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'};
           border-bottom: 1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'};
-          padding: 20px 0;
+          padding: 14px 0;
           overflow: hidden;
           transition: background 0.3s;
         }
@@ -160,9 +192,8 @@ export function StatsBar({ stats, loading }) {
         .sb-track {
           display: flex;
           align-items: center;
-          animation: sb-scroll 40s linear infinite;
+          animation: flag-scroll 60s linear infinite;
           width: max-content;
-          height: 80px;
         }
         
         .sb-track:hover {
@@ -172,86 +203,76 @@ export function StatsBar({ stats, loading }) {
         .sb-item {
           display: inline-flex;
           align-items: center;
-          flex-direction: column;
-          justify-content: center;
-          gap: 4px;
-          padding: 0;
-          height: 80px;
-          width: 180px;
+          gap: 16px;
+          padding: 0 40px;
           white-space: nowrap;
-          transition: opacity 0.2s ease;
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
           flex-shrink: 0;
         }
         
         .sb-item:hover {
-          opacity: 0.85;
+          transform: scale(1.05);
         }
         
-
-        
-        .sb-value {
+        .sb-code {
           font-family: ${FONT.display};
           font-weight: 900;
           color: ${textPrimary};
-          font-size: 2.2rem;
+          font-size: 1.6rem;
           line-height: 1;
-          letter-spacing: -0.04em;
-          font-variant-numeric: tabular-nums;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          transition: color 0.3s;
         }
         
-        .sb-label {
+        .sb-name {
           font-family: ${FONT.body};
           font-size: 10px;
-          font-weight: 700;
+          font-weight: 800;
           letter-spacing: 0.2em;
           text-transform: uppercase;
           color: ${textMuted};
           line-height: 1;
+          transition: color 0.3s;
         }
-        
+
         .sb-divider {
           width: 1px;
-          height: 48px;
-          background: ${darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
+          height: 32px;
+          background: ${divider};
           flex-shrink: 0;
-          align-self: center;
         }
-        
+
         @media (max-width: 768px) {
-          .sb-track { height: 72px; }
-          .sb-item { padding: 0; gap: 4px; height: 72px; width: 160px; }
-          .sb-value { font-size: 1.9rem; }
-          .sb-divider { height: 44px; }
-          @keyframes sb-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-960px); }
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .sb-track { height: 64px; }
-          .sb-item { padding: 0; gap: 4px; height: 64px; width: 140px; }
-          .sb-value { font-size: 1.7rem; }
-          @keyframes sb-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-840px); }
-          }
+          .sb-item { padding: 0 24px; gap: 12px; }
+          .sb-code { font-size: 1.3rem; }
+          .sb-divider { height: 24px; }
         }
       `}</style>
 
       <div className="sb-root">
         <div className="sb-track">
-          {[...items, ...items].map((item, i) => {
-            return (
+          {displayTeams.length > 0 ? (
+            displayTeams.map((t, i) => (
               <React.Fragment key={i}>
                 <div className="sb-item">
-                  <span className="sb-value">{item.value}</span>
-                  <span className="sb-label">{item.label}</span>
+                  <Flag code={t.country?.code || t.flag || t.code} size={44} />
                 </div>
-                {i < 11 && <div className="sb-divider" />}
+                <div className="sb-divider" />
               </React.Fragment>
-            );
-          })}
+            ))
+          ) : (
+            // Placeholder while loading or empty
+            Array.from({ length: 12 }).map((_, i) => (
+              <React.Fragment key={i}>
+                <div className="sb-item" style={{ opacity: 0.2 }}>
+                  <div style={{ width: 48, height: 32, background: textMuted, borderRadius: 4 }} />
+                  <div style={{ width: 60, height: 20, background: textMuted, borderRadius: 2 }} />
+                </div>
+                <div className="sb-divider" />
+              </React.Fragment>
+            ))
+          )}
         </div>
       </div>
     </>
@@ -272,7 +293,7 @@ function FeaturedCard({ article, transition = false, isEntering = false }) {
   const surface         = darkMode ? "#111111"                   : "#e0e0e0";
 
   const [hovered, hoverProps] = useHover();
-  const src = resolveImg(article.img, "w640");
+  const src = resolveImg(article.img, 0);
 
   return (
     <a href="/news" style={{ 
@@ -358,7 +379,7 @@ function SideArticle({ article, last, className = "", active = false, onClick, t
   const surface       = darkMode ? "#171717"                   : "#e0e0e0";
 
   const [hovered, hoverProps] = useHover();
-  const src = resolveImg(article.img, "w160");
+  const src = resolveImg(article.img, 1);
 
   return (
     <a href="/news" className={className} style={{
@@ -431,7 +452,7 @@ function NewsCard({ article }) {
   const mutedIcon     = darkMode ? "rgba(255,255,255,0.32)"   : "#aaaaaa";
 
   const [hovered, hoverProps] = useHover();
-  const src = resolveImg(article.img, "w320");
+  const src = resolveImg(article.img, 2);
 
   return (
     <a href="/news" style={{
@@ -493,28 +514,28 @@ function NewsCard({ article }) {
 // ─── NEWS SECTION ─────────────────────────────────────────────
 const MOCK_NEWS = [
   {
-    urlToImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=640",
+    urlToImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80",
     title: "Coupe du Monde 2026 : Le Mexique prêt à accueillir le monde",
     description: "Le Mexique se prépare à accueillir le match d'ouverture au mythique Estadio Azteca, marquant le début d'un tournoi historique.",
     publishedAt: "2026-04-12T10:00:00Z",
     source: { name: "FIFA" }
   },
   {
-    urlToImage: "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?w=640",
+    urlToImage: "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?w=800&q=80",
     title: "48 équipes participeront à la Coupe du Monde 2026",
     description: "La FIFA confirme un record historique avec 48 équipes pour cette édition exceptionnelle aux USA, Mexique et Canada.",
     publishedAt: "2026-04-11T15:00:00Z",
     source: { name: "Sports" }
   },
   {
-    urlToImage: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=640",
+    urlToImage: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80",
     title: "Villes hôtes : Les préparatifs avancent",
     description: "Les 16 villes hôtes en Amérique du Nord finalisent les infrastructures pour accueillir les millions de fans attendus.",
     publishedAt: "2026-04-10T09:00:00Z",
     source: { name: "Actu Foot" }
   },
   {
-    urlToImage: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=640",
+    urlToImage: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&q=80",
     title: "Billets : La demande dépasse les attentes",
     description: "Plus de 2 millions de demandes de billets enregistrées pour les matchs de la Coupe du Monde FIFA 2026™.",
     publishedAt: "2026-04-09T12:00:00Z",
@@ -524,7 +545,7 @@ const MOCK_NEWS = [
 
 export default function NewsSection() {
   const { darkMode } = useTheme();
-  const { data: news, loading, error } = useNews({ pageSize: 8 });
+  const { data: news, loading, error } = useNews({ pageSize: 20 });
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
   const card         = darkMode ? "#1c1c1c"                  : "#ffffff";
   const border       = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
@@ -635,7 +656,7 @@ export default function NewsSection() {
         transition: "background 0.3s",
       }}>
         <div className="layout-container">
-          <SectionHead eyebrow="Actualités" title="À La Une" action="Toutes les news" href="/news" icon={FiList} />
+          <SectionHead title="À La Une" action="Toutes les news" href="/news" icon={FiList} />
           <div className="ns-grid">
             {loading ? (
               <div style={{ minHeight: 400, display: "flex", alignItems: "center", justifyContent: "center", gridColumn: "1 / -1" }}>
@@ -682,7 +703,7 @@ export default function NewsSection() {
 // ─── MORE NEWS ────────────────────────────────────────────────
 export function MoreNewsSection() {
   const { darkMode } = useTheme();
-  const { data: news, loading } = useNews({ pageSize: 9 });
+  const { data: news, loading } = useNews({ pageSize: 20 });
   const surface = darkMode ? "#171717" : "#f5f5f5";
   
   const newsArticles = (news?.articles?.length > 0 ? news.articles : MOCK_NEWS);
@@ -703,11 +724,11 @@ export function MoreNewsSection() {
           <SectionHead eyebrow="Plus d'actualités" title="Dernières Nouvelles" action="Toutes" href="/news" icon={FiList} />
           <div className="mn-grid">
             {loading || newsArticles.length === 0 ? (
-              Array.from({ length: 3 }).map((_, i) => (
+              Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} style={{ height: 240, borderRadius: 4, background: darkMode ? "#1c1c1c" : "#ffffff" }} />
               ))
             ) : (
-              newsArticles.slice(0, 3).map((n, i) => (
+              newsArticles.slice(0, 6).map((n, i) => (
                 <NewsCard key={i} article={{
                   img: n.urlToImage,
                   title: n.title,

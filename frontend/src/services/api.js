@@ -153,8 +153,9 @@ export const updateTeam = (id, data) => {
 };
 export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);
 
-// ── Groups ──────────────────────────────────────────────────
+// ── Groups & Stadiums ──────────────────────────────────────────
 export const getGroups = () => api.get("/groups");
+export const getStadiums = () => api.get("/stadiums");
 
 // ── Joueurs ──────────────────────────────────────────────────
 export const getJoueurs = () => api.get("/joueurs");

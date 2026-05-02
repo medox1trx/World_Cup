@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { FiShoppingCart, FiStar, FiArrowRight, FiUsers, FiGlobe, FiGrid, FiArrowUpRight, FiChevronRight } from "react-icons/fi";
+import { FiShoppingCart, FiStar, FiArrowRight, FiUsers, FiGlobe, FiGrid, FiArrowUpRight, FiChevronRight, FiMapPin } from "react-icons/fi";
 import { Trophy } from "lucide-react";
 import { FONT } from "./constants";
 import { SectionHead } from "./ui";
 import { useTheme } from "../../context/ThemeContext";
+import { useFanZones, useMatches } from "../../hooks/useWorldCup";
 
 function useHover() {
   const [h, setH] = useState(false);
@@ -34,9 +35,9 @@ export default function PromoSection() {
   const sectionBg = darkMode ? "#0d0d0d" : "#f0f0f0";
   const cardBg = darkMode ? "#1c1c1c" : "#0d0d0d";
   const textPrimary = "#ffffff";
-  const textMuted = "rgba(255,255,255,0.28)";
+  const textMuted = "rgba(255,255,255,0.75)";
   const textFaint = "rgba(255,255,255,0.35)";
-  const eyebrowText = darkMode ? "rgba(255,255,255,0.4)" : "#888888";
+  const eyebrowText = darkMode ? "rgba(255,255,255,0.75)" : "#888888";
   const eyebrowLine = darkMode ? "rgba(255,255,255,0.15)" : "#aaaaaa";
   const sweepLine = "rgba(255,255,255,0.2)";
 
@@ -103,7 +104,7 @@ export default function PromoSection() {
         }
         .pr-card:hover .pr-title { letter-spacing: 0.035em; }
         .pr-desc {
-          color: rgba(255,255,255,0.35); font-size: clamp(10px,1vw,12px);
+          color: rgba(255,255,255,0.85); font-size: clamp(10px,1vw,12px);
           line-height: 1.6; max-width: 280px; margin: 0;
         }
         .pr-stats {
@@ -125,8 +126,21 @@ export default function PromoSection() {
         }
         .pr-cta-btn:hover { background: #e8e8e8; transform: translateY(-1px); }
         .pr-cta-btn:active { transform: translateY(0); }
-        .pr-cta-btn .arr { transition: transform 0.2s; }
         .pr-cta-btn:hover .arr { transform: translateX(3px); }
+        
+        /* ── RESET VISITED LINKS (TEXT WHITE) ── */
+        a, a:visited, a:hover, a:active {
+          text-decoration: none !important;
+          color: #ffffff !important;
+        }
+        .pr-card, .pr-card:visited {
+          color: #ffffff !important;
+          text-decoration: none !important;
+        }
+        .pr-cta-btn, .pr-cta-btn:visited {
+          color: #0d0d0d !important;
+          text-decoration: none !important;
+        }
       `}</style>
 
       <section style={{
@@ -151,7 +165,7 @@ export default function PromoSection() {
                   <div className="pr-icon-box"><FiShoppingCart size={18} color="#ffffff" /></div>
                   <span style={{
                     fontFamily: FONT.body, fontSize: 8, fontWeight: 900,
-                    letterSpacing: "0.26em", textTransform: "uppercase", color: textFaint,
+                    letterSpacing: "0.26em", textTransform: "uppercase", color: "#ffffff",
                   }}>Billets Officiels</span>
                 </div>
                 <h3 className="pr-title" style={{ fontFamily: FONT.display }}>{"VIVEZ LE MATCH\nEN DIRECT"}</h3>
@@ -182,7 +196,7 @@ export default function PromoSection() {
                   <div className="pr-icon-box"><FiStar size={18} color="#ffffff" /></div>
                   <span style={{
                     fontFamily: FONT.body, fontSize: 8, fontWeight: 900,
-                    letterSpacing: "0.26em", textTransform: "uppercase", color: textFaint,
+                    letterSpacing: "0.26em", textTransform: "uppercase", color: "#ffffff",
                   }}>Hospitalité FIFA</span>
                 </div>
                 <h3 className="pr-title" style={{ fontFamily: FONT.display }}>{"L'EXPÉRIENCE\nVIP ULTIME"}</h3>
@@ -214,80 +228,52 @@ export default function PromoSection() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ─── TOURNAMENT SECTION — Real Mirrored Bracket ───────────────
+// ─── TOURNAMENT SECTION — Dynamic, No Flags ───────────────────
 // ═══════════════════════════════════════════════════════════════
 
-const R16_LEFT = [
-  { id: "m49", home: { name: "1er Groupe A", code: "us" }, away: { name: "2e Groupe B", code: "mx" } },
-  { id: "m50", home: { name: "1er Groupe C", code: "ar" }, away: { name: "2e Groupe D", code: "fr" } },
-  { id: "m51", home: { name: "1er Groupe E", code: "gb" }, away: { name: "2e Groupe F", code: "de" } },
-  { id: "m52", home: { name: "1er Groupe G", code: "pt" }, away: { name: "2e Groupe H", code: "uy" } },
-];
-const R16_RIGHT = [
-  { id: "m53", home: { name: "1er Groupe B", code: "es" }, away: { name: "2e Groupe A", code: "ca" } },
-  { id: "m54", home: { name: "1er Groupe D", code: "br" }, away: { name: "2e Groupe C", code: "pl" } },
-  { id: "m55", home: { name: "1er Groupe F", code: "nl" }, away: { name: "2e Groupe E", code: "co" } },
-  { id: "m56", home: { name: "1er Groupe H", code: "kr" }, away: { name: "2e Groupe G", code: "rs" } },
-];
-const QF_LEFT = [
-  { id: "m57", home: { name: "Vain. M49", code: null }, away: { name: "Vain. M50", code: null } },
-  { id: "m58", home: { name: "Vain. M51", code: null }, away: { name: "Vain. M52", code: null } },
-];
-const QF_RIGHT = [
-  { id: "m59", home: { name: "Vain. M53", code: null }, away: { name: "Vain. M54", code: null } },
-  { id: "m60", home: { name: "Vain. M55", code: null }, away: { name: "Vain. M56", code: null } },
-];
-const SF_LEFT = [{ id: "m61", home: { name: "Vain. Q1", code: null }, away: { name: "Vain. Q2", code: null } }];
-const SF_RIGHT = [{ id: "m62", home: { name: "Vain. Q3", code: null }, away: { name: "Vain. Q4", code: null } }];
+const PLACEHOLDER_BRACKET = {
+  r16_left: [
+    { id: "m49", home: "1er Groupe A", away: "2e Groupe B" },
+    { id: "m50", home: "1er Groupe C", away: "2e Groupe D" },
+    { id: "m51", home: "1er Groupe E", away: "2e Groupe F" },
+    { id: "m52", home: "1er Groupe G", away: "2e Groupe H" },
+  ],
+  r16_right: [
+    { id: "m53", home: "1er Groupe B", away: "2e Groupe A" },
+    { id: "m54", home: "1er Groupe D", away: "2e Groupe C" },
+    { id: "m55", home: "1er Groupe F", away: "2e Groupe E" },
+    { id: "m56", home: "1er Groupe H", away: "2e Groupe G" },
+  ],
+  qf_left:  [
+    { id: "m57", home: "Vain. M49", away: "Vain. M50" },
+    { id: "m58", home: "Vain. M51", away: "Vain. M52" },
+  ],
+  qf_right: [
+    { id: "m59", home: "Vain. M53", away: "Vain. M54" },
+    { id: "m60", home: "Vain. M55", away: "Vain. M56" },
+  ],
+  sf_left:  [{ id: "m61", home: "Vain. Q1", away: "Vain. Q2" }],
+  sf_right: [{ id: "m62", home: "Vain. Q3", away: "Vain. Q4" }],
+};
 
-function BracketFlag({ code, size = 13 }) {
-  if (!code) return (
-    <span style={{
-      display: "inline-block",
-      width: size * 1.45, height: size,
-      background: "rgba(128,128,128,0.13)",
-      borderRadius: 2, flexShrink: 0,
-    }} />
-  );
-  return (
-    <img
-      src={`https://flagcdn.com/w40/${code}.png`}
-      alt={code}
-      loading="lazy"
-      style={{
-        width: size * 1.45, height: size,
-        objectFit: "cover", borderRadius: 2, flexShrink: 0,
-        border: "0.5px solid rgba(128,128,128,0.18)",
-        display: "block",
-      }}
-    />
-  );
-}
-
-function MatchCard({ match, tbd = false, darkMode, width = 148 }) {
+function BMatchCard({ match, tbd = false, darkMode, width = 154 }) {
   const [hov, setHov] = useState(false);
-  const surface = darkMode ? "#141414" : "#ffffff";
+  const surface    = darkMode ? "#141414" : "#ffffff";
   const surfaceHov = darkMode ? "#1e1e1e" : "#f8f8f8";
-  const border = darkMode ? "rgba(255,255,255,0.07)" : "#000000";
-  const borderHov = darkMode ? "rgba(255,255,255,0.2)" : "#000000";
-  const divClr = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.3)";
-  const textPri = darkMode ? "#ffffff" : "#000000";
-  const textMut = darkMode ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.75)";
+  const border     = darkMode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.10)";
+  const borderHov  = darkMode ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.3)";
+  const divClr     = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)";
+  const textPri    = darkMode ? "#ffffff" : "#0d0d0d";
+  const textMut    = darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.45)";
 
-  const Row = ({ team }) => (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 8px" }}>
-      <BracketFlag code={team.code} size={13} />
+  const Row = ({ name }) => (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, padding: "6px 10px" }}>
       <span style={{
-        flex: 1, fontSize: 10, fontWeight: 600, fontFamily: FONT.body,
-        color: tbd ? textMut : textPri,
-        fontStyle: tbd ? "italic" : "normal",
+        flex: 1, fontSize: 10, fontWeight: 700, fontFamily: FONT.body,
+        color: tbd ? textMut : textPri, fontStyle: tbd ? "italic" : "normal",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-        transition: "color 0.3s",
-      }}>{team.name}</span>
-      <span style={{
-        fontSize: 10, fontWeight: 700, fontFamily: FONT.body,
-        color: textMut, minWidth: 10, textAlign: "center",
-      }}>—</span>
+      }}>{name}</span>
+      <span style={{ fontSize: 10, fontWeight: 600, fontFamily: FONT.body, color: textMut, minWidth: 10, textAlign: "center" }}>—</span>
     </div>
   );
 
@@ -299,53 +285,43 @@ function MatchCard({ match, tbd = false, darkMode, width = 148 }) {
         width, flexShrink: 0,
         background: hov ? surfaceHov : surface,
         border: `1px solid ${hov ? borderHov : border}`,
-        borderRadius: 5, overflow: "hidden",
+        borderRadius: 4, overflow: "hidden",
         transform: hov ? "translateY(-2px)" : "translateY(0)",
         boxShadow: hov ? `0 6px 18px rgba(0,0,0,${darkMode ? 0.4 : 0.09})` : "none",
-        opacity: tbd ? 0.52 : 1,
+        opacity: tbd ? 0.55 : 1,
         cursor: tbd ? "default" : "pointer",
-        transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s, background 0.2s, opacity 0.3s",
+        transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s, background 0.2s",
       }}
     >
-      <Row team={match.home} />
+      <Row name={match.home} />
       <div style={{ height: 1, background: divClr, margin: "0 8px" }} />
-      <Row team={match.away} />
+      <Row name={match.away} />
     </div>
   );
 }
 
-// SVG connector lines merging N match slots into N/2
-function Connector({ darkMode, count, direction = "right" }) {
-  const stroke = darkMode ? "rgba(255,255,255,0.11)" : "#000000";
-  const slotH = 72;
-  const totalH = slotH * count;
-  const w = 18;
-  const paths = [];
-
+function BConnector({ darkMode, count, direction = "right" }) {
+  const stroke = darkMode ? "rgba(255,255,255,0.11)" : "rgba(0,0,0,0.18)";
+  const slotH = 72; const totalH = slotH * count; const w = 18; const paths = [];
   for (let i = 0; i < count; i += 2) {
-    const top = slotH * i + slotH / 2;
-    const bottom = slotH * (i + 1) + slotH / 2;
-    const mid = (top + bottom) / 2;
+    const top = slotH * i + slotH / 2, bottom = slotH * (i + 1) + slotH / 2, mid = (top + bottom) / 2;
     if (direction === "right") {
-      paths.push(`M0 ${top} L${w / 2} ${top} L${w / 2} ${mid}`);
-      paths.push(`M0 ${bottom} L${w / 2} ${bottom} L${w / 2} ${mid} L${w} ${mid}`);
+      paths.push(`M0 ${top} L${w/2} ${top} L${w/2} ${mid}`);
+      paths.push(`M0 ${bottom} L${w/2} ${bottom} L${w/2} ${mid} L${w} ${mid}`);
     } else {
-      paths.push(`M${w} ${top} L${w / 2} ${top} L${w / 2} ${mid}`);
-      paths.push(`M${w} ${bottom} L${w / 2} ${bottom} L${w / 2} ${mid} L0 ${mid}`);
+      paths.push(`M${w} ${top} L${w/2} ${top} L${w/2} ${mid}`);
+      paths.push(`M${w} ${bottom} L${w/2} ${bottom} L${w/2} ${mid} L0 ${mid}`);
     }
   }
-
   return (
     <svg width={w} height={totalH} viewBox={`0 0 ${w} ${totalH}`} fill="none" style={{ flexShrink: 0, display: "block" }}>
-      {paths.map((d, i) => (
-        <path key={i} d={d} stroke={stroke} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-      ))}
+      {paths.map((d, i) => <path key={i} d={d} stroke={stroke} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />)}
     </svg>
   );
 }
 
-function LineConn({ darkMode }) {
-  const stroke = darkMode ? "rgba(255,255,255,0.11)" : "#000000";
+function BLineConn({ darkMode }) {
+  const stroke = darkMode ? "rgba(255,255,255,0.11)" : "rgba(0,0,0,0.18)";
   return (
     <svg width={14} height={72} viewBox="0 0 14 72" fill="none" style={{ flexShrink: 0 }}>
       <line x1="0" y1="36" x2="14" y2="36" stroke={stroke} strokeWidth="1" />
@@ -353,28 +329,16 @@ function LineConn({ darkMode }) {
   );
 }
 
-function RoundCol({ label, matches, tbd, darkMode, align = "left" }) {
-  const textMut = darkMode ? "rgba(255,255,255,0.26)" : "rgba(0,0,0,0.75)";
+function BRoundCol({ label, matches, tbd, darkMode, align = "left" }) {
+  const textMut = darkMode ? "rgba(255,255,255,0.26)" : "rgba(0,0,0,0.45)";
   const slotH = 72;
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", flexShrink: 0,
-      alignItems: align === "right" ? "flex-end" : "flex-start",
-    }}>
-      <div style={{
-        fontSize: 8, fontWeight: 800, letterSpacing: "0.18em",
-        textTransform: "uppercase", color: textMut, fontFamily: FONT.body,
-        marginBottom: 8, whiteSpace: "nowrap",
-        textAlign: align === "right" ? "right" : "left",
-        transition: "color 0.3s",
-      }}>{label}</div>
+    <div style={{ display: "flex", flexDirection: "column", flexShrink: 0, alignItems: align === "right" ? "flex-end" : "flex-start" }}>
+      <div style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", color: textMut, fontFamily: FONT.body, marginBottom: 8, whiteSpace: "nowrap", textAlign: align === "right" ? "right" : "left" }}>{label}</div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         {matches.map((m) => (
-          <div key={m.id} style={{
-            height: slotH, display: "flex", alignItems: "center",
-            justifyContent: align === "right" ? "flex-end" : "flex-start",
-          }}>
-            <MatchCard match={m} tbd={tbd} darkMode={darkMode} />
+          <div key={m.id} style={{ height: slotH, display: "flex", alignItems: "center", justifyContent: align === "right" ? "flex-end" : "flex-start" }}>
+            <BMatchCard match={m} tbd={tbd} darkMode={darkMode} />
           </div>
         ))}
       </div>
@@ -382,37 +346,24 @@ function RoundCol({ label, matches, tbd, darkMode, align = "left" }) {
   );
 }
 
-function MobileRound({ label, matches, tbd, darkMode }) {
-  const border = darkMode ? "rgba(255,255,255,0.07)" : "#000000";
+function BMobileRound({ label, matches, tbd, darkMode }) {
+  const border  = darkMode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.10)";
   const surface = darkMode ? "#141414" : "#ffffff";
-  const divClr = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.3)";
-  const textPri = darkMode ? "#ffffff" : "#000000";
-  const textMut = darkMode ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.75)";
-  const eyebrow = darkMode ? "rgba(255,255,255,0.26)" : "rgba(0,0,0,0.75)";
-
+  const divClr  = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)";
+  const textPri = darkMode ? "#ffffff" : "#0d0d0d";
+  const textMut = darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.45)";
+  const eyebrow = darkMode ? "rgba(255,255,255,0.26)" : "rgba(0,0,0,0.45)";
   return (
     <div style={{ marginBottom: 20 }}>
-      <div style={{
-        fontSize: 8, fontWeight: 800, letterSpacing: "0.18em",
-        textTransform: "uppercase", color: eyebrow, fontFamily: FONT.body,
-        marginBottom: 8, transition: "color 0.3s",
-      }}>{label}</div>
+      <div style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", color: eyebrow, fontFamily: FONT.body, marginBottom: 8 }}>{label}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {matches.map(m => (
-          <div key={m.id} style={{
-            background: surface, border: `1px solid ${border}`,
-            borderRadius: 5, overflow: "hidden", opacity: tbd ? 0.52 : 1,
-          }}>
-            {[m.home, m.away].map((t, i) => (
+          <div key={m.id} style={{ background: surface, border: `1px solid ${border}`, borderRadius: 4, overflow: "hidden", opacity: tbd ? 0.55 : 1 }}>
+            {[m.home, m.away].map((name, i) => (
               <div key={i}>
                 {i > 0 && <div style={{ height: 1, background: divClr, margin: "0 10px" }} />}
-                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px" }}>
-                  <BracketFlag code={t.code} size={14} />
-                  <span style={{
-                    fontSize: 11, fontWeight: 600, fontFamily: FONT.body,
-                    color: tbd ? textMut : textPri, fontStyle: tbd ? "italic" : "normal",
-                    flex: 1, transition: "color 0.3s",
-                  }}>{t.name}</span>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "7px 12px" }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: FONT.body, color: tbd ? textMut : textPri, fontStyle: tbd ? "italic" : "normal", flex: 1 }}>{name}</span>
                   <span style={{ fontSize: 11, color: textMut, fontFamily: FONT.body }}>—</span>
                 </div>
               </div>
@@ -424,173 +375,114 @@ function MobileRound({ label, matches, tbd, darkMode }) {
   );
 }
 
+function toCard(m) {
+  return { id: m?.id || Math.random(), home: m?.home_team?.name || m?.team_home || "TBD", away: m?.away_team?.name || m?.team_away || "TBD" };
+}
+
 export function TournamentSection() {
   const { darkMode } = useTheme();
-  const bg = darkMode ? "#0d0d0d" : "#ffffff";
+  const bg      = darkMode ? "#0d0d0d" : "#ffffff";
   const textPri = darkMode ? "#ffffff" : "#0d0d0d";
   const textMut = darkMode ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.65)";
-  const accent = darkMode ? "#ffffff" : "#0d0d0d";
-  const acCon = darkMode ? "#0d0d0d" : "#ffffff";
-  const acHov = darkMode ? "#e8e8e8" : "#333333";
-  const dateBdr = darkMode ? "rgba(255,255,255,0.07)" : "#000000";
+  const dateBdr = darkMode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.10)";
+
+  const { data: r16Data } = useMatches({ stage: "round_of_16",  limit: 16 });
+  const { data: qfData  } = useMatches({ stage: "quarterfinals", limit: 8 });
+  const { data: sfData  } = useMatches({ stage: "semifinals",    limit: 4 });
+
+  const buildSide = (dbArr, ph) => (dbArr && dbArr.length > 0) ? dbArr.map(toCard) : ph;
+
+  const R16_L = buildSide(r16Data?.slice(0,4), PLACEHOLDER_BRACKET.r16_left);
+  const R16_R = buildSide(r16Data?.slice(4,8), PLACEHOLDER_BRACKET.r16_right);
+  const QF_L  = buildSide(qfData?.slice(0,2),  PLACEHOLDER_BRACKET.qf_left);
+  const QF_R  = buildSide(qfData?.slice(2,4),  PLACEHOLDER_BRACKET.qf_right);
+  const SF_L  = buildSide(sfData?.slice(0,1),  PLACEHOLDER_BRACKET.sf_left);
+  const SF_R  = buildSide(sfData?.slice(1,2),  PLACEHOLDER_BRACKET.sf_right);
+
+  const tbdR16 = !r16Data || r16Data.length === 0;
+  const tbdQF  = !qfData  || qfData.length  === 0;
+  const tbdSF  = !sfData  || sfData.length  === 0;
 
   return (
     <>
       <style>{`
         .ts-desktop { display: flex; }
         .ts-mobile  { display: none; }
-        @media (max-width: 900px) {
-          .ts-desktop { display: none; }
-          .ts-mobile  { display: block; }
-        }
+        @media (max-width: 900px) { .ts-desktop { display: none; } .ts-mobile { display: block; } }
         .ts-final {
-          display: flex; flex-direction: column;
-          align-items: center; justify-content: center;
-          background: #0d0d0d; border-radius: 6px;
-          padding: 20px 14px; text-align: center;
-          flex-shrink: 0; width: 96px;
-          transition: transform 0.2s, box-shadow 0.2s;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          background: #0d0d0d; border-radius: 4px; padding: 20px 14px; text-align: center;
+          flex-shrink: 0; width: 96px; transition: transform 0.2s, box-shadow 0.2s;
         }
-        .ts-final:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 32px rgba(0,0,0,0.4);
-        }
-        .ts-dates {
-          display: flex; flex-wrap: wrap;
-          border: 1px solid ${dateBdr};
-          border-radius: 5px; overflow: hidden;
-          margin-top: 24px; margin-bottom: 8px; transition: border-color 0.3s;
-          ${!darkMode ? "box-shadow: 0 1px 3px rgba(0,0,0,0.06);" : ""}
-        }
-        .ts-date-item {
-          flex: 1; min-width: 90px; padding: 12px 16px;
-          border-right: 1px solid ${dateBdr};
-          transition: background 0.2s, border-color 0.3s;
-        }
+        .ts-final:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,0.4); }
+        .ts-dates { display: flex; flex-wrap: wrap; border: 1px solid ${dateBdr}; border-radius: 4px; overflow: hidden; margin-top: 24px; margin-bottom: 8px; }
+        .ts-date-item { flex: 1; min-width: 90px; padding: 12px 16px; border-right: 1px solid ${dateBdr}; transition: background 0.2s; }
         .ts-date-item:last-child { border-right: none; }
-        .ts-date-item:hover { background: ${darkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.08)"}; }
-        .ts-date-d {
-          font-family: ${FONT.display}; font-size: 13px; font-weight: 900;
-          color: ${textPri}; letter-spacing: 0.02em; transition: color 0.3s;
-        }
-        .ts-date-e {
-          font-family: ${FONT.body}; font-size: 9px; font-weight: 600;
-          color: ${textMut}; margin-top: 2px; letter-spacing: 0.04em; transition: color 0.3s;
-        }
+        .ts-date-item:hover { background: ${darkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}; }
+        .ts-date-d { font-family: ${FONT.display}; font-size: 13px; font-weight: 900; color: ${textPri}; letter-spacing: 0.02em; }
+        .ts-date-e { font-family: ${FONT.body}; font-size: 9px; font-weight: 600; color: ${textMut}; margin-top: 2px; letter-spacing: 0.04em; }
         @media (max-width: 540px) {
           .ts-date-item { min-width: 50%; flex: 0 0 50%; }
           .ts-date-item:nth-child(2n) { border-right: none; }
           .ts-date-item:nth-child(n+3) { border-top: 1px solid ${dateBdr}; }
         }
-        
-        ${!darkMode ? `
-        .ts-date-item {
-          border-right-width: 1px;
-          border-right-style: solid;
-        }
-        ` : ""}
-
       `}</style>
 
-      <section style={{
-        background: bg, padding: "clamp(28px,5vw,48px) 0",
-        transition: "background 0.3s",
-      }}>
+      <section style={{ background: bg, padding: "clamp(28px,5vw,48px) 0", transition: "background 0.3s" }}>
         <div className="layout-container">
+          <SectionHead title="Tableau du Tournoi" />
 
-          <SectionHead
-            eyebrow="Phase Éliminatoire · FIFA 2026"
-            title="Tableau du Tournoi"
-          />
-
-          {/* ── DESKTOP BRACKET ── */}
           <div className="ts-desktop" style={{ overflowX: "auto", paddingBottom: 8 }}>
-            <div style={{
-              display: "flex", alignItems: "center",
-              minWidth: 960, margin: "0 auto", justifyContent: "center",
-            }}>
-              <RoundCol label="Huitièmes" matches={R16_LEFT} tbd={false} darkMode={darkMode} align="left" />
-              <Connector darkMode={darkMode} count={4} direction="right" />
-              <RoundCol label="Quarts" matches={QF_LEFT} tbd={true} darkMode={darkMode} align="left" />
-              <Connector darkMode={darkMode} count={2} direction="right" />
-              <RoundCol label="Demi-finale" matches={SF_LEFT} tbd={true} darkMode={darkMode} align="left" />
-              <LineConn darkMode={darkMode} />
-
-              {/* FINAL */}
+            <div style={{ display: "flex", alignItems: "center", minWidth: 960, margin: "0 auto", justifyContent: "center" }}>
+              <BRoundCol label="Huitièmes"   matches={R16_L} tbd={tbdR16} darkMode={darkMode} align="left" />
+              <BConnector darkMode={darkMode} count={4} direction="right" />
+              <BRoundCol label="Quarts"      matches={QF_L}  tbd={tbdQF}  darkMode={darkMode} align="left" />
+              <BConnector darkMode={darkMode} count={2} direction="right" />
+              <BRoundCol label="Demi-finale" matches={SF_L}  tbd={tbdSF}  darkMode={darkMode} align="left" />
+              <BLineConn darkMode={darkMode} />
               <div className="ts-final">
                 <Trophy size={24} color="#ffffff" style={{ display: "block", marginBottom: 8 }} />
-                <span style={{
-                  fontFamily: FONT.display, fontSize: 11, fontWeight: 900,
-                  color: "#ffffff", letterSpacing: "0.14em", textTransform: "uppercase",
-                  display: "block", lineHeight: 1,
-                }}>FINALE</span>
-                <span style={{
-                  fontFamily: FONT.body, fontSize: 8, fontWeight: 700,
-                  color: "rgba(255,255,255,0.35)", marginTop: 7,
-                  letterSpacing: "0.08em", textTransform: "uppercase", display: "block",
-                }}>19 Juillet</span>
-                <span style={{
-                  fontFamily: FONT.body, fontSize: 8, fontWeight: 600,
-                  color: "rgba(255,255,255,0.2)", marginTop: 2, display: "block",
-                }}>New York / NJ</span>
+                <span style={{ fontFamily: FONT.display, fontSize: 11, fontWeight: 900, color: "#ffffff", letterSpacing: "0.14em", textTransform: "uppercase", display: "block", lineHeight: 1 }}>FINALE</span>
+                <span style={{ fontFamily: FONT.body, fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.35)", marginTop: 7, letterSpacing: "0.08em", textTransform: "uppercase", display: "block" }}>19 Juillet</span>
+                <span style={{ fontFamily: FONT.body, fontSize: 8, fontWeight: 600, color: "rgba(255,255,255,0.2)", marginTop: 2, display: "block" }}>New York / NJ</span>
               </div>
-
-              <LineConn darkMode={darkMode} />
-              <RoundCol label="Demi-finale" matches={SF_RIGHT} tbd={true} darkMode={darkMode} align="right" />
-              <Connector darkMode={darkMode} count={2} direction="left" />
-              <RoundCol label="Quarts" matches={QF_RIGHT} tbd={true} darkMode={darkMode} align="right" />
-              <Connector darkMode={darkMode} count={4} direction="left" />
-              <RoundCol label="Huitièmes" matches={R16_RIGHT} tbd={false} darkMode={darkMode} align="right" />
+              <BLineConn darkMode={darkMode} />
+              <BRoundCol label="Demi-finale" matches={SF_R}  tbd={tbdSF}  darkMode={darkMode} align="right" />
+              <BConnector darkMode={darkMode} count={2} direction="left" />
+              <BRoundCol label="Quarts"      matches={QF_R}  tbd={tbdQF}  darkMode={darkMode} align="right" />
+              <BConnector darkMode={darkMode} count={4} direction="left" />
+              <BRoundCol label="Huitièmes"   matches={R16_R} tbd={tbdR16} darkMode={darkMode} align="right" />
             </div>
           </div>
 
-          {/* ── MOBILE LIST ── */}
           <div className="ts-mobile">
-            <MobileRound label="Huitièmes de finale" matches={[...R16_LEFT, ...R16_RIGHT]} tbd={false} darkMode={darkMode} />
-            <MobileRound label="Quarts de finale" matches={[...QF_LEFT, ...QF_RIGHT]} tbd={true} darkMode={darkMode} />
-            <MobileRound label="Demi-finales" matches={[...SF_LEFT, ...SF_RIGHT]} tbd={true} darkMode={darkMode} />
-            <div style={{
-              background: "#0d0d0d", borderRadius: 5, padding: "16px 18px",
-              marginBottom: 20, display: "flex", alignItems: "center", gap: 14,
-            }}>
+            <BMobileRound label="Huitièmes de finale" matches={[...R16_L,...R16_R]} tbd={tbdR16} darkMode={darkMode} />
+            <BMobileRound label="Quarts de finale"    matches={[...QF_L,...QF_R]}   tbd={tbdQF}  darkMode={darkMode} />
+            <BMobileRound label="Demi-finales"        matches={[...SF_L,...SF_R]}   tbd={tbdSF}  darkMode={darkMode} />
+            <div style={{ background: "#0d0d0d", borderRadius: 4, padding: "16px 18px", marginBottom: 20, display: "flex", alignItems: "center", gap: 14 }}>
               <Trophy size={22} color="#ffffff" />
               <div>
-                <div style={{
-                  fontFamily: FONT.display, fontSize: 13, fontWeight: 900,
-                  color: "#ffffff", letterSpacing: "0.12em", textTransform: "uppercase",
-                }}>FINALE</div>
-                <div style={{
-                  fontFamily: FONT.body, fontSize: 9, fontWeight: 600,
-                  color: "rgba(255,255,255,0.35)", marginTop: 2,
-                }}>19 Juillet 2026 · New York / New Jersey</div>
+                <div style={{ fontFamily: FONT.display, fontSize: 13, fontWeight: 900, color: "#ffffff", letterSpacing: "0.12em", textTransform: "uppercase" }}>FINALE</div>
+                <div style={{ fontFamily: FONT.body, fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>19 Juillet 2026 · New York / New Jersey</div>
               </div>
             </div>
           </div>
 
-          {/* ── KEY DATES ── */}
           <div className="ts-dates">
-            {[
-              { d: "6 Juil", e: "Huitièmes · J1" },
-              { d: "9 Juil", e: "Huitièmes · J2" },
-              { d: "12 Juil", e: "Quarts · J1" },
-              { d: "13 Juil", e: "Quarts · J2" },
-              { d: "17 Juil", e: "Demi-finales" },
-              { d: "19 Juil", e: "Finale · NY/NJ" },
-            ].map((item, i) => (
+            {[{d:"6 Juil",e:"Huitièmes · J1"},{d:"9 Juil",e:"Huitièmes · J2"},{d:"12 Juil",e:"Quarts · J1"},{d:"13 Juil",e:"Quarts · J2"},{d:"17 Juil",e:"Demi-finales"},{d:"19 Juil",e:"Finale · NY/NJ"}].map((item,i) => (
               <div key={i} className="ts-date-item">
                 <div className="ts-date-d">{item.d}</div>
                 <div className="ts-date-e">{item.e}</div>
               </div>
             ))}
           </div>
-
-
-
         </div>
       </section>
     </>
   );
 }
+
+
 
 // ─── FAN ZONE SECTION ─────────────────────────────────────────
 export function FanZoneSection() {
@@ -704,6 +596,12 @@ export function FanZoneSection() {
         .fz-success { display: flex; align-items: center; gap: 6px; padding: 12px 0; }
         .fz-success-dot { width: 7px; height: 7px; border-radius: 50%; background: ${successGreen}; flex-shrink: 0; }
         .fz-success-txt { font-size: 11px; color: ${successGreen}; font-weight: 600; }
+        
+        /* ── RESET VISITED LINKS (NO PURPLE) ── */
+        a, a:visited {
+          color: inherit !important;
+          text-decoration: none !important;
+        }
       `}</style>
 
       <section className="fz-root">

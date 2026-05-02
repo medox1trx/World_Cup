@@ -201,7 +201,7 @@ export default function AdminTickets() {
                 ) : tickets.map((t) => (
                   <tr key={t.id}>
                     <td>
-                      <div style={{ fontWeight: 700 }}>{t.match?.home_team} vs {t.match?.away_team}</div>
+                      <div style={{ fontWeight: 700 }}>{t.match?.team1?.name || "TBD"} vs {t.match?.team2?.name || "TBD"}</div>
                       <div style={{ fontSize: 12, opacity: 0.6 }}>{t.match?.venue}, {t.match?.city}</div>
                     </td>
                     <td>{t.category}</td>
@@ -243,7 +243,7 @@ export default function AdminTickets() {
                 >
                   <option value="">Sélectionnez un match</option>
                   {matches.map(m => (
-                    <option key={m.id} value={m.id}>{m.home_team} vs {m.away_team} ({m.city})</option>
+                    <option key={m.id} value={m.id}>{m.team1?.name || "TBD"} vs {m.team2?.name || "TBD"} ({m.city})</option>
                   ))}
                 </select>
               </div>

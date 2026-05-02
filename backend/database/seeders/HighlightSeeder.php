@@ -13,7 +13,7 @@ class HighlightSeeder extends Seeder
     public function run(): void
     {
         \App\Models\Highlight::create([
-            'title' => 'Maroc vs Espagne - Demi-Finales 2022',
+            'title' => 'Maroc vs Portugal - Qualifs 2026',
             'image_url' => 'https://i.ytimg.com/vi/kO-r4xSmbN0/maxresdefault.jpg',
             'video_url' => 'https://www.youtube.com/watch?v=kO-r4xSmbN0',
             'duration' => '10:32',

@@ -117,6 +117,9 @@ Route::prefix('v1')->group(function () {
     // Groups (Public)
     Route::get('/groups', [GroupController::class, 'index']);
 
+    // Stadiums (Public)
+    Route::get('/stadiums', [ApiController::class, 'indexStadiums']);
+
     // Joueurs (Public)
     Route::get('/joueurs/top-scorers',      [JoueurController::class, 'topScorers']);
     Route::get('/joueurs',                  [JoueurController::class, 'index']);

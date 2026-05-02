@@ -120,7 +120,7 @@ class ApiController extends Controller
     // ── GET /api/v1/standings ────────────────────────────────
     public function standings(): JsonResponse
     {
-        $groups = \App\Models\Group::with('teams')->get();
+        $groups = \App\Models\Group::with('teams.country')->get();
         
         $grouped = $groups->map(function ($group) {
             return [
@@ -130,7 +130,8 @@ class ApiController extends Controller
                         'id'   => $t->id,
                         'pos'  => $idx + 1,
                         'team' => $t->name,
-                        'code' => $t->flag, // using flag as code for the UI
+                        'code' => $t->country ? $t->country->code : $t->flag,
+                        'flag_url' => $t->country ? $t->country->flag_url : null,
                         'pld'  => 0,
                         'w'    => 0,
                         'd'    => 0,
@@ -138,7 +139,8 @@ class ApiController extends Controller
                         'gf'   => 0,
                         'ga'   => 0,
                         'gd'   => 0,
-                        'pts'  => 0
+                        'pts'  => 0,
+                        'country' => $t->country
                     ];
                 })
             ];
@@ -150,7 +152,7 @@ class ApiController extends Controller
     // ── GET /api/v1/matches ──────────────────────────────────
     public function matches(Request $request): JsonResponse
     {
-        $query = FootballMatch::with(['tickets', 'homeTeam', 'awayTeam']);
+        $query = FootballMatch::with(['tickets', 'team1.country', 'team2.country']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -170,7 +172,7 @@ class ApiController extends Controller
     // ── GET /api/v1/matches/{id} ─────────────────────────────
     public function match(int $id): JsonResponse
     {
-        $match = FootballMatch::with(['tickets', 'homeTeam', 'awayTeam'])->findOrFail($id);
+        $match = FootballMatch::with(['tickets', 'team1.country', 'team2.country'])->findOrFail($id);
         return response()->json($match);
     }
 
@@ -178,12 +180,12 @@ class ApiController extends Controller
     public function storeMatch(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'home_team_id' => 'required|exists:teams,id',
-            'away_team_id' => 'required|exists:teams,id',
-            'home_team'  => 'nullable|string|max:100',
-            'away_team'  => 'nullable|string|max:100',
-            'home_flag'  => 'nullable|string',
-            'away_flag'  => 'nullable|string',
+            'team1_id' => 'required|exists:teams,id',
+            'team2_id' => 'required|exists:teams,id',
+            'team1'  => 'nullable|string|max:100',
+            'team2'  => 'nullable|string|max:100',
+            'team1_flag'  => 'nullable|string',
+            'team2_flag'  => 'nullable|string',
             'venue'      => 'required|string|max:150',
             'city'       => 'required|string|max:100',
             'match_date' => 'required|date',
@@ -200,7 +202,7 @@ class ApiController extends Controller
         ]);
 
         $match = FootballMatch::create($validated);
-        return response()->json($match->load(['homeTeam', 'awayTeam']), 201);
+        return response()->json($match->load(['team1.country', 'team2.country']), 201);
     }
 
     // ── PUT /api/v1/matches/{id} ─────────────────────────────
@@ -209,12 +211,12 @@ class ApiController extends Controller
         $match = FootballMatch::findOrFail($id);
 
         $validated = $request->validate([
-            'home_team_id' => 'sometimes|required|exists:teams,id',
-            'away_team_id' => 'sometimes|required|exists:teams,id',
-            'home_team'  => 'sometimes|string|max:100',
-            'away_team'  => 'sometimes|string|max:100',
-            'home_flag'  => 'nullable|string',
-            'away_flag'  => 'nullable|string',
+            'team1_id' => 'sometimes|required|exists:teams,id',
+            'team2_id' => 'sometimes|required|exists:teams,id',
+            'team1'  => 'sometimes|string|max:100',
+            'team2'  => 'sometimes|string|max:100',
+            'team1_flag'  => 'nullable|string',
+            'team2_flag'  => 'nullable|string',
             'venue'      => 'sometimes|string|max:150',
             'city'       => 'sometimes|string|max:100',
             'match_date' => 'sometimes|date',
@@ -233,7 +235,7 @@ class ApiController extends Controller
         ]);
 
         $match->update($validated);
-        return response()->json($match->load(['homeTeam', 'awayTeam']));
+        return response()->json($match->load(['team1.country', 'team2.country']));
     }
 
     // ── DELETE /api/v1/matches/{id} ──────────────────────────
@@ -436,8 +438,12 @@ class ApiController extends Controller
     {
         $q = $request->get('q', '');
 
-        $results = FootballMatch::where('home_team', 'like', "%{$q}%")
-            ->orWhere('away_team', 'like', "%{$q}%")
+        $results = FootballMatch::whereHas('team1', function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->get('q', '')}%");
+            })
+            ->orWhereHas('team2', function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->get('q', '')}%");
+            })
             ->orWhere('venue',     'like', "%{$q}%")
             ->orWhere('city',      'like', "%{$q}%")
             ->limit(10)
@@ -445,7 +451,7 @@ class ApiController extends Controller
             ->map(function ($m) {
                 return [
                     'id'   => $m->id,
-                    'name' => $m->home_flag . ' ' . $m->home_team . ' vs ' . $m->away_flag . ' ' . $m->away_team,
+                    'name' => ($m->team1 ? $m->team1->name : 'TBD') . ' vs ' . ($m->team2 ? $m->team2->name : 'TBD'),
                     'type' => 'match',
                 ];
             });
@@ -682,5 +688,11 @@ class ApiController extends Controller
     {
         $hospitality->delete();
         return response()->json(['message' => 'Hospitality deleted']);
+    }
+
+    // ── STADIUMS ──────────────────────────────────────────────
+    public function indexStadiums(): JsonResponse
+    {
+        return response()->json(\App\Models\Stadium::all());
     }
 }

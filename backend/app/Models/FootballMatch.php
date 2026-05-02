@@ -10,30 +10,38 @@ class FootballMatch extends Model
     protected $table = 'matches';
 
     protected $fillable = [
-        'home_team', 'away_team',
-        'home_team_id', 'away_team_id',
-        'home_flag', 'away_flag',
-        'venue', 'city',
+        'team1_id', 'team2_id',
+        'stadium_id', 'city_id',
+        'referee_id', 'weather_id',
+        'video_url',
         'match_date', 'match_time',
         'stage', 'group_name',
         'home_score', 'away_score',
         'status',
-        'stadium_image', 'video_url', 'referee', 'assistant_referees',
-        'weather_condition', 'weather_temp',
     ];
 
     protected $casts = [
         'match_date' => 'date',
     ];
 
-    public function homeTeam()
+    public function team1()
     {
-        return $this->belongsTo(Team::class, 'home_team_id');
+        return $this->belongsTo(Team::class, 'team1_id');
     }
 
-    public function awayTeam()
+    public function team2()
     {
-        return $this->belongsTo(Team::class, 'away_team_id');
+        return $this->belongsTo(Team::class, 'team2_id');
+    }
+
+    public function stadium()
+    {
+        return $this->belongsTo(Stadium::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(Ville::class, 'city_id');
     }
 
     public function tickets()

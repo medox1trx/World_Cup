@@ -12,25 +12,25 @@ class FanZone extends Model
     protected $table = 'fan_zones';
 
     protected $fillable = [
-        'ville_id',
-        'stade',
-        'capacite',
-        'nb_matchs',
-        'adresse',
+        'city_id',
+        'stadium_name',
+        'capacity',
+        'matches_count',
+        'address',
         'zone_label',
         'description',
         'image_url',
-        'groupe',
-        'statut',
+        'group_label',
+        'status',
     ];
 
-    public function ville()
+    public function city()
     {
-        return $this->belongsTo(Ville::class, 'ville_id');
+        return $this->belongsTo(Ville::class, 'city_id');
     }
 
     public function pays()
     {
-        return $this->hasOneThrough(Pays::class, Ville::class, 'id', 'id', 'ville_id', 'pays_id');
+        return $this->hasOneThrough(Pays::class, Ville::class, 'id', 'id', 'city_id', 'country_id');
     }
 }

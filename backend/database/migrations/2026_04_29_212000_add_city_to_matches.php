@@ -8,17 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('matches', function (Blueprint $table) {
-            if (!Schema::hasColumn('matches', 'city_id')) {
-                $table->foreignId('city_id')->nullable()->after('stadium_id')->constrained('cities')->onDelete('set null');
-            }
-        });
+        // Columns already added in base migration
     }
 
     public function down(): void
     {
-        Schema::table('matches', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('city_id');
-        });
     }
 };

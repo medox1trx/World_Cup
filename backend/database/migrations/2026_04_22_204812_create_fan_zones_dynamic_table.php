@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('fan_zones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ville_id')->constrained('villes')->onDelete('cascade');
+            $table->foreignId('city_id')->constrained('cities')->onDelete('cascade');
             $table->string('stade', 150);
             $table->string('capacite', 20);
             $table->integer('nb_matchs')->default(0);

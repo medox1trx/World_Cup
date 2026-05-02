@@ -158,8 +158,8 @@ export default function Matches() {
 
               <div className="match-teams-side" style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
                 <div className="match-team-block" style={{ textAlign: "right", justifyContent: "flex-end" }}>
-                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.home_team?.name || (typeof m.home_team === 'string' ? m.home_team : "TBD")}</span>
-                  <Flag code={m.home_team?.flag || getCode(m.home_team)} size={28} />
+                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.team1?.name || (typeof m.team1 === 'string' ? m.team1 : "TBD")}</span>
+                  <Flag code={m.team1?.code || m.team1?.flag || getCode(m.team1)} size={28} />
                 </div>
 
                 <div className="match-vs-block">
@@ -167,8 +167,8 @@ export default function Matches() {
                 </div>
 
                 <div className="match-team-block" style={{ textAlign: "left", justifyContent: "flex-start" }}>
-                  <Flag code={m.away_team?.flag || getCode(m.away_team)} size={28} />
-                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.away_team?.name || (typeof m.away_team === 'string' ? m.away_team : "TBD")}</span>
+                  <Flag code={m.team2?.code || m.team2?.flag || getCode(m.team2)} size={28} />
+                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.team2?.name || (typeof m.team2 === 'string' ? m.team2 : "TBD")}</span>
                 </div>
               </div>
 
@@ -246,12 +246,12 @@ export default function Matches() {
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, marginBottom: 24, flexWrap: "wrap" }}>
                 <div style={{ flex: 1, textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, minWidth: 120 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.home_team?.name || (typeof selectedMatch.home_team === 'string' ? selectedMatch.home_team : "TBD")}</span>
-                    <Flag code={selectedMatch.home_team?.flag || getCode(selectedMatch.home_team)} size={36} />
+                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.team1?.name || (typeof selectedMatch.team1 === 'string' ? selectedMatch.team1 : "TBD")}</span>
+                    <Flag code={selectedMatch.team1?.code || selectedMatch.team1?.flag || getCode(selectedMatch.team1)} size={36} />
                   </div>
                   {/* Form */}
                   <div style={{ display: "flex", gap: 4 }}>
-                    {getRecentForm(selectedMatch.home_team?.name || selectedMatch.home_team).map((res, idx) => (
+                    {getRecentForm(selectedMatch.team1?.name || selectedMatch.team1).map((res, idx) => (
                       <span key={idx} style={{ background: getFormColor(res), color: "white", fontSize: 9, fontWeight: 800, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 3 }}>
                         {res}
                       </span>
@@ -269,12 +269,12 @@ export default function Matches() {
 
                 <div style={{ flex: 1, textAlign: "left", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10, minWidth: 120 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <Flag code={selectedMatch.away_team?.flag || getCode(selectedMatch.away_team)} size={36} />
-                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.away_team?.name || (typeof selectedMatch.away_team === 'string' ? selectedMatch.away_team : "TBD")}</span>
+                    <Flag code={selectedMatch.team2?.code || selectedMatch.team2?.flag || getCode(selectedMatch.team2)} size={36} />
+                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.team2?.name || (typeof selectedMatch.team2 === 'string' ? selectedMatch.team2 : "TBD")}</span>
                   </div>
                   {/* Form */}
                   <div style={{ display: "flex", gap: 4 }}>
-                    {getRecentForm(selectedMatch.away_team?.name || selectedMatch.away_team).map((res, idx) => (
+                    {getRecentForm(selectedMatch.team2?.name || selectedMatch.team2).map((res, idx) => (
                       <span key={idx} style={{ background: getFormColor(res), color: "white", fontSize: 9, fontWeight: 800, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 3 }}>
                         {res}
                       </span>

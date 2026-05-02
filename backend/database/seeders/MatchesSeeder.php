@@ -2,52 +2,58 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\FootballMatch;
-use Illuminate\Support\Facades\DB;
+use App\Models\Team;
+use App\Models\City;
+use App\Models\Stadium;
+use Illuminate\Database\Seeder;
 
 class MatchesSeeder extends Seeder
 {
-    public function run()
+    private array $matches = [
+        ['t1' => 'Mexico', 't2' => 'South Africa', 'date' => '2026-06-11 15:00:00', 'city' => 'Mexico City', 'stadium' => 'Estadio Azteca'],
+        ['t1' => 'Canada', 't2' => 'Bosnia and Herzegovina', 'date' => '2026-06-12 15:00:00', 'city' => 'Toronto', 'stadium' => 'BMO Field'],
+        ['t1' => 'Brazil', 't2' => 'Morocco', 'date' => '2026-06-13 18:00:00', 'city' => 'New York/New Jersey', 'stadium' => 'MetLife Stadium'],
+        ['t1' => 'USA', 't2' => 'Paraguay', 'date' => '2026-06-12 21:00:00', 'city' => 'Los Angeles', 'stadium' => 'SoFi Stadium'],
+        ['t1' => 'Germany', 't2' => 'Curacao', 'date' => '2026-06-14 13:00:00', 'city' => 'Houston', 'stadium' => 'NRG Stadium'],
+        ['t1' => 'Netherlands', 't2' => 'Japan', 'date' => '2026-06-14 16:00:00', 'city' => 'Dallas', 'stadium' => 'AT&T Stadium'],
+        ['t1' => 'Belgium', 't2' => 'Egypt', 'date' => '2026-06-15 15:00:00', 'city' => 'Seattle', 'stadium' => 'Lumen Field'],
+        ['t1' => 'Spain', 't2' => 'Cape Verde', 'date' => '2026-06-15 12:00:00', 'city' => 'Atlanta', 'stadium' => 'Mercedes-Benz Stadium'],
+        ['t1' => 'France', 't2' => 'Senegal', 'date' => '2026-06-16 15:00:00', 'city' => 'New York/New Jersey', 'stadium' => 'MetLife Stadium'],
+        ['t1' => 'Argentina', 't2' => 'Algeria', 'date' => '2026-06-16 21:00:00', 'city' => 'Kansas City', 'stadium' => 'GEHA Field at Arrowhead Stadium'],
+        ['t1' => 'Portugal', 't2' => 'DR Congo', 'date' => '2026-06-17 13:00:00', 'city' => 'Houston', 'stadium' => 'NRG Stadium'],
+        ['t1' => 'England', 't2' => 'Croatia', 'date' => '2026-06-17 16:00:00', 'city' => 'Dallas', 'stadium' => 'AT&T Stadium'],
+    ];
+
+    public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('matches')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        foreach ($this->matches as $m) {
+            $team1 = Team::where('name', $m['t1'])->first();
+            $team2 = Team::where('name', $m['t2'])->first();
+            $city = City::where('name', $m['city'])->first();
+            $stadium = Stadium::where('name', $m['stadium'])->first();
 
-        $matches = [
-            ['group_name' => 'Group B', 'home_team' => 'Mexico',        'away_team' => 'Uzbekistan',  'match_date' => '2026-06-11', 'match_time' => '17:00', 'venue' => 'Estadio Azteca', 'city' => 'Mexico City', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group C', 'home_team' => 'Canada',        'away_team' => 'Qatar',       'match_date' => '2026-06-12', 'match_time' => '15:00', 'venue' => 'BMO Field', 'city' => 'Toronto', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group A', 'home_team' => 'United States', 'away_team' => 'Iraq',        'match_date' => '2026-06-12', 'match_time' => '18:00', 'venue' => 'SoFi Stadium', 'city' => 'Los Angeles', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group D', 'home_team' => 'France',        'away_team' => 'Costa Rica',  'match_date' => '2026-06-13', 'match_time' => '14:00', 'venue' => 'MetLife Stadium', 'city' => 'East Rutherford', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group E', 'home_team' => 'Argentina',     'away_team' => 'Panama',      'match_date' => '2026-06-13', 'match_time' => '17:00', 'venue' => 'Mercedes-Benz Stadium', 'city' => 'Atlanta', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group F', 'home_team' => 'Brazil',        'away_team' => 'Australia',   'match_date' => '2026-06-14', 'match_time' => '13:00', 'venue' => 'NRG Stadium', 'city' => 'Houston', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group G', 'home_team' => 'England',       'away_team' => 'Hungary',     'match_date' => '2026-06-14', 'match_time' => '16:00', 'venue' => 'Lincoln Financial Field', 'city' => 'Philadelphia', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group H', 'home_team' => 'Spain',         'away_team' => 'Sweden',      'match_date' => '2026-06-15', 'match_time' => '12:00', 'venue' => 'Lumen Field', 'city' => 'Seattle', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group I', 'home_team' => 'Portugal',      'away_team' => 'Turkey',      'match_date' => '2026-06-15', 'match_time' => '15:00', 'venue' => 'Gillette Stadium', 'city' => 'Boston', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group J', 'home_team' => 'Netherlands',   'away_team' => 'Wales',       'match_date' => '2026-06-16', 'match_time' => '14:00', 'venue' => 'BC Place', 'city' => 'Vancouver', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group K', 'home_team' => 'Belgium',       'away_team' => 'New Zealand', 'match_date' => '2026-06-16', 'match_time' => '18:00', 'venue' => 'Arrowhead Stadium', 'city' => 'Kansas City', 'stage' => 'group', 'status' => 'upcoming'],
-            ['group_name' => 'Group L', 'home_team' => 'Italy',         'away_team' => 'Ukraine',     'match_date' => '2026-06-17', 'match_time' => '13:00', 'venue' => "Levi's Stadium", 'city' => 'Santa Clara', 'stage' => 'group', 'status' => 'upcoming'],
-        ];
+            if (!$team1 || !$team2 || !$city || !$stadium) continue;
 
-        foreach ($matches as $data) {
-            $homeTeam = \App\Models\Team::where('name', $data['home_team'])->first();
-            $awayTeam = \App\Models\Team::where('name', $data['away_team'])->first();
-
-            FootballMatch::create([
-                'group_name'   => $data['group_name'],
-                'home_team'    => $data['home_team'],
-                'away_team'    => $data['away_team'],
-                'home_team_id' => $homeTeam?->id,
-                'away_team_id' => $awayTeam?->id,
-                'match_date'   => $data['match_date'],
-                'match_time'   => $data['match_time'],
-                'venue'        => $data['venue'],
-                'city'         => $data['city'],
-                'stage'        => $data['stage'],
-                'status'       => $data['status'],
-                'home_score'   => null,
-                'away_score'   => null,
-            ]);
+            FootballMatch::updateOrCreate(
+                [
+                    'team1_id' => $team1->id,
+                    'team2_id' => $team2->id,
+                    'match_date' => date('Y-m-d', strtotime($m['date'])),
+                ],
+                [
+                    'city_id' => $city->id,
+                    'stadium_id' => $stadium->id,
+                    'city' => $city->name,
+                    'venue' => $stadium->name,
+                    'match_time' => date('H:i:s', strtotime($m['date'])),
+                    'status' => 'upcoming',
+                    'stage' => 'group',
+                    'group_name' => $team1->group->name ?? 'Unknown',
+                    'home_score' => null,
+                    'away_score' => null,
+                ]
+            );
         }
     }
 }

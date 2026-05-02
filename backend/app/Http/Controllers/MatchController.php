@@ -60,12 +60,34 @@ class MatchController extends Controller
                          ->paginate($perPage);
 
         $paginator->getCollection()->transform(function ($m) {
-            $t1Country = $m->team1 ? $m->team1->country : null;
-            $t2Country = $m->team2 ? $m->team2->country : null;
+            $t1 = $m->team1;
+            $t2 = $m->team2;
+
+            // Flags & Codes with fallbacks
+            $t1Flag = '';
+            if ($t1) {
+                if ($t1->country && $t1->country->code) {
+                    $t1Flag = "https://flagcdn.com/w320/" . strtolower($t1->country->code) . ".png";
+                } else {
+                    $t1Flag = $t1->flag;
+                }
+            }
+
+            $t2Flag = '';
+            if ($t2) {
+                if ($t2->country && $t2->country->code) {
+                    $t2Flag = "https://flagcdn.com/w320/" . strtolower($t2->country->code) . ".png";
+                } else {
+                    $t2Flag = $t2->flag;
+                }
+            }
+
+            $t1Code = $t1 ? ($t1->country ? strtolower($t1->country->code) : strtolower($t1->code)) : '';
+            $t2Code = $t2 ? ($t2->country ? strtolower($t2->country->code) : strtolower($t2->code)) : '';
 
             // Use direct city relation or fallback to stadium city
             $cityName = $m->city ? $m->city->name : ($m->stadium && $m->stadium->city ? $m->stadium->city->name : 'TBD');
-            $venueName = $m->stadium ? $m->stadium->name : 'TBD';
+            $venueName = $m->stadium ? $m->stadium->name : ($m->venue ?: 'TBD');
 
             return [
                 'id' => $m->id,
@@ -73,20 +95,25 @@ class MatchController extends Controller
                 'group_name' => $m->group_name,
                 'team1' => [
                     'id' => $m->team1_id,
-                    'name' => $m->team1 ? $m->team1->name : 'TBD',
-                    'flag' => $t1Country ? "https://flagcdn.com/w320/" . strtolower($t1Country->code) . ".png" : '',
-                    'code' => $t1Country ? strtolower($t1Country->code) : '',
+                    'name' => $t1 ? $t1->name : 'TBD',
+                    'flag' => $t1Flag,
+                    'code' => $t1Code,
                 ],
                 'team2' => [
                     'id' => $m->team2_id,
-                    'name' => $m->team2 ? $m->team2->name : 'TBD',
-                    'flag' => $t2Country ? "https://flagcdn.com/w320/" . strtolower($t2Country->code) . ".png" : '',
-                    'code' => $t2Country ? strtolower($t2Country->code) : '',
+                    'name' => $t2 ? $t2->name : 'TBD',
+                    'flag' => $t2Flag,
+                    'code' => $t2Code,
                 ],
                 'venue' => $venueName,
                 'city' => $cityName,
+                'stadium' => $m->stadium ? [
+                    'name' => $m->stadium->name,
+                    'capacity' => $m->stadium->capacity,
+                    'image' => $m->stadium->image_url,
+                ] : null,
                 'match_date' => $m->match_date ? $m->match_date->format('Y-m-d') : null,
-                'match_time' => $m->match_time,
+                'match_time' => $m->match_time ? substr($m->match_time, 0, 5) : null,
                 'status' => $m->status,
                 'home_score' => $m->home_score,
                 'away_score' => $m->away_score,

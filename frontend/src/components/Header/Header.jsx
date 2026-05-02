@@ -131,6 +131,12 @@ export default function Header({ onOpenAdminSidebar }) {
           --hbody: 'DM Sans', sans-serif;
         }
 
+        /* ── RESET VISITED LINKS (NO PURPLE) ── */
+        a, a:visited {
+          color: inherit !important;
+          text-decoration: none !important;
+        }
+
         .hdr {
           position: sticky; top: 0; z-index: 1000;
           background: var(--hbg);
@@ -438,11 +444,17 @@ export default function Header({ onOpenAdminSidebar }) {
         .hdr-season-opt:last-child { border-bottom: none; }
         .hdr-season-opt:hover { background: rgba(255,255,255,0.06); color: white; }
         .hdr-season-opt.sel { color: white; background: rgba(255,255,255,0.08); }
-        .hdr-season-opt-host {
-          font-size: 10px; color: rgba(255,255,255,0.3);
-          margin-top: 2px; font-weight: 400;
-        }
         .hdr-season-opt.sel .hdr-season-opt-host { color: rgba(255,255,255,0.5); }
+        .hdr-season-opt.locked { cursor: not-allowed; opacity: 0.65; }
+        .hdr-season-opt.locked:hover { background: transparent; }
+        
+        .hdr-season-badge {
+          background: #ef4444; color: white;
+          font-family: var(--hfont); font-size: 7px; font-weight: 900;
+          letter-spacing: 0.1em; padding: 1px 5px; border-radius: 2px;
+          text-transform: uppercase; margin-left: 8px;
+          display: inline-flex; align-items: center; gap: 3px;
+        }
 
 
 
@@ -722,9 +734,14 @@ export default function Header({ onOpenAdminSidebar }) {
               <div className={`hdr-season-drop${seasonOpen ? " open" : ""}`}>
                 {seasons.map(s => (
                   <button key={s.id}
-                    className={`hdr-season-opt${season?.id === s.id ? " sel" : ""}`}
-                    onClick={() => { selectSeason(s.id); setSeasonOpen(false); }}>
-                    <span>{s.label}</span>
+                    className={`hdr-season-opt${season?.id === s.id ? " sel" : ""}${s.locked ? " locked" : ""}`}
+                    onClick={() => { if (!s.locked) { selectSeason(s.id); setSeasonOpen(false); } }}
+                    disabled={s.locked}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                      <span>{s.label}</span>
+                      {s.badge && <span className="hdr-season-badge">{s.badge}</span>}
+                    </div>
                     <span className="hdr-season-opt-host">{s.host}</span>
                   </button>
                 ))}

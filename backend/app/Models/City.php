@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class City extends Model
 {
@@ -13,6 +14,7 @@ class City extends Model
     protected $fillable = [
         'slug',
         'name',
+        'country_id',
         'description',
         'stadium',
         'match_period',
@@ -20,6 +22,11 @@ class City extends Model
         'lat',
         'lng',
     ];
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Pays::class, 'country_id');
+    }
 
     public function accommodations(): HasMany
     {

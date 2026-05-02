@@ -6,6 +6,7 @@ const ONE_HOUR_MS = 60 * 60 * 1000;
 
 export const SEASONS = [
   { id: "2026", label: "Coupe du Monde 2026", host: "USA · Mexique · Canada" },
+  { id: "2030", label: "Coupe du Monde 2030", host: "Maroc · Espagne · Portugal", locked: true, badge: "Bientôt" },
 ];
 
 function loadSeason() {
@@ -32,7 +33,7 @@ function saveSeason(id) {
 }
 
 export function SeasonProvider({ children }) {
-  const [season, setSeason] = useState(() => loadSeason());
+  const [season, setSeason] = useState(() => loadSeason() || { id: "2026", timestamp: Date.now() });
 
   const selectSeason = useCallback((id) => {
     if (!id) {
@@ -40,6 +41,9 @@ export function SeasonProvider({ children }) {
       setSeason(null);
       return;
     }
+    const found = SEASONS.find(s => s.id === id);
+    if (found?.locked) return;
+
     const data = saveSeason(id);
     setSeason(data);
   }, []);

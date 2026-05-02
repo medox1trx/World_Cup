@@ -17,29 +17,35 @@ export const FONT = {
 
 // ─── COUNTRY CODES ────────────────────────────────────────────
 export const CODES = {
-  Brazil:"br", France:"fr", Germany:"de", Argentina:"ar",
-  Allemagne:"de", Italie:"it",
-  Spain:"es", England:"gb", Portugal:"pt", Morocco:"ma",
-  USA:"us", Mexico:"mx", Italy:"it", Japan:"jp",
-  Netherlands:"nl", Belgium:"be", Croatia:"hr", Uruguay:"uy",
-  Colombia:"co", Senegal:"sn", Australia:"au", "South Korea":"kr",
-  Switzerland:"ch", Serbia:"rs", Canada:"ca", Ecuador:"ec",
-  Qatar:"qa", Iran:"ir", Poland:"pl", Denmark:"dk",
-  Tunisia:"tn", Cameroon:"cm", "Saudi Arabia":"sa",
-  "South Africa":"za", Egypt:"eg", Nigeria:"ng", Algeria:"dz",
-  Brésil:"br", Argentine:"ar", Espagne:"es",
-  Angleterre:"gb", Maroc:"ma", Colombie:"co", Japon:"jp",
-  Mexique:"mx", Brazil:"br", Cameroon:"cm", 
-  Morocco:"ma", France:"fr", Spain:"es", England:"gb",
+  USA: "us", Mexico: "mx", Canada: "ca",
+  Brazil: "br", Argentina: "ar", France: "fr",
+  Germany: "de", Spain: "es", England: "gb",
+  Portugal: "pt", Morocco: "ma", Italy: "it",
+  Japan: "jp", Netherlands: "nl", Belgium: "be",
+  Croatia: "hr", Uruguay: "uy", Colombia: "co",
+  Senegal: "sn", Australia: "au", "South Korea": "kr",
+  Switzerland: "ch", Serbia: "rs", Denmark: "dk",
+  Cameroon: "cm", "Saudi Arabia": "sa", Egypt: "eg",
+  Nigeria: "ng", Algeria: "dz", Turkey: "tr",
+  Panama: "pa", Albania: "al", Ukraine: "ua",
+  Ecuador: "ec", Jamaica: "jm", Venezuela: "ve",
+  Honduras: "hn", Iran: "ir", Peru: "pe",
+  "Ivory Coast": "ci", Paraguay: "py",
+  Qatar: "qa", Bolivia: "bo", Chile: "cl",
+  "Costa Rica": "cr", Ghana: "gh", Iraq: "iq",
+  "New Zealand": "nz", "South Africa": "za", "Czechia": "cz",
+  "Bosnia and Herzegovina": "ba", "Haiti": "ht", "Scotland": "gb-sct",
+  "Curacao": "cw", "Sweden": "se", "Tunisia": "tn",
+  "Cape Verde": "cv", "Norway": "no", "Austria": "at",
+  "Jordan": "jo", "DR Congo": "cd", "Uzbekistan": "uz",
 };
 
 export const STAGE_LABEL = {
-  group:"Groupe", round_of_16:"8es",
-  quarter:"Quarts", semi:"Demi", final:"FINALE",
+  group: "Groupe", round_of_16: "8es",
+  quarter: "Quarts", semi: "Demi", final: "FINALE",
 };
 
-// ─── IMAGE POOL (picsum.photos — always works, no hotlink block) ───
-// Named seeds give consistent images across renders
+// ─── IMAGE POOL ───
 const IMG = {
   final:   "https://www.atalayar.com/media/atalayar/images/2023/10/19/2023101911255391424.jpg",
   crowd:   "https://th.bing.com/th/id/OIP.rbZyi8bjd3WckIuKKaz9VwHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
@@ -53,82 +59,50 @@ const IMG = {
 
 // ─── TICKER ───────────────────────────────────────────────────
 export const TICKER_ITEMS = [
-  "Coupe du Monde FIFA 2026™ : J-X avant le coup d'envoi au Mexico",
-  "Estadio Azteca prêt pour l'ouverture : Mexico vs Ecuador le 11 juin",
-  "Billets Phase Finale : le MetLife Stadium affiche complet pour le 19 juillet",
-  "FIFA 2026 : diffusion mondiale assurée dans 210 pays",
-  "48 nations · 104 matchs · 3 pays hôtes · 11 juin – 19 juillet 2026",
+  "Coupe du Monde FIFA 2026™ : 48 nations prêtes pour l'histoire",
+  "Estadio Azteca : coup d'envoi le 11 juin 2026",
+  "104 matchs, 16 villes, 3 nations : l'Amérique du Nord unie par le football",
+  "FIFA World Cup 2026 : une fête mondiale sans précédent",
 ];
 
 // ─── NEWS ─────────────────────────────────────────────────────
 export const NEWS_FEATURED = {
-  tag:   "Sélection",
-  title: "Bienvenue pour la Coupe du Monde de la FIFA 2026™",
-  desc:  "Le monde s'apprête à vibrer au rythme de la plus grande Coupe du Monde de l'histoire en Amérique du Nord.",
-  date:  "22 Avr 2026",
+  tag:   "FIFA 2026",
+  title: "Bienvenue dans l'ère de la Coupe du Monde à 48 nations",
+  desc:  "Découvrez le format élargi et les villes qui accueilleront le plus grand événement sportif de la planète.",
+  date:  "01 Mai 2026",
   img:   IMG.final,
 };
 
-export const NEWS_SIDE = [
-  { tag:"Stades",  title:"Le SoFi Stadium de Los Angeles prêt pour les grands rendez-vous",       date:"21 Avr 2026", img: IMG.stadium },
-  { tag:"Équipes", title:"Le Mexico dévoile son effectif pour le match d'ouverture",             date:"20 Avr 2026", img: IMG.crowd   },
-  { tag:"Billets", title:"Phase finale : record de ventes pour les matchs à New York",            date:"19 Avr 2026", img: IMG.fans    },
-  { tag:"Médias",  title:"Technologie : la VAR 2.0 sera déployée dans les 16 stades hôtes",       date:"18 Avr 2026", img: IMG.pitch   },
-];
-
-export const NEWS_MORE = [
-  { tag:"Formation",   title:"Programme FIFA Grassroots : l'héritage de 2026 commence maintenant",     date:"17 Avr 2026", img: IMG.ball    },
-  { tag:"Durabilité",  title:"Objectif Zéro Carbone : l'engagement des trois nations hôtes pour 2026", date:"16 Avr 2026", img: IMG.trophy  },
-  { tag:"Sécurité",    title:"Dispositif de sécurité renforcé pour les 104 matchs de la compétition", date:"15 Avr 2026", img: IMG.stadium2 },
-];
-
-// ─── GROUPS ───────────────────────────────────────────────────
+// ─── GROUPS (Static Fallback) ──────────────────────────────────
 export const GROUPS = [
   {
     name:"Groupe A",
     teams:[
-      { pos:1, team:"USA",      code:"us", pld:"—", gd:"—", pts:"—" },
-      { pos:2, team:"Panama",   code:"pa", pld:"—", gd:"—", pts:"—" },
-      { pos:3, team:"Albania",  code:"al", pld:"—", gd:"—", pts:"—" },
-      { pos:4, team:"Ukraine",  code:"ua", pld:"—", gd:"—", pts:"—" },
+      { pos:1, team:"USA", code:"us", pld:"0", gd:"0", pts:"0" },
+      { pos:2, team:"Panama", code:"pa", pld:"0", gd:"0", pts:"0" },
+      { pos:3, team:"Albania", code:"al", pld:"0", gd:"0", pts:"0" },
+      { pos:4, team:"Ukraine", code:"ua", pld:"0", gd:"0", pts:"0" },
     ],
   },
   {
     name:"Groupe B",
     teams:[
-      { pos:1, team:"Mexico",   code:"mx", pld:"—", gd:"—", pts:"—" },
-      { pos:2, team:"Ecuador",  code:"ec", pld:"—", gd:"—", pts:"—" },
-      { pos:3, team:"Jamaica",  code:"jm", pld:"—", gd:"—", pts:"—" },
-      { pos:4, team:"Venezuela",code:"ve", pld:"—", gd:"—", pts:"—" },
-    ],
-  },
-  {
-    name:"Groupe C",
-    teams:[
-      { pos:1, team:"Canada",   code:"ca", pld:"—", gd:"—", pts:"—" },
-      { pos:2, team:"Morocco",  code:"ma", pld:"—", gd:"—", pts:"—" },
-      { pos:3, team:"Belgium",  code:"be", pld:"—", gd:"—", pts:"—" },
-      { pos:4, team:"Honduras", code:"hn", pld:"—", gd:"—", pts:"—" },
+      { pos:1, team:"Mexico", code:"mx", pld:"0", gd:"0", pts:"0" },
+      { pos:2, team:"Ecuador", code:"ec", pld:"0", gd:"0", pts:"0" },
+      { pos:3, team:"Jamaica", code:"jm", pld:"0", gd:"0", pts:"0" },
+      { pos:4, team:"Venezuela", code:"ve", pld:"0", gd:"0", pts:"0" },
     ],
   },
 ];
 
-export const TOP_SCORERS = [
-  { player:"Kylian Mbappé", team:"France",     code:"fr", goals:0, assists:0 },
-  { player:"Lionel Messi",  team:"Argentina",  code:"ar", goals:0, assists:0 },
-  { player:"Vinicius Jr.",  team:"Brazil",     code:"br", goals:0, assists:0 },
-  { player:"Christian Pulisic", team:"USA",    code:"us", goals:0, assists:0 },
-  { player:"S. Giménez",    team:"Mexico",     code:"mx", goals:0, assists:0 },
-];
-
-// ─── FIFA 2026 host nations: USA · Mexico · Canada
+// ─── HOST CITIES ──────────────────────────────────────────────
 export const HOST_CITIES = [
-  { city:"USA",      country:"Nation hôte · 11 villes", code:"us", bg:"#002868" },
-  { city:"Mexico",   country:"Nation hôte · 3 villes",  code:"mx", bg:"#006847" },
-  { city:"Canada",   country:"Nation hôte · 2 villes",  code:"ca", bg:"#FF0000" },
+  { city:"USA", country:"11 Villes Hôtes", code:"us", bg:"#002868" },
+  { city:"Mexico", country:"3 Villes Hôtes", code:"mx", bg:"#006847" },
+  { city:"Canada", country:"2 Villes Hôtes", code:"ca", bg:"#FF0000" },
 ];
 
-// ─── COUNTDOWN ────────────────────────────────────────────────
 export const WC_DATE = new Date("2026-06-11T19:00:00Z");
 
 export function getTimeLeft() {
@@ -142,26 +116,32 @@ export function getTimeLeft() {
   };
 }
 
-export function getCode(team) {
-  if (!team) return null;
-  // If team is an object (relational data), try to get the name or flag directly
-  if (typeof team === 'object') {
-    if (team.flag) return team.flag;
-    if (team.name) team = team.name;
-    else return null;
-  }
-  
-  if (typeof team !== 'string') return null;
-  
-  const normalized = team.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  return CODES[team] || CODES[normalized] || null;
-}
-// ─── MATCHES ──────────────────────────────────────────────────
+export const NEWS_SIDE = [
+  { tag:"Stades",  title:"Le SoFi Stadium de Los Angeles prêt pour les grands rendez-vous",       date:"21 Avr 2026", img: IMG.stadium },
+  { tag:"Équipes", title:"Le Mexique dévoile son effectif pour le match d'ouverture",             date:"20 Avr 2026", img: IMG.crowd   },
+  { tag:"Billets", title:"Phase finale : record de ventes pour les matchs à New York",            date:"19 Avr 2026", img: IMG.fans    },
+  { tag:"Médias",  title:"Technologie : la VAR 2.0 sera déployée dans les 16 stades hôtes",       date:"18 Avr 2026", img: IMG.pitch   },
+];
+
+export const NEWS_MORE = [
+  { tag:"Formation",   title:"Programme FIFA Grassroots : l'héritage de 2026 commence maintenant",     date:"17 Avr 2026", img: IMG.ball    },
+  { tag:"Durabilité",  title:"Objectif Zéro Carbone : l'engagement des trois nations hôtes pour 2026", date:"16 Avr 2026", img: IMG.trophy  },
+  { tag:"Sécurité",    title:"Dispositif de sécurité renforcé pour les 104 matchs de la compétition", date:"15 Avr 2026", img: IMG.stadium2 },
+];
+
+export const TOP_SCORERS = [
+  { player:"Kylian Mbappé", team:"France",     code:"fr", goals:0, assists:0 },
+  { player:"Lionel Messi",  team:"Argentina",  code:"ar", goals:0, assists:0 },
+  { player:"Vinicius Jr.",  team:"Brazil",     code:"br", goals:0, assists:0 },
+  { player:"Christian Pulisic", team:"USA",    code:"us", goals:0, assists:0 },
+  { player:"S. Giménez",    team:"Mexico",     code:"mx", goals:0, assists:0 },
+];
+
 export const MATCHES = [
   {
     id: 1,
     stage: "group", group_name: "Groupe B",
-    home_team: "Mexico",     away_team: "Ecuador",
+    team1: "Mexico",     team2: "Ecuador",
     match_date: "2026-06-11", match_time: "19:00",
     venue: "Estadio Azteca", city: "Mexico City",
     status: "upcoming", home_score: null, away_score: null,
@@ -169,7 +149,7 @@ export const MATCHES = [
   {
     id: 2,
     stage: "group", group_name: "Groupe A",
-    home_team: "USA",        away_team: "Panama",
+    team1: "USA",        team2: "Panama",
     match_date: "2026-06-12", match_time: "21:00",
     venue: "SoFi Stadium", city: "Los Angeles",
     status: "upcoming", home_score: null, away_score: null,
@@ -177,33 +157,25 @@ export const MATCHES = [
   {
     id: 3,
     stage: "group", group_name: "Groupe C",
-    home_team: "Canada",     away_team: "Belgium",
+    team1: "Canada",     team2: "Belgium",
     match_date: "2026-06-13", match_time: "18:00",
     venue: "BC Place", city: "Vancouver",
     status: "upcoming", home_score: null, away_score: null,
   },
-  {
-    id: 4,
-    stage: "group", group_name: "Groupe D",
-    home_team: "Spain",      away_team: "Brazil",
-    match_date: "2026-06-14", match_time: "21:00",
-    venue: "MetLife Stadium", city: "New York",
-    status: "upcoming", home_score: null, away_score: null,
-  },
-  {
-    id: 5,
-    stage: "group", group_name: "Groupe E",
-    home_team: "France",     away_team: "Argentina",
-    match_date: "2026-06-15", match_time: "21:00",
-    venue: "AT&T Stadium", city: "Dallas",
-    status: "upcoming", home_score: null, away_score: null,
-  },
-  {
-    id: 6,
-    stage: "group", group_name: "Groupe F",
-    home_team: "Germany",    away_team: "Portugal",
-    match_date: "2026-06-16", match_time: "18:00",
-    venue: "Gillette Stadium", city: "Boston",
-    status: "upcoming", home_score: null, away_score: null,
-  },
 ];
+
+export function getCode(team) {
+  if (!team) return null;
+  if (typeof team === 'object' && team !== null) {
+    if (team.flag_url) return team.flag_url;
+    if (team.country?.flag_url) return team.country.flag_url;
+    if (team.code) return team.code;
+    if (team.country?.code) return team.country.code;
+    if (team.flag) return team.flag;
+    if (team.name) team = team.name;
+    else return null;
+  }
+  if (typeof team !== 'string') return null;
+  const normalized = team.trim();
+  return CODES[normalized] || null;
+}

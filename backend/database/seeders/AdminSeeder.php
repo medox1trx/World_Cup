@@ -11,7 +11,7 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         User::firstOrCreate(
-            ['email' => 'admin@fifa2030.com'],
+            ['email' => 'admin@fifa2026.com'],
             [
                 'name'     => 'Admin FIFA',
                 'password' => Hash::make('admin123'),
@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'user@fifa2030.com'],
+            ['email' => 'user@fifa2026.com'],
             [
                 'name'     => 'Utilisateur Test',
                 'password' => Hash::make('user1234'),

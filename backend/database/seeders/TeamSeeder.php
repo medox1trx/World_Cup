@@ -1,116 +1,121 @@
 <?php
- 
+
 namespace Database\Seeders;
- 
-use Illuminate\Database\Seeder;
+
 use App\Models\Team;
 use App\Models\Group;
-use Illuminate\Support\Facades\DB;
- 
+use App\Models\Pays;
+use App\Models\Confederation;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
+
 class TeamSeeder extends Seeder
 {
+    private array $data = [
+        'Group A' => [
+            ['name' => 'Mexico', 'code' => 'mx', 'conf' => 'CONCACAF'],
+            ['name' => 'South Africa', 'code' => 'za', 'conf' => 'CAF'],
+            ['name' => 'South Korea', 'code' => 'kr', 'conf' => 'AFC'],
+            ['name' => 'Czechia', 'code' => 'cz', 'conf' => 'UEFA'],
+        ],
+        'Group B' => [
+            ['name' => 'Canada', 'code' => 'ca', 'conf' => 'CONCACAF'],
+            ['name' => 'Bosnia and Herzegovina', 'code' => 'ba', 'conf' => 'UEFA'],
+            ['name' => 'Qatar', 'code' => 'qa', 'conf' => 'AFC'],
+            ['name' => 'Switzerland', 'code' => 'ch', 'conf' => 'UEFA'],
+        ],
+        'Group C' => [
+            ['name' => 'Brazil', 'code' => 'br', 'conf' => 'CONMEBOL'],
+            ['name' => 'Morocco', 'code' => 'ma', 'conf' => 'CAF'],
+            ['name' => 'Haiti', 'code' => 'ht', 'conf' => 'CONCACAF'],
+            ['name' => 'Scotland', 'code' => 'gb-sct', 'conf' => 'UEFA'],
+        ],
+        'Group D' => [
+            ['name' => 'USA', 'code' => 'us', 'conf' => 'CONCACAF'],
+            ['name' => 'Paraguay', 'code' => 'py', 'conf' => 'CONMEBOL'],
+            ['name' => 'Australia', 'code' => 'au', 'conf' => 'AFC'],
+            ['name' => 'Turkey', 'code' => 'tr', 'conf' => 'UEFA'],
+        ],
+        'Group E' => [
+            ['name' => 'Germany', 'code' => 'de', 'conf' => 'UEFA'],
+            ['name' => 'Curacao', 'code' => 'cw', 'conf' => 'CONCACAF'],
+            ['name' => 'Ivory Coast', 'code' => 'ci', 'conf' => 'CAF'],
+            ['name' => 'Ecuador', 'code' => 'ec', 'conf' => 'CONMEBOL'],
+        ],
+        'Group F' => [
+            ['name' => 'Netherlands', 'code' => 'nl', 'conf' => 'UEFA'],
+            ['name' => 'Japan', 'code' => 'jp', 'conf' => 'AFC'],
+            ['name' => 'Sweden', 'code' => 'se', 'conf' => 'UEFA'],
+            ['name' => 'Tunisia', 'code' => 'tn', 'conf' => 'CAF'],
+        ],
+        'Group G' => [
+            ['name' => 'Belgium', 'code' => 'be', 'conf' => 'UEFA'],
+            ['name' => 'Egypt', 'code' => 'eg', 'conf' => 'CAF'],
+            ['name' => 'Iran', 'code' => 'ir', 'conf' => 'AFC'],
+            ['name' => 'New Zealand', 'code' => 'nz', 'conf' => 'OFC'],
+        ],
+        'Group H' => [
+            ['name' => 'Spain', 'code' => 'es', 'conf' => 'UEFA'],
+            ['name' => 'Cape Verde', 'code' => 'cv', 'conf' => 'CAF'],
+            ['name' => 'Saudi Arabia', 'code' => 'sa', 'conf' => 'AFC'],
+            ['name' => 'Uruguay', 'code' => 'uy', 'conf' => 'CONMEBOL'],
+        ],
+        'Group I' => [
+            ['name' => 'France', 'code' => 'fr', 'conf' => 'UEFA'],
+            ['name' => 'Senegal', 'code' => 'sn', 'conf' => 'CAF'],
+            ['name' => 'Iraq', 'code' => 'iq', 'conf' => 'AFC'],
+            ['name' => 'Norway', 'code' => 'no', 'conf' => 'UEFA'],
+        ],
+        'Group J' => [
+            ['name' => 'Argentina', 'code' => 'ar', 'conf' => 'CONMEBOL'],
+            ['name' => 'Algeria', 'code' => 'dz', 'conf' => 'CAF'],
+            ['name' => 'Austria', 'code' => 'at', 'conf' => 'UEFA'],
+            ['name' => 'Jordan', 'code' => 'jo', 'conf' => 'AFC'],
+        ],
+        'Group K' => [
+            ['name' => 'Portugal', 'code' => 'pt', 'conf' => 'UEFA'],
+            ['name' => 'DR Congo', 'code' => 'cd', 'conf' => 'CAF'],
+            ['name' => 'Uzbekistan', 'code' => 'uz', 'conf' => 'AFC'],
+            ['name' => 'Colombia', 'code' => 'co', 'conf' => 'CONMEBOL'],
+        ],
+        'Group L' => [
+            ['name' => 'England', 'code' => 'gb-eng', 'conf' => 'UEFA'],
+            ['name' => 'Croatia', 'code' => 'hr', 'conf' => 'UEFA'],
+            ['name' => 'Ghana', 'code' => 'gh', 'conf' => 'CAF'],
+            ['name' => 'Panama', 'code' => 'pa', 'conf' => 'CONCACAF'],
+        ],
+    ];
+
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Team::truncate();
- 
-        // Pre-fetch groups for performance and easy lookup
-        $groups = Group::all()->pluck('id', 'name')->toArray();
-        // Fallback for different naming (e.g. "Group A" vs "Groupe A")
-        $getGroupId = function($name) use ($groups) {
-            $letter = substr($name, -1);
-            return $groups["Group $letter"] ?? $groups["Groupe $letter"] ?? null;
-        };
- 
-        $teams = [
-            // ── GROUPE A ──
-            ['name'=>'USA',          'confederation'=>'CONCACAF','code'=>'USA','flag'=>'https://flagcdn.com/w320/us.png','group_name'=>'Group A','coach'=>'Mauricio Pochettino','captain'=>'Christian Pulisic','world_ranking'=>11,'world_cup_titles'=>0,'key_player'=>'Christian Pulisic','description'=>'Co-organisateurs et favoris à domicile, les États-Unis veulent marquer l\'histoire avec une grande performance en 2026.','image_url'=>'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Panama',       'confederation'=>'CONCACAF','code'=>'PAN','flag'=>'https://flagcdn.com/w320/pa.png','group_name'=>'Group A','coach'=>'Thomas Christiansen','captain'=>'Roderick Miller','world_ranking'=>49,'world_cup_titles'=>0,'key_player'=>'Ismael Díaz','description'=>'Le Panama dispute sa deuxième Coupe du Monde et vise une qualification historique en phase finale.','image_url'=>'https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Albania',      'confederation'=>'UEFA','code'=>'ALB','flag'=>'https://flagcdn.com/w320/al.png','group_name'=>'Group A','coach'=>'Sylvinho','captain'=>'Berat Djimsiti','world_ranking'=>66,'world_cup_titles'=>0,'key_player'=>'Jasir Asani','description'=>'L\'Albanie fait ses débuts en Coupe du Monde et représente une belle surprise de ces qualifications.','image_url'=>'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Ukraine',      'confederation'=>'UEFA','code'=>'UKR','flag'=>'https://flagcdn.com/w320/ua.png','group_name'=>'Group A','coach'=>'Serhiy Rebrov','captain'=>'Andriy Yarmolenko','world_ranking'=>22,'world_cup_titles'=>0,'key_player'=>'Mykhailo Mudryk','description'=>'L\'Ukraine, malgré un contexte difficile, a réussi à se qualifier et porte l\'espoir d\'une nation tout entière.','image_url'=>'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE B ──
-            ['name'=>'Mexico',       'confederation'=>'CONCACAF','code'=>'MEX','flag'=>'https://flagcdn.com/w320/mx.png','group_name'=>'Group B','coach'=>'Javier Aguirre','captain'=>'Héctor Herrera','world_ranking'=>16,'world_cup_titles'=>0,'key_player'=>'Hirving Lozano','description'=>'Co-organisateur et nation phare de la CONCACAF, le Mexique rêve enfin de dépasser les quarts de finale.','image_url'=>'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Ecuador',      'confederation'=>'CONMEBOL','code'=>'ECU','flag'=>'https://flagcdn.com/w320/ec.png','group_name'=>'Group B','coach'=>'Sebastián Beccacece','captain'=>'Enner Valencia','world_ranking'=>34,'world_cup_titles'=>0,'key_player'=>'Kendry Páez','description'=>'L\'Équateur revient en force avec une génération talentueuse menée par le prodige Kendry Páez.','image_url'=>'https://images.unsplash.com/photo-1582239401768-3fa44026da73?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Jamaica',      'confederation'=>'CONCACAF','code'=>'JAM','flag'=>'https://flagcdn.com/w320/jm.png','group_name'=>'Group B','coach'=>'Steve McClaren','captain'=>'Bobby Reid','world_ranking'=>58,'world_cup_titles'=>0,'key_player'=>'Michail Antonio','description'=>'La Jamaïque effectue son grand retour en Coupe du Monde avec une équipe physique et enthousiasmante.','image_url'=>'https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Venezuela',    'confederation'=>'CONMEBOL','code'=>'VEN','flag'=>'https://flagcdn.com/w320/ve.png','group_name'=>'Group B','coach'=>'Fernando Batista','captain'=>'Tomás Rincón','world_ranking'=>30,'world_cup_titles'=>0,'key_player'=>'Yangel Herrera','description'=>'Pour la première fois de son histoire, le Venezuela se qualifie pour une Coupe du Monde — un moment historique.','image_url'=>'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE C ──
-            ['name'=>'Canada',       'confederation'=>'CONCACAF','code'=>'CAN','flag'=>'https://flagcdn.com/w320/ca.png','group_name'=>'Group C','coach'=>'Jesse Marsch','captain'=>'Atiba Hutchinson','world_ranking'=>40,'world_cup_titles'=>0,'key_player'=>'Alphonso Davies','description'=>'Co-organisateur, le Canada revient en Coupe du Monde après 40 ans avec une génération dorée menée par Alphonso Davies.','image_url'=>'https://images.unsplash.com/photo-1559564614-a399728b70ba?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Honduras',     'confederation'=>'CONCACAF','code'=>'HON','flag'=>'https://flagcdn.com/w320/hn.png','group_name'=>'Group C','coach'=>'Reinaldo Rueda','captain'=>'Romell Quioto','world_ranking'=>80,'world_cup_titles'=>0,'key_player'=>'Romell Quioto','description'=>'Le Honduras espère créer la surprise en phase de groupes lors de ce retour en Coupe du Monde.','image_url'=>'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Morocco',      'confederation'=>'CAF','code'=>'MAR','flag'=>'https://flagcdn.com/w320/ma.png','group_name'=>'Group C','coach'=>'Walid Regragui','captain'=>'Romain Saïss','world_ranking'=>13,'world_cup_titles'=>0,'key_player'=>'Achraf Hakimi','description'=>'Les Lions de l\'Atlas, demi-finalistes historiques en 2022, reviennent avec une équipe soudée pour conquerir le monde.','image_url'=>'https://images.unsplash.com/photo-1597830219514-e601f029924d?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Belgium',      'confederation'=>'UEFA','code'=>'BEL','flag'=>'https://flagcdn.com/w320/be.png','group_name'=>'Group C','coach'=>'Domenico Tedesco','captain'=>'Kevin De Bruyne','world_ranking'=>3,'world_cup_titles'=>0,'key_player'=>'Kevin De Bruyne','description'=>'Une nouvelle génération belge veut enfin transformer le potentiel en trophée mondial.','image_url'=>'https://images.unsplash.com/photo-1511886929837-329f79011999?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE D ──
-            ['name'=>'Spain',        'confederation'=>'UEFA','code'=>'ESP','flag'=>'https://flagcdn.com/w320/es.png','group_name'=>'Group D','coach'=>'Luis de la Fuente','captain'=>'Álvaro Morata','world_ranking'=>8,'world_cup_titles'=>1,'key_player'=>'Lamine Yamal','description'=>'La Roja, championne d\'Europe 2024, mise sur sa nouvelle génération dorée pour décrocher une deuxième étoile.','image_url'=>'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Brazil',       'confederation'=>'CONMEBOL','code'=>'BRA','flag'=>'https://flagcdn.com/w320/br.png','group_name'=>'Group D','coach'=>'Dorival Júnior','captain'=>'Danilo','world_ranking'=>5,'world_cup_titles'=>5,'key_player'=>'Vinícius Júnior','description'=>'La Seleção, nation la plus titrée, cherche à mettre fin à une longue attente pour son sixième sacre mondial.','image_url'=>'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Japan',        'confederation'=>'AFC','code'=>'JPN','flag'=>'https://flagcdn.com/w320/jp.png','group_name'=>'Group D','coach'=>'Hajime Moriyasu','captain'=>'Wataru Endo','world_ranking'=>18,'world_cup_titles'=>0,'key_player'=>'Takefusa Kubo','description'=>'Les Samouraïs Bleus, connus pour leur discipline et vitesse, sont capables de renverser n\'importe quel géant.','image_url'=>'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Cameroon',     'confederation'=>'CAF','code'=>'CMR','flag'=>'https://flagcdn.com/w320/cm.png','group_name'=>'Group D','coach'=>'Marc Brys','captain'=>'Vincent Aboubakar','world_ranking'=>42,'world_cup_titles'=>0,'key_player'=>'André Onana','description'=>'Les Lions Indomptables du Cameroun reviennent avec la flamme de l\'Afrique dans le cœur.','image_url'=>'https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE E ──
-            ['name'=>'France',       'confederation'=>'UEFA','code'=>'FRA','flag'=>'https://flagcdn.com/w320/fr.png','group_name'=>'Group E','coach'=>'Didier Deschamps','captain'=>'Kylian Mbappé','world_ranking'=>2,'world_cup_titles'=>2,'key_player'=>'Kylian Mbappé','description'=>'Avec une profondeur de banc inégalée et des stars mondiales, les Bleus visent une troisième étoile.','image_url'=>'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Argentina',    'confederation'=>'CONMEBOL','code'=>'ARG','flag'=>'https://flagcdn.com/w320/ar.png','group_name'=>'Group E','coach'=>'Lionel Scaloni','captain'=>'Lionel Messi','world_ranking'=>1,'world_cup_titles'=>3,'key_player'=>'Lionel Messi','description'=>'Les champions en titre sont de retour. L\'Albiceleste, menée par le légendaire Messi, reste la nation à battre.','image_url'=>'https://images.unsplash.com/photo-1589133465492-4d40026e2a2a?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Australia',    'confederation'=>'AFC','code'=>'AUS','flag'=>'https://flagcdn.com/w320/au.png','group_name'=>'Group E','coach'=>'Tony Popovic','captain'=>'Mat Ryan','world_ranking'=>24,'world_cup_titles'=>0,'key_player'=>'Mitchell Duke','description'=>'Les Socceroos continuent de progresser sur la scène mondiale avec une génération prometteuse.','image_url'=>'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Saudi Arabia', 'confederation'=>'AFC','code'=>'KSA','flag'=>'https://flagcdn.com/w320/sa.png','group_name'=>'Group E','coach'=>'Herve Renard','captain'=>'Salem Al-Dawsari','world_ranking'=>56,'world_cup_titles'=>0,'key_player'=>'Salem Al-Dawsari','description'=>'L\'Arabie Saoudite, après le choc contre l\'Argentine en 2022, veut confirmer son statut de force émergente.','image_url'=>'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE F ──
-            ['name'=>'Germany',      'confederation'=>'UEFA','code'=>'GER','flag'=>'https://flagcdn.com/w320/de.png','group_name'=>'Group F','coach'=>'Julian Nagelsmann','captain'=>'Joshua Kimmich','world_ranking'=>12,'world_cup_titles'=>4,'key_player'=>'Jamal Musiala','description'=>'La Mannschaft, en reconstruction réussie, veut retrouver son statut de géant mondial sur le terrain.','image_url'=>'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Portugal',     'confederation'=>'UEFA','code'=>'POR','flag'=>'https://flagcdn.com/w320/pt.png','group_name'=>'Group F','coach'=>'Roberto Martínez','captain'=>'Cristiano Ronaldo','world_ranking'=>6,'world_cup_titles'=>0,'key_player'=>'Cristiano Ronaldo','description'=>'Une équipe mêlant expérience de légende et jeunes prodiges, prête à marquer l\'histoire mondiale.','image_url'=>'https://images.unsplash.com/photo-1582239401768-3fa44026da73?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Senegal',      'confederation'=>'CAF','code'=>'SEN','flag'=>'https://flagcdn.com/w320/sn.png','group_name'=>'Group F','coach'=>'Aliou Cissé','captain'=>'Kalidou Koulibaly','world_ranking'=>20,'world_cup_titles'=>0,'key_player'=>'Sadio Mané','description'=>'La meilleure nation africaine de ces dernières années veut porter haut les couleurs du continent.','image_url'=>'https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'New Zealand',  'confederation'=>'OFC','code'=>'NZL','flag'=>'https://flagcdn.com/w320/nz.png','group_name'=>'Group F','coach'=>'Darren Bazeley','captain'=>'Winston Reid','world_ranking'=>95,'world_cup_titles'=>0,'key_player'=>'Chris Wood','description'=>'Les All Whites de Nouvelle-Zélande espèrent créer la surprise lors de leur retour en Coupe du Monde.','image_url'=>'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE G ──
-            ['name'=>'England',      'confederation'=>'UEFA','code'=>'ENG','flag'=>'https://flagcdn.com/w320/gb-eng.png','group_name'=>'Group G','coach'=>'Thomas Tuchel','captain'=>'Harry Kane','world_ranking'=>4,'world_cup_titles'=>1,'key_player'=>'Jude Bellingham','description'=>'Les Three Lions, finalistes européens, comptent sur leur armada offensive pour ramener le trophée à la maison.','image_url'=>'https://images.unsplash.com/photo-1511886929837-329f79011999?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Netherlands',  'confederation'=>'UEFA','code'=>'NED','flag'=>'https://flagcdn.com/w320/nl.png','group_name'=>'Group G','coach'=>'Ronald Koeman','captain'=>'Virgil van Dijk','world_ranking'=>7,'world_cup_titles'=>0,'key_player'=>'Cody Gakpo','description'=>'La Hollande, avec ses stars européennes, ambitionne d\'atteindre enfin son premier titre mondial.','image_url'=>'https://images.unsplash.com/photo-1559564614-a399728b70ba?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Iran',         'confederation'=>'AFC','code'=>'IRN','flag'=>'https://flagcdn.com/w320/ir.png','group_name'=>'Group G','coach'=>'Amir Ghalenoei','captain'=>'Ehsan Hajsafi','world_ranking'=>22,'world_cup_titles'=>0,'key_player'=>'Mehdi Taremi','description'=>'L\'Iran, fort de sa solidité défensive, vise une qualification historique en phase à élimination directe.','image_url'=>'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Peru',         'confederation'=>'CONMEBOL','code'=>'PER','flag'=>'https://flagcdn.com/w320/pe.png','group_name'=>'Group G','coach'=>'Jorge Fossati','captain'=>'Paolo Guerrero','world_ranking'=>37,'world_cup_titles'=>0,'key_player'=>'André Carrillo','description'=>'Le Pérou revient en Coupe du Monde avec la détermination de dépasser le premier tour.','image_url'=>'https://images.unsplash.com/photo-1582239401768-3fa44026da73?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE H ──
-            ['name'=>'Uruguay',      'confederation'=>'CONMEBOL','code'=>'URU','flag'=>'https://flagcdn.com/w320/uy.png','group_name'=>'Group H','coach'=>'Marcelo Bielsa','captain'=>'José María Giménez','world_ranking'=>17,'world_cup_titles'=>2,'key_player'=>'Federico Valverde','description'=>'L\'Uruguay, nation pionnière du football mondial, ne manque jamais de caractère et d\'ambition.','image_url'=>'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Colombia',     'confederation'=>'CONMEBOL','code'=>'COL','flag'=>'https://flagcdn.com/w320/co.png','group_name'=>'Group H','coach'=>'Néstor Lorenzo','captain'=>'James Rodríguez','world_ranking'=>14,'world_cup_titles'=>0,'key_player'=>'James Rodríguez','description'=>'La Colombie arrive en grande forme et vise les derniers carrés avec James Rodríguez en maître.','image_url'=>'https://images.unsplash.com/photo-1589133465492-4d40026e2a2a?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Ivory Coast',  'confederation'=>'CAF','code'=>'CIV','flag'=>'https://flagcdn.com/w320/ci.png','group_name'=>'Group H','coach'=>'Emerse Faé','captain'=>'Sébastien Haller','world_ranking'=>31,'world_cup_titles'=>0,'key_player'=>'Sébastien Haller','description'=>'Les Éléphants de Côte d\'Ivoire visent une qualification en huitièmes en s\'appuyant sur leur expérience africaine.','image_url'=>'https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Paraguay',     'confederation'=>'CONMEBOL','code'=>'PAR','flag'=>'https://flagcdn.com/w320/py.png','group_name'=>'Group H','coach'=>'Gustavo Alfaro','captain'=>'Miguel Almirón','world_ranking'=>65,'world_cup_titles'=>0,'key_player'=>'Miguel Almirón','description'=>'Le Paraguay revient en Coupe du Monde avec la passion d\'une nation de football sud-américain.','image_url'=>'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE I ──
-            ['name'=>'Croatia',      'confederation'=>'UEFA','code'=>'CRO','flag'=>'https://flagcdn.com/w320/hr.png','group_name'=>'Group I','coach'=>'Zlatko Dalić','captain'=>'Luka Modrić','world_ranking'=>10,'world_cup_titles'=>0,'key_player'=>'Luka Modrić','description'=>'Les vice-champions du monde 2018 sont portés par le génie éternel de Luka Modrić.','image_url'=>'https://images.unsplash.com/photo-1559564614-a399728b70ba?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Denmark',      'confederation'=>'UEFA','code'=>'DEN','flag'=>'https://flagcdn.com/w320/dk.png','group_name'=>'Group I','coach'=>'Kasper Hjulmand','captain'=>'Simon Kjær','world_ranking'=>21,'world_cup_titles'=>0,'key_player'=>'Christian Eriksen','description'=>'Le Danemark mise sur son organisation collective irréprochable pour atteindre les phases finales.','image_url'=>'https://images.unsplash.com/photo-1511886929837-329f79011999?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Qatar',        'confederation'=>'AFC','code'=>'QAT','flag'=>'https://flagcdn.com/w320/qa.png','group_name'=>'Group I','coach'=>'Marquez Lopez','captain'=>'Hassan Al-Haydos','world_ranking'=>38,'world_cup_titles'=>0,'key_player'=>'Akram Afif','description'=>'Les champions d\'Asie entendent aller plus loin que lors de leur première participation en 2022.','image_url'=>'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Bolivia',      'confederation'=>'CONMEBOL','code'=>'BOL','flag'=>'https://flagcdn.com/w320/bo.png','group_name'=>'Group I','coach'=>'Óscar Villegas','captain'=>'Marcelo Martins','world_ranking'=>85,'world_cup_titles'=>0,'key_player'=>'Marcelo Martins','description'=>'La Bolivie marque son retour sur la scène mondiale après des décennies d\'absence.','image_url'=>'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE J ──
-            ['name'=>'Italy',        'confederation'=>'UEFA','code'=>'ITA','flag'=>'https://flagcdn.com/w320/it.png','group_name'=>'Group J','coach'=>'Luciano Spalletti','captain'=>'Gianluigi Donnarumma','world_ranking'=>9,'world_cup_titles'=>4,'key_player'=>'Federico Chiesa','description'=>'Après avoir manqué la précédente édition, la Squadra Azzurra revient avec une ferveur renouvelée.','image_url'=>'https://images.unsplash.com/photo-1559564614-a399728b70ba?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'South Korea',  'confederation'=>'AFC','code'=>'KOR','flag'=>'https://flagcdn.com/w320/kr.png','group_name'=>'Group J','coach'=>'Hong Myung-bo','captain'=>'Son Heung-min','world_ranking'=>23,'world_cup_titles'=>0,'key_player'=>'Son Heung-min','description'=>'Les Taeguk Warriors, portés par Son Heung-min, visent un nouveau quart de finale historique.','image_url'=>'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Algeria',      'confederation'=>'CAF','code'=>'ALG','flag'=>'https://flagcdn.com/w320/dz.png','group_name'=>'Group J','coach'=>'Vladimir Petkovic','captain'=>'Riyad Mahrez','world_ranking'=>36,'world_cup_titles'=>0,'key_player'=>'Riyad Mahrez','description'=>'Les Fennecs d\'Algérie, forts d\'une AFCON victorieuse, veulent briller sur la scène mondiale.','image_url'=>'https://images.unsplash.com/photo-1597830219514-e601f029924d?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Chile',        'confederation'=>'CONMEBOL','code'=>'CHI','flag'=>'https://flagcdn.com/w320/cl.png','group_name'=>'Group J','coach'=>'Ricardo Gareca','captain'=>'Alexis Sánchez','world_ranking'=>45,'world_cup_titles'=>0,'key_player'=>'Alexis Sánchez','description'=>'Le Chili revient en Coupe du Monde avec la mentalité guerrière de ses champions continentaux.','image_url'=>'https://images.unsplash.com/photo-1582239401768-3fa44026da73?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE K ──
-            ['name'=>'Switzerland',  'confederation'=>'UEFA','code'=>'SUI','flag'=>'https://flagcdn.com/w320/ch.png','group_name'=>'Group K','coach'=>'Murat Yakin','captain'=>'Granit Xhaka','world_ranking'=>19,'world_cup_titles'=>0,'key_player'=>'Granit Xhaka','description'=>'La Suisse, toujours régulière et solide, vise enfin les demi-finales pour la première fois de son histoire.','image_url'=>'https://images.unsplash.com/photo-1511886929837-329f79011999?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Turkey',       'confederation'=>'UEFA','code'=>'TUR','flag'=>'https://flagcdn.com/w320/tr.png','group_name'=>'Group K','coach'=>'Vincenzo Montella','captain'=>'Hakan Çalhanoğlu','world_ranking'=>29,'world_cup_titles'=>0,'key_player'=>'Hakan Çalhanoğlu','description'=>'La Turquie revient en Coupe du Monde avec ambition, portée par une génération de joueurs de premier plan.','image_url'=>'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Nigeria',      'confederation'=>'CAF','code'=>'NGA','flag'=>'https://flagcdn.com/w320/ng.png','group_name'=>'Group K','coach'=>'Finidi George','captain'=>'William Troost-Ekong','world_ranking'=>35,'world_cup_titles'=>0,'key_player'=>'Victor Osimhen','description'=>'Les Super Eagles du Nigeria misent sur le talent de Victor Osimhen pour briller à l\'échelle mondiale.','image_url'=>'https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Costa Rica',   'confederation'=>'CONCACAF','code'=>'CRC','flag'=>'https://flagcdn.com/w320/cr.png','group_name'=>'Group K','coach'=>'Gustavo Alfaro','captain'=>'Bryan Ruiz','world_ranking'=>50,'world_cup_titles'=>0,'key_player'=>'Joel Campbell','description'=>'Le Costa Rica, surprise de 2014 avec son fameux quart de finale, vise une nouvelle sensation.','image_url'=>'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800'],
- 
-            // ── GROUPE L ──
-            ['name'=>'Mexico 2',     'confederation'=>'CONCACAF','code'=>'TBD','flag'=>'https://flagcdn.com/w320/mx.png','group_name'=>'Group L','coach'=>'À déterminer','captain'=>'À déterminer','world_ranking'=>0,'world_cup_titles'=>0,'key_player'=>'À déterminer','description'=>'Nation qualifiée — détails à confirmer selon le tirage au sort officiel FIFA.','image_url'=>'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Egypt',        'confederation'=>'CAF','code'=>'EGY','flag'=>'https://flagcdn.com/w320/eg.png','group_name'=>'Group L','coach'=>'Rui Vitória','captain'=>'Mohamed Salah','world_ranking'=>33,'world_cup_titles'=>0,'key_player'=>'Mohamed Salah','description'=>'Les Pharaons d\'Égypte sont emmenés par la superstar Mohamed Salah qui rêve de sa première Coupe du Monde.','image_url'=>'https://images.unsplash.com/photo-1597830219514-e601f029924d?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Serbia',       'confederation'=>'UEFA','code'=>'SRB','flag'=>'https://flagcdn.com/w320/rs.png','group_name'=>'Group L','coach'=>'Dragan Stojković','captain'=>'Aleksandar Mitrović','world_ranking'=>28,'world_cup_titles'=>0,'key_player'=>'Dušan Vlahović','description'=>'La Serbie, forte de sa génération de talents, vise une qualification historique en huitièmes de finale.','image_url'=>'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=800'],
-            ['name'=>'Ghana',        'confederation'=>'CAF','code'=>'GHA','flag'=>'https://flagcdn.com/w320/gh.png','group_name'=>'Group L','coach'=>'Otto Addo','captain'=>'Thomas Partey','world_ranking'=>60,'world_cup_titles'=>0,'key_player'=>'Mohammed Kudus','description'=>'Les Black Stars du Ghana reviennent avec la flamme de 2010 et l\'ambition de dépasser les quarts de finale.','image_url'=>'https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=800'],
-        ];
- 
-        foreach ($teams as $t) {
-            $groupName = $t['group_name'];
-            unset($t['group_name']);
-            $t['group_id'] = $getGroupId($groupName);
-            
-            // Derive hero_image from flag URL (larger format w640)
-            if (isset($t['flag']) && str_contains($t['flag'], 'flagcdn.com')) {
-                $t['hero_image'] = str_replace('w320', 'w640', $t['flag']);
-            } else {
-                $t['hero_image'] = $t['flag'] ?? null;
-            }
+        foreach ($this->data as $groupName => $teams) {
+            $group = Group::where('name', $groupName)->first();
+            if (!$group) continue;
 
-            Team::create($t);
+            foreach ($teams as $t) {
+                // Ensure Confederation exists
+                $conf = Confederation::firstOrCreate(['name' => $t['conf']]);
+
+                // Ensure Country exists
+                $country = Pays::updateOrCreate(
+                    ['code' => strtoupper($t['code'])],
+                    ['name' => $t['name'], 'flag_url' => $t['code']]
+                );
+
+                Team::updateOrCreate(
+                    ['name' => $t['name']],
+                    [
+                        'group_id' => $group->id,
+                        'country_id' => $country->id,
+                        'confederation_id' => $conf->id,
+                        'flag' => $t['code'],
+                        'points' => 0,
+                        'goals_for' => 0,
+                        'goals_against' => 0,
+                        'matches_played' => 0,
+                    ]
+                );
+            }
         }
- 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

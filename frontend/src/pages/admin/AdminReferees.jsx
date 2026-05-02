@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { getReferees, createReferee, updateReferee, deleteReferee } from "../../services/api";
+import { getReferees, createReferee, updateReferee, deleteReferee, getPays } from "../../services/api";
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiSave, FiFlag, FiUser, FiAward, FiShield } from "react-icons/fi";
 
 const FD = "'Bebas Neue', sans-serif";
@@ -41,6 +41,7 @@ export default function AdminReferees() {
 
   // state
   const [referees, setReferees] = useState([]);
+  const [pays, setPays] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing]   = useState(null);
@@ -49,7 +50,10 @@ export default function AdminReferees() {
   const [error, setError]       = useState(null);
   const [toast, setToast]       = useState(null);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { 
+    fetchData(); 
+    fetchPays();
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -57,6 +61,13 @@ export default function AdminReferees() {
       setReferees(data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
+  };
+
+  const fetchPays = async () => {
+    try {
+      const data = await getPays();
+      setPays(data);
+    } catch (e) { console.error(e); }
   };
 
   const flash = (msg) => {
@@ -401,15 +412,18 @@ export default function AdminReferees() {
                 </div>
                 <div>
                   <label style={labelStyle}>Nationalité *</label>
-                  <input style={inputStyle} value={form.nationality}
-                    onChange={e => setForm({ ...form, nationality: e.target.value })}
-                    placeholder="Ex: Maroc" />
+                  <select style={{ ...inputStyle, cursor: "pointer" }} value={form.nationality}
+                    onChange={e => {
+                      const selected = pays.find(p => p.nom === e.target.value);
+                      setForm({ ...form, nationality: e.target.value, nationality_code: selected?.code?.toLowerCase() || "" });
+                    }} required>
+                    <option value="">Sélectionner un pays</option>
+                    {pays.map(p => <option key={p.id} value={p.nom}>{p.nom}</option>)}
+                  </select>
                 </div>
                 <div>
-                  <label style={labelStyle}>Code pays (2 lettres)</label>
-                  <input style={inputStyle} value={form.nationality_code}
-                    onChange={e => setForm({ ...form, nationality_code: e.target.value.toLowerCase() })}
-                    placeholder="Ex: ma" maxLength={2} />
+                  <label style={labelStyle}>Code pays (Auto)</label>
+                  <input style={{ ...inputStyle, opacity: 0.6 }} value={form.nationality_code} readOnly placeholder="Auto-rempli" />
                 </div>
                 <div>
                   <label style={labelStyle}>Rôle</label>

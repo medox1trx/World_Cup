@@ -6,22 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('matches', function (Blueprint $table) {
-            $table->foreignId('home_team_id')->nullable()->after('away_team')->constrained('teams')->onDelete('set null');
-            $table->foreignId('away_team_id')->nullable()->after('home_team_id')->constrained('teams')->onDelete('set null');
-        });
+        // Columns already added in base migration
     }
 
     public function down(): void
     {
-        Schema::table('matches', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('home_team_id');
-            $table->dropConstrainedForeignId('away_team_id');
-        });
     }
 };

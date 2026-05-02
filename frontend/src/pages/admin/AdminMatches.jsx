@@ -1,78 +1,25 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { FiPlus, FiTrash2, FiEdit2, FiCalendar, FiMapPin, FiClock, FiActivity } from "react-icons/fi";
-import { getMatches, createMatch, updateMatch, deleteMatch } from "../../services/api";
+import { getMatches, createMatch, updateMatch, deleteMatch, getTeams, getVilles, getStadiums, getReferees } from "../../services/api";
 
 const FD = "'Bebas Neue', sans-serif";
 const FB = "'DM Sans', sans-serif";
 
-const WORLD_CUP_TEAMS = [
-  { code: "", name: "Select a country" },
-  { code: "al", name: "Albania 🇦🇱" },
-  { code: "dz", name: "Algeria 🇩🇿" },
-  { code: "ar", name: "Argentina 🇦🇷" },
-  { code: "au", name: "Australia 🇦🇺" },
-  { code: "be", name: "Belgium 🇧🇪" },
-  { code: "bo", name: "Bolivia 🇧🇴" },
-  { code: "br", name: "Brazil 🇧🇷" },
-  { code: "cm", name: "Cameroon 🇨🇲" },
-  { code: "ca", name: "Canada 🇨🇦" },
-  { code: "cl", name: "Chile 🇨🇱" },
-  { code: "co", name: "Colombia 🇨🇴" },
-  { code: "cr", name: "Costa Rica 🇨🇷" },
-  { code: "hr", name: "Croatia 🇭🇷" },
-  { code: "dk", name: "Denmark 🇩🇰" },
-  { code: "ec", name: "Ecuador 🇪🇨" },
-  { code: "eg", name: "Egypt 🇪🇬" },
-  { code: "gb", name: "England 🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-  { code: "fr", name: "France 🇫🇷" },
-  { code: "de", name: "Germany 🇩🇪" },
-  { code: "gh", name: "Ghana 🇬🇭" },
-  { code: "hn", name: "Honduras 🇭🇳" },
-  { code: "ir", name: "Iran 🇮🇷" },
-  { code: "it", name: "Italy 🇮🇹" },
-  { code: "ci", name: "Ivory Coast 🇨🇮" },
-  { code: "jm", name: "Jamaica 🇯🇲" },
-  { code: "jp", name: "Japan 🇯🇵" },
-  { code: "mx", name: "Mexico 🇲🇽" },
-  { code: "ma", name: "Morocco 🇲🇦" },
-  { code: "nl", name: "Netherlands 🇳🇱" },
-  { code: "nz", name: "New Zealand 🇳🇿" },
-  { code: "ng", name: "Nigeria 🇳🇬" },
-  { code: "pa", name: "Panama 🇵🇦" },
-  { code: "py", name: "Paraguay 🇵🇾" },
-  { code: "pe", name: "Peru 🇵🇪" },
-  { code: "pl", name: "Poland 🇵🇱" },
-  { code: "pt", name: "Portugal 🇵🇹" },
-  { code: "qa", name: "Qatar 🇶🇦" },
-  { code: "sa", name: "Saudi Arabia 🇸🇦" },
-  { code: "sn", name: "Senegal 🇸🇳" },
-  { code: "rs", name: "Serbia 🇷🇸" },
-  { code: "kr", name: "South Korea 🇰🇷" },
-  { code: "es", name: "Spain 🇪🇸" },
-  { code: "ch", name: "Switzerland 🇨🇭" },
-  { code: "tn", name: "Tunisia 🇹🇳" },
-  { code: "tr", name: "Turkey 🇹🇷" },
-  { code: "ua", name: "Ukraine 🇺🇦" },
-  { code: "uy", name: "Uruguay 🇺🇾" },
-  { code: "us", name: "USA 🇺🇸" },
-  { code: "ve", name: "Venezuela 🇻🇪" },
-];
 
 export default function AdminMatches() {
   const { darkMode } = useTheme();
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [villes, setVilles] = useState([]);
+  const [stadiums, setStadiums] = useState([]);
+  const [refereesList, setRefereesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
-    home_team_id: "",
-    away_team_id: "",
-    home_team: "", // Keep for backward compatibility if needed, but we'll use ID
-    away_team: "",
-    home_flag: "",
-    away_flag: "",
+    team1_id: "",
+    team2_id: "",
     venue: "",
     city: "",
     match_date: "",
@@ -106,12 +53,18 @@ export default function AdminMatches() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [mRes, tRes] = await Promise.all([
+      const [mRes, tRes, vRes, sRes, rRes] = await Promise.all([
         getMatches(),
-        fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/v1/teams`).then(r => r.json())
+        getTeams(),
+        getVilles(),
+        getStadiums(),
+        getReferees()
       ]);
       setMatches(mRes.data || mRes);
       setTeams(tRes);
+      setVilles(vRes.data || vRes);
+      setStadiums(sRes);
+      setRefereesList(rRes);
     } catch (err) {
       console.error("Error fetching admin matches data:", err);
     } finally {
@@ -122,17 +75,7 @@ export default function AdminMatches() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Find team names for the display fields if needed by backend (though we use IDs now)
-      const home = teams.find(t => t.id == formData.home_team_id);
-      const away = teams.find(t => t.id == formData.away_team_id);
-      
-      const payload = {
-        ...formData,
-        home_team: home?.name || formData.home_team,
-        away_team: away?.name || formData.away_team,
-        home_flag: home?.flag || formData.home_flag,
-        away_flag: away?.flag || formData.away_flag,
-      };
+      const payload = { ...formData };
 
       if (editId) {
         await updateMatch(editId, payload);
@@ -150,8 +93,8 @@ export default function AdminMatches() {
 
   const resetForm = () => {
     setFormData({
-      home_team_id: "", away_team_id: "", 
-      home_team: "", away_team: "", home_flag: "", away_flag: "", venue: "", city: "",
+      team1_id: "", team2_id: "", 
+      venue: "", city: "",
       match_date: "", match_time: "", stage: "group", group_name: "",
       status: "upcoming", home_score: 0, away_score: 0,
       stadium_image: "", video_url: "", referee: "", assistant_referees: "",
@@ -163,10 +106,8 @@ export default function AdminMatches() {
   const handleEdit = (m) => {
     setEditId(m.id);
     setFormData({
-      home_team_id: m.home_team_id || "",
-      away_team_id: m.away_team_id || "",
-      home_team: m.home_team,
-      away_team: m.away_team,
+      team1_id: m.team1?.id || m.team1_id || "",
+      team2_id: m.team2?.id || m.team2_id || "",
       venue: m.venue,
       city: m.city,
       match_date: m.match_date ? m.match_date.split('T')[0] : "",
@@ -176,8 +117,6 @@ export default function AdminMatches() {
       status: m.status,
       home_score: m.home_score || 0,
       away_score: m.away_score || 0,
-      home_flag: m.home_flag || "",
-      away_flag: m.away_flag || "",
       stadium_image: m.stadium_image || "",
       video_url: m.video_url || "",
       referee: m.referee || "",
@@ -312,7 +251,7 @@ export default function AdminMatches() {
                 ) : matches.map((m) => (
                   <tr key={m.id}>
                     <td>
-                      <div style={{ fontWeight: 800, fontSize: 16 }}>{m.home_team} vs {m.away_team}</div>
+                      <div style={{ fontWeight: 800, fontSize: 16 }}>{m.team1?.name || "TBD"} vs {m.team2?.name || "TBD"}</div>
                     </td>
                     <td>
                        <div style={{ textTransform: "capitalize", fontWeight: 600 }}>{m.stage.replace('_', ' ')}</div>
@@ -367,7 +306,7 @@ export default function AdminMatches() {
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">Équipe Domicile</label>
-                  <select className="form-input" value={formData.home_team_id} onChange={e => setFormData({...formData, home_team_id: e.target.value})} required>
+                  <select className="form-input" value={formData.team1_id} onChange={e => setFormData({...formData, team1_id: e.target.value})} required>
                     <option value="">Sélectionner une équipe</option>
                     {teams.map(t => (
                       <option key={`home-${t.id}`} value={t.id}>{t.name}</option>
@@ -376,7 +315,7 @@ export default function AdminMatches() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Équipe Extérieur</label>
-                  <select className="form-input" value={formData.away_team_id} onChange={e => setFormData({...formData, away_team_id: e.target.value})} required>
+                  <select className="form-input" value={formData.team2_id} onChange={e => setFormData({...formData, team2_id: e.target.value})} required>
                     <option value="">Sélectionner une équipe</option>
                     {teams.map(t => (
                       <option key={`away-${t.id}`} value={t.id}>{t.name}</option>
@@ -388,11 +327,17 @@ export default function AdminMatches() {
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">Stade / Venue</label>
-                  <input className="form-input" value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} required placeholder="Ex: SoFi Stadium" />
+                  <select className="form-input" value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} required>
+                    <option value="">Sélectionner un stade</option>
+                    {stadiums.map(s => <option key={s.id} value={s.nom}>{s.nom}</option>)}
+                  </select>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Ville</label>
-                  <input className="form-input" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} required placeholder="Ex: Los Angeles" />
+                  <select className="form-input" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} required>
+                    <option value="">Sélectionner une ville</option>
+                    {villes.map(v => <option key={v.id} value={v.nom}>{v.nom}</option>)}
+                  </select>
                 </div>
               </div>
 
@@ -438,7 +383,10 @@ export default function AdminMatches() {
                 <div className="form-grid">
                   <div className="form-group">
                     <label className="form-label">Arbitre Principal</label>
-                    <input className="form-input" value={formData.referee} onChange={e => setFormData({...formData, referee: e.target.value})} placeholder="Nom de l'arbitre" />
+                    <select className="form-input" value={formData.referee} onChange={e => setFormData({...formData, referee: e.target.value})}>
+                      <option value="">Sélectionner un arbitre</option>
+                      {refereesList.map(r => <option key={r.id} value={`${r.first_name} ${r.last_name}`}>{r.first_name} {r.last_name} ({r.nationality})</option>)}
+                    </select>
                   </div>
                   <div className="form-group">
                     <label className="form-label">Arbitres Assistants</label>

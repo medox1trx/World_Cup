@@ -9,16 +9,21 @@ class Ville extends Model
 {
     use HasFactory;
 
-    protected $table = 'villes';
+    protected $table = 'cities';
 
     protected $fillable = [
-        'nom',
-        'pays_id',
+        'name',
+        'country_id',
+        'slug',
+        'description',
+        'stadium',
+        'match_period',
+        'image_url',
     ];
 
     public function pays()
     {
-        return $this->belongsTo(Pays::class, 'pays_id');
+        return $this->belongsTo(Pays::class, 'country_id');
     }
 
     public function fanZones()

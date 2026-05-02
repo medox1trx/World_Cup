@@ -339,7 +339,7 @@ export default function Dashboard() {
                           textOverflow: "ellipsis",
                           fontFamily: FD
                         }}>
-                          {book.ticket?.match?.home_team} <span style={{ color: "#c8102e", fontSize: 14 }}>VS</span> {book.ticket?.match?.away_team}
+                          {book.ticket?.match?.team1?.name || "TBD"} <span style={{ color: "#c8102e", fontSize: 14 }}>VS</span> {book.ticket?.match?.team2?.name || "TBD"}
                         </h4>
                         
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "12px 20px", marginTop: 8, fontSize: 12, color: darkMode ? "#888" : "#666" }}>
@@ -439,7 +439,7 @@ export default function Dashboard() {
             <div style={{ marginBottom: 28 }}>
               <p style={{ margin: 0, fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "#888", marginBottom: 6, letterSpacing: "0.05em" }}>Match Entry</p>
               <h4 style={{ margin: 0, fontSize: 22, fontWeight: 900, fontFamily: FD }}>
-                {activeTix?.ticket?.match?.home_team} <span style={{ color: "#c8102e" }}>VS</span> {activeTix?.ticket?.match?.away_team}
+                {activeTix?.ticket?.match?.team1?.name || "TBD"} <span style={{ color: "#c8102e" }}>VS</span> {activeTix?.ticket?.match?.team2?.name || "TBD"}
               </h4>
               <div style={{ display: "inline-block", marginTop: 4, padding: "2px 8px", background: "rgba(200, 16, 46, 0.1)", color: "#c8102e", borderRadius: 4, fontSize: 10, fontWeight: 900, textTransform: "uppercase" }}>
                 {activeTix?.ticket?.match?.stage}

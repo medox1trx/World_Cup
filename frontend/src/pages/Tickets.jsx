@@ -113,8 +113,8 @@ export default function Tickets() {
   if (searchTerm.trim()) {
     const s = searchTerm.toLowerCase();
     filteredMatches = filteredMatches.filter(m => 
-        (m.home_team?.name || m.home_team).toLowerCase().includes(s) || 
-        (m.away_team?.name || m.away_team).toLowerCase().includes(s) ||
+        (m.team1?.name || m.team1).toLowerCase().includes(s) || 
+        (m.team2?.name || m.team2).toLowerCase().includes(s) ||
         m.city.toLowerCase().includes(s) ||
         m.venue.toLowerCase().includes(s)
     );
@@ -134,7 +134,7 @@ export default function Tickets() {
   const tCardBg = darkMode ? "#111111" : "#ffffff";
   const tBorder = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const tBorderHov = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";
-  const tSubText = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)";
+  const tSubText = darkMode ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.5)";
   const tStroke = darkMode ? "1.5px rgba(255,255,255,0.6)" : "1.5px rgba(0,0,0,0.2)";
   const tGradTop = darkMode ? "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0) 100%)" : "linear-gradient(to top, #fdfdfd 0%, rgba(253,253,253,0) 100%)";
   const tInputBg = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)";
@@ -157,6 +157,12 @@ export default function Tickets() {
         /* Grid */
         .g-tickets { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 24px; }
         @media(max-width: 768px) { .g-tickets { grid-template-columns: 1fr; } }
+        
+        /* ── RESET VISITED LINKS (TEXT WHITE) ── */
+        a, a:visited {
+          color: white !important;
+          text-decoration: none !important;
+        }
         
         /* Custom Ticket Styles */
         .ticket-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: ${tInputBg}; border-radius: 8px; margin-bottom: 8px; transition: all 0.2s; border: 1px solid transparent; }
@@ -243,13 +249,13 @@ export default function Tickets() {
                   
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", gap: 20, marginBottom: 24 }}>
                     <div style={{ textAlign: "center", flex: 1 }}>
-                      <img src={getFlag(m.home_team)} alt={m.home_team?.name || m.home_team} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.home_team?.name || m.home_team}</div>
+                      <img src={getFlag(m.team1)} alt={m.team1?.name || m.team1} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
+                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.team1?.name || m.team1}</div>
                     </div>
                     <div style={{ fontFamily: FONT_D, fontSize: 24, fontWeight: 900, opacity: 0.2 }}>VS</div>
                     <div style={{ textAlign: "center", flex: 1 }}>
-                      <img src={getFlag(m.away_team)} alt={m.away_team?.name || m.away_team} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.away_team?.name || m.away_team}</div>
+                      <img src={getFlag(m.team2)} alt={m.team2?.name || m.team2} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
+                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.team2?.name || m.team2}</div>
                     </div>
                   </div>
 

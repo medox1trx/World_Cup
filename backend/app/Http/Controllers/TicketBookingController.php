@@ -74,7 +74,7 @@ class TicketBookingController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'data' => $booking->load(['ticket.match', 'user']),
+                'data' => $booking->load(['ticket.match.team1', 'ticket.match.team2', 'user']),
                 'message' => 'Ticket reserved successfully!'
             ], 201);
         });
@@ -90,7 +90,7 @@ class TicketBookingController extends Controller
         }
 
         $bookings = TicketBooking::where('user_id', auth('web')->id())
-            ->with(['ticket.match'])
+            ->with(['ticket.match.team1', 'ticket.match.team2'])
             ->latest()
             ->get();
 

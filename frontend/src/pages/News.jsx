@@ -3,6 +3,7 @@ import axios from "axios";
 import { FiSearch, FiCalendar, FiArrowRight, FiActivity } from "react-icons/fi";
 import { NEWS_SIDE, NEWS_MORE, NEWS_FEATURED } from "./Home/constants";
 import { useTheme } from "../context/ThemeContext";
+import { getImageUrl } from "../services/api";
 
 const API_BASE_URL = "http://localhost:8000/api/v1";
 const FONT_D = "'Bebas Neue', sans-serif";
@@ -35,7 +36,7 @@ export default function News() {
       setError(null);
       try {
         const response = await axios.get(`${API_BASE_URL}/news`, {
-          params: { q: filter, language: "en", pageSize: 12 }
+          params: { q: filter, language: "en", pageSize: 20 }
         });
         
         const articles = response.data.articles || [];
@@ -94,9 +95,14 @@ export default function News() {
         .btn-shim .sh { position:absolute; top:0; left:-80%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent); pointer-events:none; }
         .btn-shim:hover .sh { animation:shim 0.5s ease forwards; }
         @keyframes shim { from{left:-80%;} to{left:130%;} }
-        /* Grid */
         .g-news { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
         @media(max-width: 768px) { .g-news { grid-template-columns: 1fr; } }
+        
+        /* ── RESET VISITED LINKS (NO PURPLE) ── */
+        a, a:visited {
+          color: inherit !important;
+          text-decoration: none !important;
+        }
       `}</style>
 
       {/* HERO SECTION */}
@@ -171,9 +177,13 @@ export default function News() {
             {news.map((item, i) => (
               <a href={item.url || "#"} target="_blank" rel="noopener noreferrer" key={i} className="pkg" style={{ textDecoration: "none", color: tText }}>
                 <div style={{ height: 220, overflow: "hidden", position: "relative" }}>
-                  <img src={item.urlToImage || item.img} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
+                  <img 
+                    src={getImageUrl(item.urlToImage || item.img)} 
+                    alt={item.title} 
+                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
                     onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseOut={e => e.currentTarget.style.transform = "translateY(0) scale(1)"} />
+                    onMouseOut={e => e.currentTarget.style.transform = "translateY(0) scale(1)"} 
+                  />
                   <div style={{ position: "absolute", inset: 0, background: tCardGrad }} />
                   {i === 0 && (
                      <div style={{ position: "absolute", top: 14, left: 16, background: tBtnBg, color: tBtnText, fontFamily: FONT_B, fontSize: 9, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 10px", borderRadius: 2 }}>
