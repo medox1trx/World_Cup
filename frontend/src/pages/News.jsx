@@ -100,41 +100,24 @@ export default function News() {
         
         /* ── RESET VISITED LINKS (NO PURPLE) ── */
         a, a:visited {
-          color: inherit !important;
+          color: inherit;
           text-decoration: none !important;
         }
       `}</style>
 
       {/* HERO SECTION */}
-      <section style={{ position: "relative", minHeight: "50vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(var(--text-muted) 1px,transparent 1px)`, backgroundSize: "32px 32px", zIndex: 1, opacity: 0.1 }} />
-        <div style={{ 
-          position: "absolute", inset: 0, 
-          background: darkMode ? "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0) 100%)" : "linear-gradient(to top, #fdfdfd 0%, rgba(253,253,253,0) 100%)", 
-          zIndex: 1 
-        }} />
-        
-        <div className="hw" style={{ position: "relative", zIndex: 2, width: "100%", padding: "clamp(120px,15vh,180px) clamp(16px,3vw,48px) 48px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 26 }}>
-            <div style={{ height: 1, width: 36, background: "var(--border-hover)", flexShrink: 0 }} />
-            <span style={{ color: "var(--text-muted)", fontFamily: FONT_B, fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>Le Hub Officiel</span>
-          </div>
-          
-          <div style={{ marginBottom: 40 }}>
-            <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px,8vw,110px)", fontWeight: 900, lineHeight: 0.85, textTransform: "uppercase", letterSpacing: "-0.02em", margin: 0 }}>
-              ACTUALITÉS <span style={{ color: "transparent", WebkitTextStroke: darkMode ? "1.5px rgba(255,255,255,0.6)" : "1.5px rgba(0,0,0,0.2)" }}>MONDIALES</span>
-            </h1>
-          </div>
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
-            <form onSubmit={handleSearch} style={{ display: "flex", background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", border: `1px solid var(--border-main)`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
-              <input type="text" placeholder="Chercher un sujet..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                style={{ background: "transparent", border: "none", outline: "none", color: "var(--text-main)", padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
-              <button type="submit" style={{ background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", padding: "0 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <FiSearch size={16} />
-              </button>
-            </form>
-          </div>
+      <section className="hw" style={{ position: "relative", paddingTop: 100, paddingBottom: 60 }}>
+        <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, textTransform: "uppercase", marginBottom: 60 }}>
+          Actualités
+        </h1>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
+          <form onSubmit={handleSearch} style={{ display: "flex", background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", border: `1px solid var(--border-main)`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
+            <input type="text" placeholder="Chercher un sujet..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+              style={{ background: "transparent", border: "none", outline: "none", color: "var(--text-main)", padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
+            <button type="submit" style={{ background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", padding: "0 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <FiSearch size={16} />
+            </button>
+          </form>
         </div>
       </section>
 

@@ -4,68 +4,73 @@ namespace Database\Seeders;
 
 use App\Models\Hospitality;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class HospitalitySeeder extends Seeder
 {
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Hospitality::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        
         $hospitalities = [
             [
-                'tier' => 'Premium',
-                'price' => '2 500 €',
+                'tier' => 'Match Club',
+                'price' => '$950',
                 'badge' => null,
                 'is_featured' => false,
-                'description' => 'L\'expérience Premium vous offre un accès exclusif aux meilleures places du tournoi.',
+                'description' => 'The ultimate entry into official World Cup hospitality. Enjoy a festive, shared lounge experience with fantastic street-food dining within the stadium perimeter.',
                 'perks' => [
-                    'Siège catégorie Premium en tribune',
-                    'Accès salon hospitalité FIFA',
-                    'Repas gastronomique 3 services',
-                    'Programme de match officiel',
-                    'Cadeau de bienvenue FIFA',
-                    'Service voiturier',
+                    'Category 1 or 2 Match Ticket',
+                    'Shared hospitality village or lounge access',
+                    'Street-food style dining experience',
+                    'Beer, wine, and soft drinks included',
+                    'Pre-match and post-match entertainment',
+                    'Official World Cup commemorative gift',
                 ],
-                'cta_text' => 'Réserver',
-                'image_url' => 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=700&q=80&fit=crop',
+                'cta_text' => 'Book Now',
+                'image_url' => 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=700&q=80&fit=crop', // Lounge setting
                 'sort_order' => 1,
                 'is_active' => true,
             ],
             [
-                'tier' => 'Business',
-                'price' => '5 000 €',
-                'badge' => 'Le plus populaire',
+                'tier' => 'Business Seat',
+                'price' => '$3,500',
+                'badge' => 'Most Popular',
                 'is_featured' => true,
-                'description' => 'L\'expérience Business combine confort ultime et services exclusifs pour les passionnés du football.',
+                'description' => 'Experience the World Cup with premium comfort. Unwind in an upscale shared lounge and savor chef-curated dining before taking your prime stadium seat.',
                 'perks' => [
-                    'Siège catégorie Business en tribune centrale',
-                    'Salon privatif avec vue terrain',
-                    'Menu dégustation & bar premium',
-                    'Conférencier invité FIFA',
-                    'Kit media & accréditation presse',
-                    'Transfert aller-retour luxe',
-                    'Accès vestiaires après match',
+                    'Prime seating in the lower/mid tiers',
+                    'Access to a premium shared lounge',
+                    'Chef-curated premium buffet',
+                    'Champagne, premium spirits, and wine',
+                    'Dedicated VIP entrance',
+                    'Parking pass (subject to availability)',
+                    'Official match program and premium gift',
                 ],
-                'cta_text' => 'Réserver',
-                'image_url' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=700&q=80&fit=crop',
+                'cta_text' => 'Book Now',
+                'image_url' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=700&q=80&fit=crop', // Premium stadium seats/lounge
                 'sort_order' => 2,
                 'is_active' => true,
             ],
             [
-                'tier' => 'Prestige',
-                'price' => 'Sur devis',
-                'badge' => 'Exclusif',
+                'tier' => 'Pearl Lounge',
+                'price' => 'On Request',
+                'badge' => 'Exclusive',
                 'is_featured' => false,
-                'description' => 'L\'expérience Prestige est réservez aux clients les plus exigeants souhaitant une personnalisation totale.',
+                'description' => 'The pinnacle of luxury at the 2026 World Cup. Immerse yourself in an ultra-premium private environment with the best midfield views and bespoke service.',
                 'perks' => [
-                    'Loge privée avec terrasse terrain',
-                    'Chef privé & sommelier personnel',
-                    'Rencontre avec une légende FIFA',
-                    'Accès pitch walk officiel',
-                    'Suite hôtel 5★ incluse',
-                    'Jet privé depuis votre ville',
-                    'Itinéraire 100% personnalisé',
+                    'Best-in-class midfield stadium seating',
+                    'Exclusive access to the Pearl Lounge or Private Suite',
+                    'Gourmet fine dining with personal chef',
+                    'Sommelier-selected wines and signature cocktails',
+                    'Meet-and-greet with FIFA Legends',
+                    'Dedicated personal concierge service',
+                    'VIP stadium parking and fast-track entry',
                 ],
-                'cta_text' => 'Contacter notre équipe',
-                'image_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=700&q=80&fit=crop',
+                'cta_text' => 'Contact Sales',
+                'image_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=700&q=80&fit=crop', // Luxury box
                 'sort_order' => 3,
                 'is_active' => true,
             ],

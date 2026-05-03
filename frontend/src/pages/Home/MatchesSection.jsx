@@ -75,7 +75,7 @@ function FeaturedMatch({ match }) {
   const card          = darkMode ? "#1c1c1c" : "#ffffff";
   const border        = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)";
   const textPrimary   = darkMode ? "#ffffff" : "#0d0d0d";
-  const textSecondary = darkMode ? "rgba(255,255,255,0.5)" : "#666666";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.85)" : "#666666";
   const textMuted     = darkMode ? "rgba(255,255,255,0.3)" : "#999999";
   const teamBg        = darkMode ? "#161616" : "#fcfcfc";
   const teamBgHov     = darkMode ? "#222222" : "#f5f5f5";
@@ -237,7 +237,7 @@ function FeaturedMatch({ match }) {
 function MatchRow({ m }) {
   const { darkMode } = useTheme();
   const textPrimary   = darkMode ? "#ffffff" : "#0d0d0d";
-  const textSecondary = darkMode ? "rgba(255,255,255,0.5)" : "#666666";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.85)" : "#666666";
   const border        = darkMode ? "rgba(255,255,255,0.06)" : "#f0f0f0";
   const rowHov       = darkMode ? "rgba(255,255,255,0.02)" : "#fcfcfc";
 
@@ -302,7 +302,7 @@ function TopScorers() {
   const border        = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)";
   const borderSub     = darkMode ? "rgba(255,255,255,0.06)" : "#f0f0f0";
   const textPrimary   = darkMode ? "#ffffff" : "#0d0d0d";
-  const textSecondary = darkMode ? "rgba(255,255,255,0.5)" : "#666666";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.85)" : "#666666";
   const textMuted     = darkMode ? "rgba(255,255,255,0.3)" : "#999999";
   const rowHov       = darkMode ? "rgba(255,255,255,0.03)" : "#fafafa";
 
@@ -338,42 +338,51 @@ function TopScorers() {
         </a>
       </div>
 
-      {scorers.length === 0 ? (
-         <div style={{ padding: 24, textAlign: "center", background: card }}>
-           <span style={{ fontSize: 11, color: textMuted, fontFamily: FONT.body }}>Aucune donnée</span>
-         </div>
-      ) : scorers.map((p, i) => (
-        <div key={p.id} style={{
-          display: "flex", alignItems: "center", gap: 10,
-          padding: "11px 14px",
-          borderBottom: i < scorers.length - 1 ? `1px solid ${borderSub}` : "none",
-          background: card, cursor: "pointer",
-          transition: "background 0.2s",
-        }}
-          onMouseEnter={e => e.currentTarget.style.background = rowHov}
-          onMouseLeave={e => e.currentTarget.style.background = card}
-        >
-          <span style={{
-            fontSize: 10, fontWeight: 900, color: textMuted,
-            width: 16, textAlign: "center", fontFamily: FONT.body, flexShrink: 0,
-          }}>{i + 1}</span>
-
-          <Flag code={p.team?.flag || getCode(p.team?.name)} alt={p.team?.name} size={14} />
-          
-          <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ maxHeight: '400px', overflowY: 'auto', scrollbarWidth: 'thin' }}>
+        {scorers.length === 0 ? (
+           <div style={{ padding: 24, textAlign: "center", background: card }}>
+             <span style={{ fontSize: 11, color: textMuted, fontFamily: FONT.body }}>Aucune donnée</span>
+           </div>
+        ) : scorers.map((p, i) => (
+          <div key={p.id} style={{
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "11px 14px",
+            borderBottom: i < scorers.length - 1 ? `1px solid ${borderSub}` : "none",
+            background: card, cursor: "pointer",
+            transition: "background 0.2s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = rowHov}
+            onMouseLeave={e => e.currentTarget.style.background = card}
+          >
             <span style={{
-              fontSize: 11, fontWeight: 700, color: textPrimary,
-              fontFamily: FONT.body, display: "block",
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>{p.name || p.player}</span>
-          </div>
+              fontSize: 10, fontWeight: 900, color: textMuted,
+              width: 16, textAlign: "center", fontFamily: FONT.body, flexShrink: 0,
+            }}>{i + 1}</span>
 
-          <span style={{
-            fontSize: 12, fontWeight: 900, color: textPrimary,
-            fontFamily: FONT.display, minWidth: 20, textAlign: "right",
-          }}>{p.goals || 0}</span>
-        </div>
-      ))}
+            <img 
+              src={p.photo ? getImageUrl(p.photo) : `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name || p.player)}&background=1a1a1a&color=ffffff&rounded=true`} 
+              alt={p.name || p.player} 
+              style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${border}` }} 
+            />
+            
+            <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+              <span style={{
+                fontSize: 11, fontWeight: 700, color: textPrimary,
+                fontFamily: FONT.body, display: "block",
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              }}>{p.name || p.player}</span>
+              <span style={{ fontSize: 9, color: textSecondary, fontFamily: FONT.body, fontWeight: 500 }}>
+                {p.team?.name || 'TBD'}
+              </span>
+            </div>
+
+            <span style={{
+              fontSize: 12, fontWeight: 900, color: textPrimary,
+              fontFamily: FONT.display, minWidth: 20, textAlign: "right",
+            }}>{p.goals || 0}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -387,7 +396,7 @@ export default function MatchesSection({ matches, loading, error, matchFilter, s
   const border = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)";
   const borderSub = darkMode ? "rgba(255,255,255,0.06)" : "#e8e8e8";
   const textPrimary = darkMode ? "#ffffff" : "#0d0d0d";
-  const textSecondary = darkMode ? "rgba(255,255,255,0.5)" : "#666666";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.85)" : "#666666";
   const accent = darkMode ? "#ffffff" : "#0d0d0d";
   const accentContrast = darkMode ? "#0d0d0d" : "#ffffff";
   const accentHover = darkMode ? "#e8e8e8" : "#333333";

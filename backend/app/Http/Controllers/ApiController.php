@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
+    use \App\Traits\HandlesImages;
+
     // ── GET /api/v1/news ─────────────────────────────────────
     public function news(Request $request): JsonResponse
     {
@@ -180,17 +182,17 @@ class ApiController extends Controller
     public function storeMatch(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'team1_id' => 'required|exists:teams,id',
-            'team2_id' => 'required|exists:teams,id',
+            'team1_id' => 'nullable|exists:teams,id',
+            'team2_id' => 'nullable|exists:teams,id',
             'team1'  => 'nullable|string|max:100',
             'team2'  => 'nullable|string|max:100',
             'team1_flag'  => 'nullable|string',
             'team2_flag'  => 'nullable|string',
-            'venue'      => 'required|string|max:150',
-            'city'       => 'required|string|max:100',
-            'match_date' => 'required|date',
-            'match_time' => 'required',
-            'stage'      => 'required|in:group,round_of_16,quarter,semi,final',
+            'venue'      => 'nullable|string|max:150',
+            'city'       => 'nullable|string|max:100',
+            'match_date' => 'nullable|date',
+            'match_time' => 'nullable',
+            'stage'      => 'required|in:group,round_of_32,round_of_16,quarter,semi,final',
             'group_name' => 'nullable|string',
             'status'     => 'in:upcoming,live,finished',
             'stadium_image' => 'nullable|string',
@@ -221,7 +223,7 @@ class ApiController extends Controller
             'city'       => 'sometimes|string|max:100',
             'match_date' => 'sometimes|date',
             'match_time' => 'sometimes',
-            'stage'      => 'sometimes|in:group,round_of_16,quarter,semi,final',
+            'stage'      => 'sometimes|in:group,round_of_32,round_of_16,quarter,semi,final',
             'group_name' => 'nullable|string',
             'home_score' => 'nullable|integer',
             'away_score' => 'nullable|integer',
@@ -602,15 +604,19 @@ class ApiController extends Controller
             'nationality'        => 'required|string|max:100',
             'nationality_code'   => 'required|string|max:10',
             'role'               => 'required|string',
-            'age'                => 'required|integer|min:18',
-            'experience_years'   => 'required|integer|min:0',
-            'matches_officiated' => 'required|integer|min:0',
+            'age'                => 'nullable|integer|min:18',
+            'experience_years'   => 'nullable|integer|min:0',
+            'matches_officiated' => 'nullable|integer|min:0',
             'photo_url'          => 'nullable|string',
-            'fifa_badge'         => 'boolean',
+            'fifa_badge'         => 'nullable|string',
             'notes'              => 'nullable|string',
         ]);
 
-        $referee = Referee::create($validated);
+        $data = $validated;
+        $data['name'] = ($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '');
+        $data['photo_url'] = $this->handleImage($request, 'photo', 'referees');
+
+        $referee = Referee::create($data);
         return response()->json($referee, 201);
     }
 
@@ -622,15 +628,26 @@ class ApiController extends Controller
             'nationality'        => 'sometimes|string|max:100',
             'nationality_code'   => 'sometimes|string|max:10',
             'role'               => 'sometimes|string',
-            'age'                => 'sometimes|integer|min:18',
-            'experience_years'   => 'sometimes|integer|min:0',
-            'matches_officiated' => 'sometimes|integer|min:0',
+            'age'                => 'nullable|integer|min:18',
+            'experience_years'   => 'nullable|integer|min:0',
+            'matches_officiated' => 'nullable|integer|min:0',
             'photo_url'          => 'nullable|string',
-            'fifa_badge'         => 'boolean',
+            'fifa_badge'         => 'nullable|string',
             'notes'              => 'nullable|string',
         ]);
 
-        $referee->update($validated);
+        $data = $validated;
+        if (isset($data['first_name']) || isset($data['last_name'])) {
+            $fn = $data['first_name'] ?? $referee->first_name;
+            $ln = $data['last_name'] ?? $referee->last_name;
+            $data['name'] = trim($fn . ' ' . $ln);
+        }
+
+        if ($request->hasFile('photo') || $request->filled('photo')) {
+            $data['photo_url'] = $this->handleImage($request, 'photo', 'referees', $referee->photo_url);
+        }
+
+        $referee->update($data);
         return response()->json($referee);
     }
 
@@ -693,6 +710,45 @@ class ApiController extends Controller
     // ── STADIUMS ──────────────────────────────────────────────
     public function indexStadiums(): JsonResponse
     {
-        return response()->json(\App\Models\Stadium::all());
+        return response()->json(\App\Models\Stadium::with('city')->get());
+    }
+
+    public function storeStadium(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:150',
+            'city_id'     => 'nullable|exists:cities,id',
+            'capacity'    => 'nullable|integer',
+            'image_url'   => 'nullable|string',
+            'description' => 'nullable|string',
+            'opened_year' => 'nullable|string',
+            'surface'     => 'nullable|string',
+        ]);
+
+        $stadium = \App\Models\Stadium::create($validated);
+        return response()->json($stadium->load('city'), 201);
+    }
+
+    public function updateStadium(Request $request, int $id): JsonResponse
+    {
+        $stadium = \App\Models\Stadium::findOrFail($id);
+        $validated = $request->validate([
+            'name'        => 'sometimes|required|string|max:150',
+            'city_id'     => 'nullable|exists:cities,id',
+            'capacity'    => 'nullable|integer',
+            'image_url'   => 'nullable|string',
+            'description' => 'nullable|string',
+            'opened_year' => 'nullable|string',
+            'surface'     => 'nullable|string',
+        ]);
+
+        $stadium->update($validated);
+        return response()->json($stadium->load('city'));
+    }
+
+    public function destroyStadium(int $id): JsonResponse
+    {
+        \App\Models\Stadium::findOrFail($id)->delete();
+        return response()->json(['message' => 'Stadium deleted']);
     }
 }

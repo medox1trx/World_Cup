@@ -56,7 +56,7 @@ class TeamController extends Controller
      */
     public function show(Team $team)
     {
-        return $team->load(['joueurs', 'group']);
+        return $team->load(['joueurs', 'group', 'selectionneur']);
     }
 
     /**

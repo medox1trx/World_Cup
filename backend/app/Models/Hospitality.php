@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Hospitality extends Model
 {
     protected $fillable = [
+        'city_id',
         'tier',
         'price',
         'badge',
@@ -24,4 +25,9 @@ class Hospitality extends Model
         'is_active' => 'boolean',
         'perks' => 'array',
     ];
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 }

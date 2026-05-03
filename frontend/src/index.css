@@ -9,6 +9,25 @@
 }
 
 /* Dark mode overrides - Sync with ThemeContext's data-theme="dark" */
+:root {
+  --container-max: 1400px;
+  --container-narrow: 1100px;
+  --section-pad-y: 80px; 
+  --section-pad-x: 32px; 
+  --header-height: 102px; 
+  --main-bg: #fdfdfd;
+  --text-main: #000000;
+  --text-main-rgb: 0, 0, 0;
+  --text-muted: rgba(0, 0, 0, 0.75);
+  --border-main: rgba(0, 0, 0, 0.10);
+  --border-hover: rgba(0, 0, 0, 0.25);
+  --btn-bg: #000000;
+  --btn-text: #ffffff;
+  --card-bg: #ffffff;
+  --accent-color: #000000;
+  --card-radius: 12px;
+}
+
 [data-theme="dark"] {
   --main-bg: #0d0d0d;
   --text-main: #fcfcfc;
@@ -19,26 +38,7 @@
   --btn-bg: #ffffff;
   --btn-text: #0d0d0d;
   --card-bg: #111111;
-  --accent-color: #ef4444;
-}
-
-:root {
-  --container-max: 1400px;
-  --container-narrow: 1100px;
-  --section-pad-y: 80px; 
-  --section-pad-x: 32px; 
-  --header-height: 102px; 
-  --main-bg: #fdfdfd;
-  --text-main: #0a0a0a;
-  --text-main-rgb: 10, 10, 10;
-  --text-muted: rgba(0, 0, 0, 0.5);
-  --border-main: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.2);
-  --btn-bg: #0d0d0d;
-  --btn-text: #ffffff;
-  --card-bg: #ffffff;
-  --accent-color: #c8102e;
-  --card-radius: 12px;
+  --accent-color: #ffffff;
 }
 
 html { 
@@ -67,7 +67,7 @@ a {
 }
 
 a:visited {
-  color: inherit !important;
+  color: inherit;
 }
 
 a:active, a:focus {
@@ -143,8 +143,8 @@ input, select, textarea {
   padding: 8px 16px;
   font-size: 14px;
   background-color: #ffffff;
-  color: #1f2937;
-  border: 1px solid #e2e8f0;
+  color: #1a1a1a;
+  border: 1px solid #d1d1d1;
   border-radius: 8px;
   outline: none;
   transition: 
@@ -169,7 +169,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Placeholder styling */
 input::placeholder, textarea::placeholder {
-  color: #94a3b8;
+  color: #888888;
   transition: color 0.35s ease;
 }
 
@@ -179,7 +179,7 @@ input:focus::placeholder, textarea:focus::placeholder {
 
 /* Select arrow styling */
 select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666666'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 16px;

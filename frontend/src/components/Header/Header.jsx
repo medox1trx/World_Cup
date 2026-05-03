@@ -17,9 +17,12 @@ const NAV = [
   {
     label: "Compétition",
     children: [
-      { label: "Résultats & Calendrier", href: "/matches" },
-      { label: "Groupes & Classements", href: "/standings" },
+      { label: "Résultats", href: "/matches" },
+      { label: "Groupes", href: "/standings" },
       { label: "Équipes", href: "/teams" },
+      { label: "Joueurs", href: "/joueurs" },
+      { label: "Sélectionneurs", href: "/selectionneurs" },
+      { label: "Arbitres", href: "/referees" },
       { label: "Qualifications", href: "/qualifications" },
     ],
   },
@@ -36,6 +39,7 @@ const NAV = [
     children: [
       { label: "Villes Hôtes", href: "/cities" },
       { label: "Fan Zone", href: "/fans" },
+      { label: "Les Stades", href: "/stadiums" },
     ],
   },
   {
@@ -131,9 +135,8 @@ export default function Header({ onOpenAdminSidebar }) {
           --hbody: 'DM Sans', sans-serif;
         }
 
-        /* ── RESET VISITED LINKS (NO PURPLE) ── */
+        /* ── RESET VISITED LINKS ── */
         a, a:visited {
-          color: inherit !important;
           text-decoration: none !important;
         }
 
@@ -216,26 +219,29 @@ export default function Header({ onOpenAdminSidebar }) {
         .hdr-link.grp          { color: rgba(255,255,255,0.72); }
         .hdr-link.grp::after   { transform: scaleX(1); opacity: 0.35; }
 
-        /* Admin links — red color */
-        .hdr-link.admin-link          { color: #ef4444; }
-        .hdr-link.admin-link::after   { background: #ef4444; }
-        .hdr-link.admin-link:hover    { color: #f87171; }
-        .hdr-link.admin-link.act      { color: #ef4444; }
-        .hdr-link.admin-link.act::after { background: #ef4444; }
+        /* Admin links — monochromatic */
+        .hdr-link.admin-link          { color: var(--as-accent, white); font-weight: 900; }
+        .hdr-link.admin-link::after   { background: var(--as-accent, white); }
+        .hdr-link.admin-link:hover    { opacity: 0.8; }
+        .hdr-link.admin-link.act      { opacity: 1; }
+        .hdr-link.admin-link.act::after { transform: scaleX(1); }
 
         .hdr-chev { opacity: 0.35; flex-shrink: 0; transition: transform 0.2s, opacity 0.15s; }
         .hdr-link.drop-open .hdr-chev { transform: rotate(180deg); opacity: 0.65; }
 
         .hdr-badge {
           display: inline-flex; align-items: center;
-          color: #ef4444;
+          color: white;
           font-family: var(--hfont); font-size: 8px; font-weight: 700;
           letter-spacing: 0.1em; margin-left: 6px; 
           line-height: 1; flex-shrink: 0;
           text-transform: uppercase;
+          background: rgba(255,255,255,0.1);
+          padding: 2px 4px; border-radius: 2px;
         }
         .hdr-badge.admin-badge {
-          color: #ef4444;
+          background: white;
+          color: black;
           font-size: 7px;
         }
 
@@ -258,7 +264,7 @@ export default function Header({ onOpenAdminSidebar }) {
         .hdr-drop-item {
           display: flex; align-items: center; justify-content: space-between;
           padding: 12px 18px;
-          color: rgba(255,255,255,0.48); text-decoration: none;
+          color: rgba(255,255,255,0.85) !important; text-decoration: none;
           font-family: var(--hbody); font-size: 13px; font-weight: 600;
           letter-spacing: 0.02em;
           border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -266,8 +272,8 @@ export default function Header({ onOpenAdminSidebar }) {
           position: relative;
         }
         .hdr-drop-item:last-child { border-bottom: none; }
-        .hdr-drop-item:hover { background: rgba(255,255,255,0.05); color: white; padding-left: 22px; }
-        .hdr-drop-item.act { color: white; background: rgba(255,255,255,0.04); }
+        .hdr-drop-item:hover { background: rgba(255,255,255,0.05); color: white !important; padding-left: 22px; }
+        .hdr-drop-item.act { color: white !important; background: rgba(255,255,255,0.04); }
         .hdr-drop-item.act::before {
           content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
           width: 3px; height: 3px; border-radius: 50%; background: white;
@@ -337,13 +343,14 @@ export default function Header({ onOpenAdminSidebar }) {
 
         .hdr-tickets {
           display: flex; align-items: center; gap: 7px;
-          background: white; color: #0d0d0d; text-decoration: none;
+          background: white; color: #0d0d0d !important; text-decoration: none;
           font-family: var(--hfont); font-size: 12px; font-weight: 900;
           letter-spacing: 0.18em; text-transform: uppercase;
           padding: 0 16px; height: 34px; border-radius: 2px;
           margin-left: 6px; flex-shrink: 0; white-space: nowrap;
           transition: background 0.15s, transform 0.15s;
         }
+        .hdr-tickets * { color: #0d0d0d !important; }
         .hdr-tickets:hover  { background: #e8e8e8; transform: translateY(-1px); }
         .hdr-tickets:active { transform: translateY(0); }
 
@@ -449,7 +456,7 @@ export default function Header({ onOpenAdminSidebar }) {
         .hdr-season-opt.locked:hover { background: transparent; }
         
         .hdr-season-badge {
-          background: #ef4444; color: white;
+          background: #000000; color: white;
           font-family: var(--hfont); font-size: 7px; font-weight: 900;
           letter-spacing: 0.1em; padding: 1px 5px; border-radius: 2px;
           text-transform: uppercase; margin-left: 8px;
@@ -570,72 +577,73 @@ export default function Header({ onOpenAdminSidebar }) {
             --hbg: #ffffff;
             --hborder: rgba(0,0,0,0.08);
             --hmuted: #000000;
-            --hhover: rgba(0,0,0,0.08);
+            --hhover: rgba(0,0,0,0.06);
           }
           .hdr.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
-          .hdr-ham span               { background: #0d0d0d; }
-          .hdr-link                   { color: #000000; opacity: 0.7; }
+          .hdr-ham span               { background: #000000; }
+          .hdr-link                   { color: #000000; opacity: 1; }
           .hdr-link:hover             { color: #000000; opacity: 1; }
-          .hdr-link::after            { background: #0d0d0d; }
+          .hdr-link::after            { background: #000000; }
           .hdr-link.act               { color: #000000; }
           .hdr-link.grp               { color: #000000; }
-          .hdr-link.admin-link        { color: #dc2626; }
-          .hdr-link.admin-link::after { background: #dc2626; }
-          .hdr-link.admin-link:hover  { color: #ef4444; }
-          .hdr-badge                  { background: #0d0d0d; color: white; }
-          .hdr-badge.admin-badge      { background: #dc2626; color: white; }
-          .hdr-drop                   { background: #fafafa; border-color: rgba(0,0,0,0.08); border-top-color: #0d0d0d; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
-          .hdr-drop-item              { color: rgba(0,0,0,0.48); border-bottom-color: rgba(0,0,0,0.05); }
-          .hdr-drop-item:hover        { background: rgba(0,0,0,0.04); color: #0d0d0d; }
-          .hdr-drop-item.act          { color: #0d0d0d; background: rgba(0,0,0,0.04); }
-          .hdr-drop-item.act::before  { background: #0d0d0d; }
-          .hdr-drop-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.5); }
-          .hdr-btn                    { color: rgba(0,0,0,0.45); }
-          .hdr-btn:hover              { background: rgba(0,0,0,0.05); color: #0d0d0d; }
-          .hdr-btn.is-open            { background: rgba(0,0,0,0.05); color: #0d0d0d; }
-          .hdr-theme-btn              { color: rgba(0,0,0,0.45) !important; }
-          .hdr-theme-btn:hover        { background: rgba(0,0,0,0.05) !important; color: #0d0d0d !important; }
-          .hdr-lang-btn               { border-color: rgba(0,0,0,0.12); color: rgba(0,0,0,0.5); }
-          .hdr-lang-btn:hover         { border-color: rgba(0,0,0,0.35); color: #0d0d0d; }
+          .hdr-link.admin-link        { color: #000000; font-weight: 900; }
+          .hdr-link.admin-link::after { background: #000000; }
+          .hdr-link.admin-link:hover  { color: #000000; opacity: 0.7; }
+          .hdr-badge                  { background: #000000; color: white; }
+          .hdr-badge.admin-badge      { background: #000000; color: white; }
+          .hdr-drop                   { background: #fafafa; border-color: rgba(0,0,0,0.08); border-top-color: #000000; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+          .hdr-drop-item              { color: rgba(0,0,0,0.75) !important; border-bottom-color: rgba(0,0,0,0.05); }
+          .hdr-drop-item:hover        { background: rgba(0,0,0,0.04); color: #000000 !important; }
+          .hdr-drop-item.act          { color: #000000 !important; background: rgba(0,0,0,0.04); }
+          .hdr-drop-item.act::before  { background: #000000; }
+          .hdr-drop-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.6); }
+          .hdr-btn                    { color: rgba(0,0,0,0.6); }
+          .hdr-btn:hover              { background: rgba(0,0,0,0.05); color: #000000; }
+          .hdr-btn.is-open            { background: rgba(0,0,0,0.05); color: #000000; }
+          .hdr-theme-btn              { color: rgba(0,0,0,0.6) !important; }
+          .hdr-theme-btn:hover        { background: rgba(0,0,0,0.05) !important; color: #000000 !important; }
+          .hdr-lang-btn               { border-color: rgba(0,0,0,0.15); color: rgba(0,0,0,0.65); }
+          .hdr-lang-btn:hover         { border-color: rgba(0,0,0,0.35); color: #000000; }
           .hdr-lang-drop              { background: #fafafa; border-color: rgba(0,0,0,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
-          .hdr-lang-opt               { color: rgba(0,0,0,0.4); border-bottom-color: rgba(0,0,0,0.04); }
-          .hdr-lang-opt:hover         { background: rgba(0,0,0,0.04); color: #0d0d0d; }
-          .hdr-lang-opt.sel           { color: #0d0d0d; }
-          .hdr-tickets                { background: #0d0d0d; color: white; }
+          .hdr-lang-opt               { color: rgba(0,0,0,0.55); border-bottom-color: rgba(0,0,0,0.04); }
+          .hdr-lang-opt:hover         { background: rgba(0,0,0,0.04); color: #000000; }
+          .hdr-lang-opt.sel           { color: #000000; }
+          .hdr-tickets                { background: #000000; color: white !important; }
+          .hdr-tickets *              { color: white !important; }
           .hdr-tickets:hover          { background: #333; }
           .hdr-search                 { background: #f5f5f5; border-bottom-color: rgba(0,0,0,0.06); }
           .hdr-search-inner           { border-bottom-color: rgba(0,0,0,0.06); }
-          .hdr-search-input           { color: #0d0d0d; }
-          .hdr-search-input::placeholder { color: rgba(0,0,0,0.25); }
+          .hdr-search-input           { color: #000000; }
+          .hdr-search-input::placeholder { color: rgba(0,0,0,0.3); }
           .hdr-mob                    { background: #f8f8f8; border-top-color: rgba(0,0,0,0.06); }
-          .hdr-macc                   { color: rgba(0,0,0,0.4); border-color: rgba(0,0,0,0.06); }
-          .hdr-macc:hover             { color: rgba(0,0,0,0.75); background: rgba(0,0,0,0.02); }
-          .hdr-macc.open              { color: #0d0d0d; }
-          .hdr-macc.grp               { color: rgba(0,0,0,0.75); }
+          .hdr-macc                   { color: rgba(0,0,0,0.6); border-color: rgba(0,0,0,0.06); }
+          .hdr-macc:hover             { color: rgba(0,0,0,0.9); background: rgba(0,0,0,0.02); }
+          .hdr-macc.open              { color: #000000; }
+          .hdr-macc.grp               { color: rgba(0,0,0,0.85); }
           .hdr-msub                   { background: rgba(0,0,0,0.03); }
-          .hdr-msub-link              { color: rgba(0,0,0,0.35); border-bottom-color: rgba(0,0,0,0.04); }
-          .hdr-msub-link:hover        { color: #0d0d0d; background: rgba(0,0,0,0.02); }
-          .hdr-msub-link.act          { color: #0d0d0d; }
+          .hdr-msub-link              { color: rgba(0,0,0,0.6); border-bottom-color: rgba(0,0,0,0.04); }
+          .hdr-msub-link:hover        { color: #000000; background: rgba(0,0,0,0.02); }
+          .hdr-msub-link.act          { color: #000000; }
           .hdr-msub-link:last-child   { border-bottom-color: rgba(0,0,0,0.05); }
-          .hdr-msub-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.5); }
+          .hdr-msub-badge             { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.6); }
           .hdr-mfooter                { border-top-color: rgba(0,0,0,0.07); }
-          .hdr-mtickets               { background: #0d0d0d; color: white; }
+          .hdr-mtickets               { background: #000000; color: white; }
           .hdr-mtickets:hover         { background: #333; }
           .hdr-user-dropdown          { background: #fafafa; border-color: rgba(0,0,0,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
-          .hdr-user-name              { color: #0d0d0d; }
+          .hdr-user-name              { color: #000000; }
           .hdr-user-info              { border-bottom-color: rgba(0,0,0,0.06); }
-          .hdr-user-item              { color: rgba(0,0,0,0.5); border-bottom-color: rgba(0,0,0,0.04); }
-          .hdr-user-item:hover        { background: rgba(0,0,0,0.04); color: #0d0d0d; }
+          .hdr-user-item              { color: rgba(0,0,0,0.65); border-bottom-color: rgba(0,0,0,0.04); }
+          .hdr-user-item:hover        { background: rgba(0,0,0,0.04); color: #000000; }
           .hdr-user-divider           { background: rgba(0,0,0,0.06); }
-          .hdr-season-btn             { border-color: rgba(0,0,0,0.25); color: rgba(0,0,0,0.5); }
-          .hdr-season-btn:hover       { border-color: rgba(0,0,0,0.35); color: #0d0d0d; }
-          .hdr-season-btn.active-season { border-color: #000000; color: #0d0d0d; }
+          .hdr-season-btn             { border-color: rgba(0,0,0,0.25); color: rgba(0,0,0,0.65); }
+          .hdr-season-btn:hover       { border-color: rgba(0,0,0,0.35); color: #000000; }
+          .hdr-season-btn.active-season { border-color: #000000; color: #000000; }
           .hdr-season-drop            { background: #fafafa; border-color: rgba(0,0,0,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
-          .hdr-season-opt             { color: rgba(0,0,0,0.5); border-bottom-color: rgba(0,0,0,0.04); }
-          .hdr-season-opt:hover       { background: rgba(0,0,0,0.04); color: #0d0d0d; }
-          .hdr-season-opt.sel         { color: #0d0d0d; background: rgba(0,0,0,0.05); }
-          .hdr-season-opt-host        { color: rgba(0,0,0,0.35); }
-          .hdr-season-opt.sel .hdr-season-opt-host { color: rgba(0,0,0,0.5); }
+          .hdr-season-opt             { color: rgba(0,0,0,0.6); border-bottom-color: rgba(0,0,0,0.04); }
+          .hdr-season-opt:hover       { background: rgba(0,0,0,0.04); color: #000000; }
+          .hdr-season-opt.sel         { color: #000000; background: rgba(0,0,0,0.05); }
+          .hdr-season-opt-host        { color: rgba(0,0,0,0.45); }
+          .hdr-season-opt.sel .hdr-season-opt-host { color: rgba(0,0,0,0.6); }
 
         ` : ''}
       `}</style>
@@ -738,11 +746,7 @@ export default function Header({ onOpenAdminSidebar }) {
                     onClick={() => { if (!s.locked) { selectSeason(s.id); setSeasonOpen(false); } }}
                     disabled={s.locked}
                   >
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-                      <span>{s.label}</span>
-                      {s.badge && <span className="hdr-season-badge">{s.badge}</span>}
-                    </div>
-                    <span className="hdr-season-opt-host">{s.host}</span>
+                    <span>{s.id}</span>
                   </button>
                 ))}
 
@@ -871,7 +875,7 @@ export default function Header({ onOpenAdminSidebar }) {
           {isAdmin && (
             <button
               className="hdr-msub-link"
-              style={{ color: "#ef4444", paddingLeft: 20, fontWeight: 800, background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+              style={{ color: "#000000", paddingLeft: 20, fontWeight: 900, background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
               onClick={() => { setMenuOpen(false); onOpenAdminSidebar(); }}
             >
               <span>Admin Space</span>

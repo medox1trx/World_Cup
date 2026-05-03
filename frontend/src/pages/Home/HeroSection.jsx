@@ -13,14 +13,14 @@ const YT_VIDEO_ID = "RDtdVQgB9ME";
 export function NewsTicker() {
   const { darkMode } = useTheme();
 
-  const bg            = darkMode ? "#0a0a0a" : "#f5f5f5";
-  const borderColor   = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const bg            = darkMode ? "#050505" : "#f5f5f5";
+  const borderColor   = darkMode ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)";
   const badgeBg       = darkMode ? "#ffffff" : "#0d0d0d";
   const badgeText     = darkMode ? "#0a0a0a" : "#ffffff";
-  const divider       = darkMode ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)";
-  const textSecondary = darkMode ? "#ffffff" : "rgba(0,0,0,0.5)";
+  const divider       = darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.12)";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.7)";
   const dotActive     = darkMode ? "#ffffff" : "#0d0d0d";
-  const dotInactive   = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)";
+  const dotInactive   = darkMode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.2)";
 
   const [items, setItems] = useState([]);
   const [idx,   setIdx]   = useState(0);
@@ -92,8 +92,8 @@ export function NewsTicker() {
 
         {/* Text */}
         {current?.url ? (
-          <a href={current.url} target="_blank" rel="noopener noreferrer" style={{
-            flex: 1, color: textSecondary, fontSize: 13,
+          <a href={current.url} target="_blank" rel="noopener noreferrer" className="nt-link" style={{
+            flex: 1, fontSize: 13,
             fontFamily: FONT.body, overflow: "hidden", whiteSpace: "nowrap",
             textOverflow: "ellipsis", opacity: fade ? 1 : 0,
             transition: "opacity 0.28s, color 0.3s",
@@ -102,8 +102,8 @@ export function NewsTicker() {
             {current.text}
           </a>
         ) : (
-          <p style={{
-            flex: 1, color: textSecondary, fontSize: 13,
+          <p className="nt-link" style={{
+            flex: 1, fontSize: 13,
             fontFamily: FONT.body, overflow: "hidden", whiteSpace: "nowrap",
             textOverflow: "ellipsis", opacity: fade ? 1 : 0,
             transition: "opacity 0.28s, color 0.3s",
@@ -128,7 +128,11 @@ export function NewsTicker() {
         )}
       </div>
 
-      <style>{`@keyframes tdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}`}</style>
+      <style>{`
+        @keyframes tdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}
+        .nt-link { color: ${textSecondary} !important; }
+        .nt-link:hover { opacity: 0.8; }
+      `}</style>
     </div>
   );
 }
@@ -145,9 +149,9 @@ export function HeroSection() {
   
   /* Hero section specific tokens */
   const hText = darkMode ? "#ffffff" : "#0d0d0d";
-  const hTextSub = darkMode ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.55)";
+  const hTextSub = darkMode ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.55)";
   const hStroke = darkMode ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.35)";
-  const hLine = darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.15)";
+  const hLine = darkMode ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.15)";
   
   /* Overlays */
   const ovColor = darkMode ? "0,0,0" : "255,255,255";
@@ -342,21 +346,22 @@ export function HeroSection() {
           max-width: 45ch; width: 100%;
           transition: color 0.4s;
         }
-
-        .hero-cta {
-          display: flex; flex-wrap: wrap;
-          align-items: center; gap: clamp(8px,1.5vw,12px);
-          margin-bottom: clamp(18px,2.5vh,28px);
-          width: 100%;
+        
+        .hero-cta { 
+          display: flex; 
+          align-items: center; 
+          gap: 16px; 
         }
 
+        .btn-buy, .btn-buy * { color: ${accentContrast} !important; }
         .btn-buy {
           position: relative; overflow: hidden;
           display: inline-flex; align-items: center; gap: 8px;
-          background: ${accent}; color: ${accentContrast};
+          background: ${accent};
           font-family: 'Barlow', sans-serif;
-          font-size: clamp(12px,1.2vw,14px); font-weight: 800; letter-spacing: .04em;
-          padding: clamp(11px,1.4vh,14px) clamp(20px,2.2vw,28px);
+          font-size: 13px; font-weight: 800; letter-spacing: .04em;
+          height: 52px; min-width: 210px; justify-content: center;
+          padding: 0 28px;
           border-radius: 100px; text-decoration: none;
           box-shadow: 0 4px 20px ${shadow};
           transition: transform .2s ease, box-shadow .2s ease, background .3s, color 0.3s;
@@ -377,13 +382,15 @@ export function HeroSection() {
         .btn-buy .arr { transition: transform .2s; }
         .btn-buy:hover .arr { transform: translateX(3px); }
 
+        .btn-watch, .btn-watch * { color: ${secondaryBtnText} !important; }
         .btn-watch {
           display: inline-flex; align-items: center; gap: 9px;
           text-decoration: none;
           background: ${secondaryBtnBg};
           border: 1px solid ${mcBorder};
           border-radius: 100px;
-          padding: clamp(11px,1.4vh,14px) clamp(16px,2vw,22px);
+          height: 52px; min-width: 210px; justify-content: center;
+          padding: 0 22px;
           transition: background .25s, transform .2s;
           white-space: nowrap;
         }
@@ -400,17 +407,19 @@ export function HeroSection() {
         }
         .btn-watch:hover .btn-watch-circle { background: ${darkMode ? "rgba(255,255,255,0.26)" : "rgba(0,0,0,0.18)"}; }
         .btn-watch-label {
-          color: ${secondaryBtnText}; font-family: 'Barlow', sans-serif;
+          font-family: 'Barlow', sans-serif;
           font-size: clamp(11px,1.1vw,13px); font-weight: 700; letter-spacing: .04em;
           transition: color .3s;
         }
 
+        .hero-live, .hero-live * { color: #ffffff !important; }
         .hero-live {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 8px 14px; border-radius: 100px;
           border: 1px solid rgba(255,255,255,0.15);
           background: rgba(255,255,255,0.07);
           backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           text-decoration: none; transition: all .3s;
           width: fit-content;
         }
@@ -421,9 +430,10 @@ export function HeroSection() {
           animation: lpul 1.8s ease-in-out infinite;
         }
         .live-txt {
-          color: rgba(255,255,255,0.5); font-family: 'Barlow', sans-serif;
+          font-family: 'Barlow', sans-serif;
           font-size: clamp(10px,1vw,11px); font-weight: 500; letter-spacing: .05em;
           white-space: nowrap; transition: color 0.3s;
+          opacity: 0.6;
         }
 
         .match-card {
@@ -471,9 +481,10 @@ export function HeroSection() {
           font-size: clamp(9px,.9vw,10px); margin-top: 3px;
           transition: color 0.3s;
         }
+        .mc-btn, .mc-btn * { color: ${accentContrast} !important; }
         .mc-btn {
           display: flex; align-items: center; justify-content: center; gap: 6px;
-          background: ${accent}; color: ${accentContrast}; font-family: 'Barlow', sans-serif;
+          background: ${accent}; font-family: 'Barlow', sans-serif;
           font-size: clamp(9px,.95vw,11px); font-weight: 800;
           letter-spacing: .12em; text-transform: uppercase;
           padding: clamp(8px,1vh,11px) 14px;

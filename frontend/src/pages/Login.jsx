@@ -252,7 +252,7 @@ export default function Login() {
           display: flex; align-items: center; gap: 8px;
         }
         .toast.success { background: #16a34a; color: white; }
-        .toast.error   { background: #dc2626; color: white; }
+        .toast.error   { background: #000000; color: white; border: 1px solid rgba(255,255,255,0.1); }
         @keyframes toastIn { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
 

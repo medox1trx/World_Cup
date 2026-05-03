@@ -1,24 +1,23 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { FiPlus, FiTrash2, FiEdit2, FiMapPin } from "react-icons/fi";
-import { getHospitalities, createHospitality, updateHospitality, deleteHospitality, getCities, getImageUrl } from "../../services/api";
+import { FiPlus, FiTrash2, FiEdit2 } from "react-icons/fi";
+import { adminGetSelectionneurs, createSelectionneur, updateSelectionneur, deleteSelectionneur, getTeams, getImageUrl } from "../../services/api";
 import ImageUpload from "../../components/ImageUpload.jsx";
+import toast from "react-hot-toast";
 
 const FD = "'Bebas Neue', sans-serif";
 const FB = "'DM Sans', sans-serif";
 
-export default function AdminHospitality() {
+export default function AdminSelectionneurs() {
   const { darkMode } = useTheme();
-  const [items, setItems] = useState([]);
-  const [cities, setCities] = useState([]);
+  const [coaches, setCoaches] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [imageData, setImageData] = useState({ type: 'url', value: '' });
-  
   const [formData, setFormData] = useState({
-    city_id: "",
-    tier: "" // This is the Name/Level of hospitality
+    name: "", photo: "", team_id: ""
   });
 
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -30,20 +29,20 @@ export default function AdminHospitality() {
   const accent       = darkMode ? "#ffffff"                  : "#0d0d0d";
   const accentContrast= darkMode ? "#0d0d0d"                 : "#ffffff";
 
-  useEffect(() => { 
-    fetchData(); 
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [hData, cData] = await Promise.all([getHospitalities(), getCities()]);
-      const fetchedH = hData?.data || hData;
-      const fetchedC = cData?.data || cData;
-      setItems(Array.isArray(fetchedH) ? fetchedH : []);
-      setCities(Array.isArray(fetchedC) ? fetchedC : []);
+      const [cData, tData] = await Promise.all([adminGetSelectionneurs(), getTeams()]);
+      const fetchedCoaches = cData?.data || cData;
+      const fetchedTeams = tData?.data || tData;
+      setCoaches(Array.isArray(fetchedCoaches) ? fetchedCoaches : []);
+      setTeams(Array.isArray(fetchedTeams) ? fetchedTeams : []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching admin coaches data:", err);
     } finally {
       setLoading(false);
     }
@@ -56,50 +55,50 @@ export default function AdminHospitality() {
 
     if (isFile) {
       payload = new FormData();
-      payload.append("city_id", formData.city_id);
-      payload.append("tier", formData.tier);
-      payload.append("image", imageData.value);
+      Object.keys(formData).forEach(key => { if (key !== 'photo') payload.append(key, formData[key]); });
+      payload.append('photo', imageData.value);
       if (editId) payload.append('_method', 'PUT');
     } else {
-      payload = { ...formData, image_url: imageData.value };
+      payload = { ...formData, photo: imageData.value };
     }
 
     try {
-      if (editId) await updateHospitality(editId, payload);
-      else await createHospitality(payload);
-      
+      if (editId) await updateSelectionneur(editId, payload);
+      else await createSelectionneur(payload);
+      toast.success("Sélectionneur enregistré !");
       setShowModal(false);
       resetForm();
       fetchData();
     } catch (err) {
-      console.error(err);
-      alert("Erreur lors de l'enregistrement");
+      toast.error(err.message || "Erreur lors de l'enregistrement");
     }
   };
 
   const resetForm = () => {
-    setFormData({ city_id: "", tier: "" });
+    setFormData({ name: "", photo: "", team_id: "" });
     setImageData({ type: 'url', value: '' });
     setEditId(null);
   };
 
-  const handleEdit = (item) => {
-    setEditId(item.id);
+  const handleEdit = (c) => {
+    setEditId(c.id);
     setFormData({
-      city_id: item.city_id || "",
-      tier: item.tier || ""
+      name: c.name || "",
+      photo: c.photo || "",
+      team_id: c.team_id || ""
     });
-    setImageData({ type: 'url', value: item.image_url || '' });
+    setImageData({ type: 'url', value: c.photo || '' });
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Supprimer ce package d'hospitalité ?")) return;
+    if (!window.confirm("Supprimer ce sélectionneur ?")) return;
     try {
-      await deleteHospitality(id);
+      await deleteSelectionneur(id);
+      toast.success("Supprimé !");
       fetchData();
     } catch (err) {
-      alert("Erreur lors de la suppression");
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -119,6 +118,7 @@ export default function AdminHospitality() {
           letter-spacing: 0.02em; text-transform: uppercase; color: ${textPrimary};
           margin: 0;
         }
+        .admin-sub { font-family: ${FB}; font-size: 14px; color: ${textSecondary}; margin: 4px 0 0; }
         .admin-table-container { 
           background: ${card}; border-radius: 24px; overflow: hidden;
           border: 1px solid ${border}; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -163,34 +163,45 @@ export default function AdminHospitality() {
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
         .form-input { 
-          width: 100%; height: 50px; padding: 0 18px; border-radius: 12px; 
+          width: 100%; padding: 12px 18px; border-radius: 12px; 
           background-color: ${surface}; border: 1px solid ${border}; 
           color: ${textPrimary}; outline: none; transition: all 0.25s ease;
-          font-family: ${FB}; font-size: 15px;
-          box-sizing: border-box;
+          font-family: ${FB}; font-size: 15px; box-sizing: border-box;
+          height: auto; min-height: 50px;
         }
         select.form-input {
-          appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(textSecondary)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 15px center;
-          background-size: 18px;
-          padding-right: 45px;
+          appearance: none !important;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(textSecondary)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+          background-repeat: no-repeat !important; 
+          background-position: right 18px center !important; 
+          background-size: 18px !important; 
+          padding-right: 48px !important; 
           cursor: pointer;
+          line-height: 1.2;
         }
         .form-input:focus { border-color: ${accent}; background-color: ${card}; }
         option { background-color: ${bg}; color: ${textPrimary}; }
-        .hosp-img-mini { width: 60px; height: 40px; border-radius: 8px; object-fit: cover; background: ${surface}; }
+        .admin-badge {
+          padding: 4px 10px; 
+          border-radius: 100px; 
+          font-size: 10px; 
+          font-weight: 800;
+          text-transform: uppercase; 
+          border: 1px solid ${border};
+          background: ${surface}; 
+          color: ${textPrimary};
+        }
+        .coach-img-mini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: ${surface}; }
       `}</style>
 
       <div className="admin-page">
         <div className="admin-inner">
           <div className="admin-header">
             <div>
-              <h1 className="admin-title">Hospitalité</h1>
+              <h1 className="admin-title">Sélectionneurs</h1>
             </div>
             <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
-              <FiPlus /> Nouveau Package
+              <FiPlus /> Ajouter un sélectionneur
             </button>
           </div>
 
@@ -198,33 +209,37 @@ export default function AdminHospitality() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Package</th>
-                  <th>Ville</th>
+                  <th>Sélectionneur</th>
+                  <th>Nation</th>
                   <th style={{ textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
-                ) : items.length === 0 ? (
-                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Aucun package trouvé</td></tr>
-                ) : items.map((item) => (
-                  <tr key={item.id}>
+                ) : coaches.length === 0 ? (
+                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Aucun sélectionneur trouvé</td></tr>
+                ) : coaches.map((c) => (
+                  <tr key={c.id}>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <img className="hosp-img-mini" src={getImageUrl(item.image_url)} alt={item.tier} />
-                        <span style={{ fontWeight: 800, fontSize: 16 }}>{item.tier}</span>
+                        <img className="coach-img-mini" src={getImageUrl(c.photo)} alt={c.name} />
+                        <span style={{ fontWeight: 800, fontSize: 16 }}>{c.name}</span>
                       </div>
                     </td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                         <FiMapPin color={textSecondary} size={14} />
-                         <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase" }}>{item.city_name || "N/A"}</span>
+                         {(c.team?.flag && c.team?.flag.length <= 10) ? (
+                           <img src={`https://flagcdn.com/w40/${c.team.flag.toLowerCase()}.png`} width="24" style={{ borderRadius: 3 }} alt="" />
+                         ) : (
+                           <img src={getImageUrl(c.team?.flag || c.team?.image_url)} width="24" style={{ borderRadius: 3 }} />
+                         )}
+                         <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase" }}>{c.team?.name || "N/A"}</span>
                       </div>
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <button className="btn-icon" onClick={() => handleEdit(item)}><FiEdit2 size={16} /></button>
-                      <button className="btn-icon" onClick={() => handleDelete(item.id)}><FiTrash2 size={16} /></button>
+                      <button className="btn-icon" onClick={() => handleEdit(c)}><FiEdit2 size={16} /></button>
+                      <button className="btn-icon" onClick={() => handleDelete(c.id)}><FiTrash2 size={16} /></button>
                     </td>
                   </tr>
                 ))}
@@ -238,29 +253,23 @@ export default function AdminHospitality() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2 style={{ fontFamily: FD, fontSize: 32, fontWeight: 900, textTransform: "uppercase", marginBottom: 30, color: textPrimary }}>
-              {editId ? "Modifier Package" : "Nouveau Package"}
+              {editId ? "Modifier Sélectionneur" : "Nouveau Sélectionneur"}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Nom du Package (Niveau)</label>
-                <input className="form-input" value={formData.tier} onChange={e => setFormData({...formData, tier: e.target.value})} required placeholder="ex: Platinum Match Club" />
+                <label className="form-label">Nom Complet</label>
+                <input className="form-input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Ville</label>
-                <select className="form-input" value={formData.city_id} onChange={e => setFormData({...formData, city_id: e.target.value})} required>
-                  <option value="">Sélectionner une ville</option>
-                  {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                <label className="form-label">Équipe</label>
+                <select className="form-input" value={formData.team_id} onChange={e => setFormData({...formData, team_id: e.target.value})} required>
+                  <option value="">Sélectionner une équipe</option>
+                  {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>
 
-              <ImageUpload 
-                label="Image de l'Hospitalité" 
-                defaultValue={formData.image_url} 
-                onChange={setImageData} 
-                darkMode={darkMode} 
-                folder="hospitalities" 
-              />
+              <ImageUpload label="Photo" defaultValue={formData.photo} onChange={setImageData} darkMode={darkMode} folder="coaches" />
 
               <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
                 <button type="submit" className="admin-btn-primary" style={{ flex: 1, justifyContent: "center" }}>Sauvegarder</button>

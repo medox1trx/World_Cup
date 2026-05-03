@@ -5,32 +5,19 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\FanZone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FanZoneController extends Controller
 {
     public function index()
     {
-        return FanZone::with(['ville', 'ville.pays'])->get()->map(function($fz) {
+        return FanZone::with('city')->get()->map(function($fz) {
             return [
-                'id' => $fz->id,
-                'stade' => $fz->stade,
-                'capacite' => $fz->capacite,
-                'nb_matchs' => $fz->nb_matchs,
-                'adresse' => $fz->adresse,
-                'zone_label' => $fz->zone_label,
-                'description' => $fz->description,
-                'image_url' => $fz->image_url,
-                'groupe' => $fz->groupe,
-                'statut' => $fz->statut,
-                'ville' => [
-                    'id' => $fz->ville->id,
-                    'nom' => $fz->ville->nom,
-                ],
-                'pays' => [
-                    'id' => $fz->ville->pays->id,
-                    'nom' => $fz->ville->pays->nom,
-                    'code_iso' => $fz->ville->pays->code_iso,
-                ],
+                'id'          => $fz->id,
+                'city_id'     => $fz->city_id,
+                'city_name'   => $fz->city?->name,
+                'zone_label'  => $fz->zone_label,
+                'image_url'   => $fz->image_url,
             ];
         });
     }
@@ -38,62 +25,53 @@ class FanZoneController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'ville_id' => 'required|exists:villes,id',
-            'stade' => 'required|string|max:150',
-            'capacite' => 'required|string|max:20',
-            'nb_matchs' => 'required|integer|min:0',
-            'adresse' => 'required|string',
-            'zone_label' => 'nullable|string|max:150',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|url',
-            'groupe' => 'nullable|string|max:50',
-            'statut' => 'required|in:actif,inactif,centenaire',
+            'city_id'    => 'required|exists:cities,id',
+            'zone_label' => 'required|string|max:150',
+            'image'      => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('fan_zones', 'public');
+            $validated['image_url'] = '/storage/' . $path;
+        }
+
+        // Set defaults for other fields to avoid DB errors if they are NOT NULL
+        $validated['stadium_name'] = 'Official Fan Zone';
+        $validated['capacity']     = 'Various';
+        $validated['matches_count'] = 64;
+        $validated['address']      = 'Official Site';
+        $validated['description']  = 'FIFA Fan Festival';
+        $validated['group_label']  = 'Official';
+        $validated['status']       = 'active';
 
         return FanZone::create($validated);
     }
 
     public function show($id)
     {
-        $fz = FanZone::with(['ville', 'ville.pays'])->findOrFail($id);
-        return [
-            'id' => $fz->id,
-            'stade' => $fz->stade,
-            'capacite' => $fz->capacite,
-            'nb_matchs' => $fz->nb_matchs,
-            'adresse' => $fz->adresse,
-            'zone_label' => $fz->zone_label,
-            'description' => $fz->description,
-            'image_url' => $fz->image_url,
-            'groupe' => $fz->groupe,
-            'statut' => $fz->statut,
-            'ville' => [
-                'id' => $fz->ville->id,
-                'nom' => $fz->ville->nom,
-            ],
-            'pays' => [
-                'id' => $fz->ville->pays->id,
-                'nom' => $fz->ville->pays->nom,
-                'code_iso' => $fz->ville->pays->code_iso,
-            ],
-        ];
+        return FanZone::with('city')->findOrFail($id);
     }
 
     public function update(Request $request, $id)
     {
         $fz = FanZone::findOrFail($id);
+        
         $validated = $request->validate([
-            'ville_id' => 'sometimes|required|exists:villes,id',
-            'stade' => 'sometimes|required|string|max:150',
-            'capacite' => 'sometimes|required|string|max:20',
-            'nb_matchs' => 'sometimes|required|integer|min:0',
-            'adresse' => 'sometimes|required|string',
-            'zone_label' => 'nullable|string|max:150',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|url',
-            'groupe' => 'nullable|string|max:50',
-            'statut' => 'sometimes|required|in:actif,inactif,centenaire',
+            'city_id'    => 'sometimes|required|exists:cities,id',
+            'zone_label' => 'sometimes|required|string|max:150',
+            'image'      => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists in storage
+            if ($fz->image_url && str_contains($fz->image_url, '/storage/')) {
+                $oldPath = str_replace('/storage/', '', $fz->image_url);
+                Storage::disk('public')->delete($oldPath);
+            }
+            
+            $path = $request->file('image')->store('fan_zones', 'public');
+            $validated['image_url'] = '/storage/' . $path;
+        }
 
         $fz->update($validated);
         return $fz;
@@ -102,6 +80,13 @@ class FanZoneController extends Controller
     public function destroy($id)
     {
         $fz = FanZone::findOrFail($id);
+        
+        // Delete image from storage
+        if ($fz->image_url && str_contains($fz->image_url, '/storage/')) {
+            $oldPath = str_replace('/storage/', '', $fz->image_url);
+            Storage::disk('public')->delete($oldPath);
+        }
+
         $fz->delete();
         return response()->noContent();
     }

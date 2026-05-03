@@ -82,8 +82,17 @@ export const getUserTicketBookings = () => api.get("/ticket-bookings");
 
 // ── Referees ─────────────────────────────────────────────────
 export const getReferees = () => api.get("/referees");
-export const createReferee = (data) => api.post("/admin/referees", data);
-export const updateReferee = (id, data) => api.put(`/admin/referees/${id}`, data);
+export const createReferee = (data) => {
+  if (data instanceof FormData) return api.post("/admin/referees", data);
+  return api.post("/admin/referees", data);
+};
+export const updateReferee = (id, data) => {
+  if (data instanceof FormData) {
+    data.append("_method", "PUT");
+    return api.post(`/admin/referees/${id}`, data);
+  }
+  return api.put(`/admin/referees/${id}`, data);
+};
 export const deleteReferee = (id) => api.delete(`/admin/referees/${id}`);
 
 // ── Search ───────────────────────────────────────────────────
@@ -106,7 +115,13 @@ export const getAccommodations = (slug, params = {}) => api.get(`/cities/${slug}
 export const getFanZones = () => api.get("/fan-zones");
 export const getFanZone = (id) => api.get(`/fan-zones/${id}`);
 export const createFanZone = (data) => api.post("/fan-zones", data);
-export const updateFanZone = (id, data) => api.put(`/fan-zones/${id}`, data);
+export const updateFanZone = (id, data) => {
+  if (data instanceof FormData) {
+    data.append("_method", "PUT");
+    return api.post(`/fan-zones/${id}`, data);
+  }
+  return api.put(`/fan-zones/${id}`, data);
+};
 export const deleteFanZone = (id) => api.delete(`/fan-zones/${id}`);
 
 export const getPays = () => api.get("/pays");
@@ -134,9 +149,15 @@ export const deleteTickerItem = (id) => api.delete(`/admin/ticker/${id}`);
 
 // ── Hospitalities ───────────────────────────────────────────
 export const getHospitalities = () => api.get("/hospitalities");
-export const createHospitality = (data) => api.post("/admin/hospitalities", data);
-export const updateHospitality = (id, data) => api.put(`/admin/hospitalities/${id}`, data);
-export const deleteHospitality = (id) => api.delete(`/admin/hospitalities/${id}`);
+export const createHospitality = (data) => api.post("/hospitalities", data);
+export const updateHospitality = (id, data) => {
+  if (data instanceof FormData) {
+    data.append("_method", "PUT");
+    return api.post(`/hospitalities/${id}`, data);
+  }
+  return api.put(`/hospitalities/${id}`, data);
+};
+export const deleteHospitality = (id) => api.delete(`/hospitalities/${id}`);
 
 // c:\Users\HP\Desktop\ProjetSyntese\World_Cup\frontend\src\services\api.js
 
@@ -153,9 +174,8 @@ export const updateTeam = (id, data) => {
 };
 export const deleteTeam = (id) => api.delete(`/admin/teams/${id}`);
 
-// ── Groups & Stadiums ──────────────────────────────────────────
+// ── Groups ────────────────────────────────────────────────────
 export const getGroups = () => api.get("/groups");
-export const getStadiums = () => api.get("/stadiums");
 
 // ── Joueurs ──────────────────────────────────────────────────
 export const getJoueurs = () => api.get("/joueurs");
@@ -171,5 +191,22 @@ export const updateJoueur = (id, data) => {
 };
 export const deleteJoueur = (id) => api.delete(`/admin/joueurs/${id}`);
 
+// ── Selectionneurs ───────────────────────────────────────────
+export const getSelectionneurs = () => api.get("/selectionneurs");
+export const adminGetSelectionneurs = () => api.get("/admin/selectionneurs");
+export const createSelectionneur = (data) => api.post("/admin/selectionneurs", data);
+export const updateSelectionneur = (id, data) => {
+  if (data instanceof FormData) {
+    return api.post(`/admin/selectionneurs/${id}`, data);
+  }
+  return api.put(`/admin/selectionneurs/${id}`, data);
+};
+export const deleteSelectionneur = (id) => api.delete(`/admin/selectionneurs/${id}`);
+
+// ── Stadiums ─────────────────────────────────────────────────
+export const getStadiums = () => api.get("/stadiums");
+export const createStadium = (data) => api.post("/admin/stadiums", data);
+export const updateStadium = (id, data) => api.put(`/admin/stadiums/${id}`, data);
+export const deleteStadium = (id) => api.delete(`/admin/stadiums/${id}`);
 
 export default api;

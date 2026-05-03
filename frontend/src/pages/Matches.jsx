@@ -1,324 +1,319 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiClock, FiMapPin, FiFilter, FiCalendar, FiSun, FiCloud, FiCloudRain, FiWind, FiZap, FiPlayCircle, FiX, FiVideo } from "react-icons/fi";
 import { useMatches } from "../hooks/useWorldCup";
-import { MATCHES as MOCK_MATCHES, FONT, C, getCode } from "./Home/constants";
+import { MATCHES as MOCK_MATCHES, FONT, getCode } from "./Home/constants";
 import { Flag } from "./Home/ui";
+import { useTheme } from "../context/ThemeContext";
 
+const D = FONT.display;
+const B = FONT.body;
+
+// ─── Group matches by day ─────────────────────────────────────
+function groupByDay(matches) {
+  const map = {};
+  matches.forEach((m) => {
+    const raw = m.match_date || m.date || "";
+    const key = raw.split("T")[0]; // "2026-06-11"
+    if (!map[key]) map[key] = [];
+    map[key].push(m);
+  });
+  // Sort keys chronologically
+  return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
+}
+
+function formatDayHeader(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T12:00:00Z");
+  return d.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function formatTime(m) {
+  const t = m.match_time || m.time || "";
+  if (t) return t.substring(0, 5);
+  const raw = m.match_date || m.date || "";
+  if (raw.includes("T")) {
+    const d = new Date(raw);
+    return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
+  }
+  return "--:--";
+}
+
+function teamName(t) {
+  if (!t) return "TBD";
+  if (typeof t === "string") return t;
+  return t.name || "TBD";
+}
+
+// ─── Single Match Row ────────────────────────────────────────
+function MatchRow({ m, darkMode }) {
+  const border  = darkMode ? "rgba(255,255,255,0.07)" : "#e8e8e8";
+  const tPrimary  = darkMode ? "#ffffff" : "#000000";
+  const tMuted    = darkMode ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.5)";
+  const hoverBg   = darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
+  const [hovered, setHovered] = useState(false);
+
+  const home = m.team1 || m.home_team;
+  const away = m.team2 || m.away_team;
+  const phase = m.group_name || m.stage || m.phase || "Phase de groupes";
+  const venue = m.venue || m.stadium || "";
+  const city  = m.city || "";
+  const time  = formatTime(m);
+  const isFinished = m.status === "finished";
+  const score = isFinished ? `${m.home_score ?? 0} - ${m.away_score ?? 0}` : null;
+
+  // Build meta line: Phase label · Groupe X · Stade (Ville)
+  const stageLabel = (() => {
+    const s = (m.stage || "").toLowerCase();
+    if (s.includes("group") || s === "phase de groupes") return "Phase de groupes";
+    if (s.includes("round of 32") || s.includes("seizième")) return "Seizièmes de finale";
+    if (s.includes("round of 16") || s.includes("huitième")) return "Huitièmes de finale";
+    if (s.includes("quarter") || s.includes("quart")) return "Quarts de finale";
+    if (s.includes("semi") || s.includes("demi")) return "Demi-finales";
+    if (s.includes("third") || s.includes("troisième")) return "Match pour la 3e place";
+    if (s.includes("final") || s.includes("finale")) return "Finale";
+    return m.stage || "Phase de groupes";
+  })();
+
+  const metaParts = [stageLabel];
+  if (m.group_name && m.group_name !== m.stage) metaParts.push(m.group_name);
+  if (venue) metaParts.push(venue + (city ? ` (${city})` : ""));
+  else if (city) metaParts.push(city);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        borderBottom: `1px solid ${border}`,
+        background: hovered ? hoverBg : "transparent",
+        transition: "background 0.15s",
+        padding: "14px clamp(16px,3vw,48px)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+      }}
+    >
+      {/* Teams row */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "clamp(8px,2vw,24px)",
+      }}>
+        {/* Home team */}
+        <div style={{
+          flex: 1, display: "flex", alignItems: "center",
+          justifyContent: "flex-end", gap: 10, minWidth: 0,
+        }}>
+          <span style={{
+            fontFamily: B, fontSize: "clamp(13px,1.4vw,16px)", fontWeight: 700,
+            color: tPrimary, textAlign: "right",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>{teamName(home)}</span>
+          <Flag code={home?.code || home?.flag || getCode(home)} size={22} alt={teamName(home)} />
+        </div>
+
+        {/* Score / Time */}
+        <div style={{
+          minWidth: "clamp(64px,8vw,90px)",
+          textAlign: "center",
+          flexShrink: 0,
+        }}>
+          {score ? (
+            <span style={{
+              fontFamily: D, fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 900,
+              color: tPrimary, letterSpacing: "0.06em",
+            }}>{score}</span>
+          ) : (
+            <span style={{
+              fontFamily: D, fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 900,
+              color: tPrimary, letterSpacing: "0.06em",
+            }}>{time}</span>
+          )}
+        </div>
+
+        {/* Away team */}
+        <div style={{
+          flex: 1, display: "flex", alignItems: "center",
+          justifyContent: "flex-start", gap: 10, minWidth: 0,
+        }}>
+          <Flag code={away?.code || away?.flag || getCode(away)} size={22} alt={teamName(away)} />
+          <span style={{
+            fontFamily: B, fontSize: "clamp(13px,1.4vw,16px)", fontWeight: 700,
+            color: tPrimary, textAlign: "left",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>{teamName(away)}</span>
+        </div>
+      </div>
+
+      {/* Meta line */}
+      <div style={{
+        textAlign: "center",
+        fontSize: "clamp(10px,1vw,12px)",
+        color: tMuted,
+        fontFamily: B,
+        fontWeight: 500,
+      }}>
+        {metaParts.map((p, i) => (
+          <span key={i}>
+            {i > 0 && <span style={{ margin: "0 5px", opacity: 0.4 }}>·</span>}
+            {p}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Day Section ──────────────────────────────────────────────
+function DaySection({ dateKey, matches, darkMode }) {
+  const border    = darkMode ? "rgba(255,255,255,0.07)" : "#e8e8e8";
+  const tPrimary  = darkMode ? "#ffffff" : "#000000";
+  const tMuted    = darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)";
+  const headerBg  = darkMode ? "#0d0d0d" : "#ffffff";
+
+  return (
+    <div>
+      {/* Date Header */}
+      <div style={{
+        position: "sticky", top: 62, zIndex: 10,
+        background: headerBg,
+        borderTop: `1px solid ${border}`,
+        borderBottom: `1px solid ${border}`,
+        padding: "10px clamp(16px,3vw,48px)",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        transition: "background 0.3s",
+      }}>
+        <span style={{
+          fontFamily: B, fontSize: "clamp(11px,1.1vw,13px)", fontWeight: 700,
+          color: tPrimary, textTransform: "capitalize",
+        }}>
+          {formatDayHeader(dateKey)}
+        </span>
+        <Link to="/standings" style={{
+          fontFamily: B, fontSize: "clamp(10px,1vw,12px)", fontWeight: 700,
+          color: tMuted, textDecoration: "none", letterSpacing: "0.05em",
+          transition: "color 0.15s",
+          display: "flex", alignItems: "center", gap: 4,
+          whiteSpace: "nowrap",
+        }}
+          onMouseOver={e => e.currentTarget.style.color = tPrimary}
+          onMouseOut={e => e.currentTarget.style.color = tMuted}
+        >
+          Afficher groupes →
+        </Link>
+      </div>
+
+      {/* Matches */}
+      {matches.map((m, i) => (
+        <MatchRow key={m.id || i} m={m} darkMode={darkMode} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────
 export default function Matches() {
+  const { darkMode } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [filter, setFilter] = useState("all");
-  const [selectedMatch, setSelectedMatch] = useState(null);
 
-  const clampValue = (min, max) => `clamp(${min}px, ${(max/12.8).toFixed(2)}vw, ${max}px)`;
-
-  // Helper to generate a fake recent form sequence for teams
-  const getRecentForm = (teamId) => {
-    // Generate a pseudo-random form based on string length and first char code
-    const base = teamId ? teamId.charCodeAt(0) + teamId.length : 0;
-    const forms = [
-      ["W", "W", "D", "W", "L"],
-      ["W", "L", "W", "W", "W"],
-      ["D", "W", "L", "D", "W"],
-      ["W", "W", "W", "D", "W"],
-      ["L", "D", "W", "L", "W"],
-    ];
-    return forms[base % forms.length];
-  };
-
-  const getFormColor = (res) => {
-    if (res === 'W') return '#10b981'; // green
-    if (res === 'D') return '#f59e0b'; // yellow
-    return '#ef4444'; // red
-  };
-
-  
   const { data: apiMatches, loading } = useMatches();
-  
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 40); return () => clearTimeout(t); }, []);
 
   const displayMatches = (apiMatches && apiMatches.length > 0) ? apiMatches : MOCK_MATCHES;
 
-  const filteredMatches = filter === "all" 
-    ? displayMatches 
-    : displayMatches.filter(m => m.group_name === filter || m.stage === filter);
+  const stages = ["all", ...new Set(displayMatches.map(m => m.group_name || m.stage).filter(Boolean))];
 
-  const groups = ["all", ...new Set(displayMatches.map(m => m.group_name))];
+  const filtered = filter === "all"
+    ? displayMatches
+    : displayMatches.filter(m => (m.group_name || m.stage) === filter);
+
+  const grouped = groupByDay(filtered);
+
+  const bg       = darkMode ? "#0d0d0d" : "#ffffff";
+  const tPrimary = darkMode ? "#ffffff" : "#000000";
+  const tMuted   = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)";
+  const filterActiveBg   = darkMode ? "#ffffff" : "#000000";
+  const filterActiveText = darkMode ? "#000000" : "#ffffff";
+  const filterIdleBg     = darkMode ? "transparent" : "transparent";
+  const filterIdleBorder = darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)";
+  const filterIdleText   = tMuted;
 
   return (
-    <div style={{ 
-      fontFamily: FONT.body, 
-      background: "#ffffff", 
-      color: "#0d0d0d", 
-      minHeight: "100vh", 
-      opacity: mounted ? 1 : 0, 
-      transition: "opacity 0.4s",
-      paddingBottom: 100
+    <div style={{
+      fontFamily: B, background: bg, color: tPrimary,
+      minHeight: "100vh", opacity: mounted ? 1 : 0,
+      transition: "background 0.4s, color 0.4s, opacity 0.45s",
+      paddingBottom: 80,
     }}>
       <style>{`
-        .matches-hero { padding: clamp(28px, 5vh, 80px) clamp(10px, 2vw, 24px); max-width: 1380px; margin: 0 auto; }
-        .match-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; }
-        .match-row-card {
-           background: #ffffff; border: 1px solid #eee; borderRadius: 12px; padding: clamp(14px, 2.5vw, 24px);
-           display: flex; flex-direction: column; gap: 24px; 
-           box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;
-        }
-        .match-team-block { display: flex; align-items: center; gap: clamp(6px, 1.5vw, 16px); flex: 1; minWidth: 0; }
-        .match-vs-block { 
-          background: #f8f8f8; padding: 8px clamp(8px, 1.5vw, 16px); borderRadius: 8px; 
-          font-size: clamp(14px, 2.5vw, 20px); fontWeight: 900; color: #0d0d0d; minWidth: 50; textAlign: center;
-          border: "1px solid #eee"; fontFamily: ${FONT.display};
-        }
-        @media (max-width: 860px) {
-          .match-row-card { flex-direction: column; align-items: stretch; }
-          .match-info-side { flex: 1 1 100% !important; border-bottom: 1px solid #eee; padding-bottom: 12px; }
-          .match-teams-side { flex: 1 1 100% !important; justify-content: space-between !important; }
-          .match-actions-side { flex: 1 1 100% !important; flex-direction: row !important; }
-          .match-actions-side a { flex: 1; justify-content: center; }
-        }
-        @media (max-width: 480px) {
-          .match-teams-side { gap: 6px !important; }
-          .match-team-block { flex-direction: column; text-align: center !important; gap: 4px !important; }
-          .match-team-block:first-child { align-items: center !important; }
-          .match-team-block:last-child { align-items: center !important; }
-          .match-team-block span { font-size: 12px !important; }
-          .match-vs-block { min-width: 40px; padding: 6px 8px; font-size: 12px; }
-          .matches-hero { padding: 16px 10px !important; }
-          .matches-hero h1 { font-size: clamp(2rem, 7vw, 3.5rem) !important; }
-          .matches-hero p { font-size: 13px !important; padding: 0 8px; }
+        .cal-filter-bar::-webkit-scrollbar { display: none; }
+        .cal-filter-bar { scrollbar-width: none; }
+        @media (max-width: 600px) {
+          .cal-match-team span { font-size: 12px !important; }
         }
       `}</style>
 
-      <section className="matches-hero">
-        
-        <div style={{ textAlign: "center", marginBottom: clampValue(32, 56) }}>
-          <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(2rem, 7vw, 5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, marginBottom: 16 }}>Calendrier</h1>
-          <p style={{ color: "#666", fontSize: "clamp(13px, 1.2vw, 16px)", maxWidth: 550, margin: "0 auto", lineHeight: 1.5 }}>
-            Consultez le programme complet des 104 matchs de la Coupe du Monde FIFA 2026™. Filtrez par groupe ou par phase pour ne rien manquer.
-          </p>
-        </div>
+      {/* Page Header */}
+      <div style={{
+        maxWidth: 1380, margin: "0 auto",
+        padding: "80px clamp(16px,3vw,48px) 32px",
+      }}>
+        <h1 style={{
+          fontFamily: D,
+          fontSize: "clamp(48px,6vw,80px)",
+          fontWeight: 900, textTransform: "uppercase",
+          margin: "0 0 32px",
+          color: tPrimary,
+        }}>
+          Le Calendrier
+        </h1>
 
-        {/* FILTERS */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20, overflowX: "auto", paddingBottom: 6, scrollbarWidth: "none" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 10px", background: "#f8f8f8", borderRadius: 100, border: "1px solid #eee", fontSize: 8, fontWeight: 800, color: "#999", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-            <FiFilter size={14} /> FILTRER
-          </div>
-          <div style={{ display: "flex", gap: 4 }}>
-            {groups.map(g => (
-              <button 
-                key={g}
-                onClick={() => setFilter(g)}
-                style={{
-                  background: filter === g ? "#0d0d0d" : "white",
-                  color: filter === g ? "white" : "#666",
-                  border: `1px solid ${filter === g ? "#0d0d0d" : "#eee"}`,
-                  padding: "5px 12px",
-                  borderRadius: 100,
-                  fontSize: 9,
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.2s"
-                }}
-              >
-                {g === "all" ? "Tous" : g}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {loading && <div style={{ textAlign: "center", padding: 48, color: "#999" }}>Chargement des matchs...</div>}
-
-        <div className="match-list">
-          {filteredMatches.map((m, i) => (
-            <div key={m.id || i} className="match-row-card"
-            onClick={() => setSelectedMatch(m)}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.06)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.02)"; }}
-            >
-              
-              <div className="match-info-side" style={{ width: "100%", borderBottom: "1px solid #eee", paddingBottom: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <span style={{ color: "#c8102e", fontSize: 11, fontWeight: 900, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                    {m.group_name || m.stage}
-                  </span>
-                  <div style={{ width: 4, height: 4, background: "#eee", borderRadius: "50%" }} />
-                  <span style={{ color: "#aaa", fontSize: 11, fontWeight: 700 }}>MATCH #{m.id || i + 1}</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#0d0d0d", fontSize: 15, fontWeight: 700 }}>
-                    <FiCalendar size={16} color="#c8102e" /> {new Date(m.match_date).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', weekday: 'long' })}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#888", fontSize: 13, fontWeight: 500 }}>
-                    <FiClock size={16} /> {m.match_time?.substring(0,5)} · <FiMapPin size={16} /> {m.city}
-                  </div>
-                </div>
-              </div>
-
-              <div className="match-teams-side" style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
-                <div className="match-team-block" style={{ textAlign: "right", justifyContent: "flex-end" }}>
-                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.team1?.name || (typeof m.team1 === 'string' ? m.team1 : "TBD")}</span>
-                  <Flag code={m.team1?.code || m.team1?.flag || getCode(m.team1)} size={28} />
-                </div>
-
-                <div className="match-vs-block">
-                  {m.status === "finished" ? `${m.home_score} - ${m.away_score}` : "VS"}
-                </div>
-
-                <div className="match-team-block" style={{ textAlign: "left", justifyContent: "flex-start" }}>
-                  <Flag code={m.team2?.code || m.team2?.flag || getCode(m.team2)} size={28} />
-                  <span style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase" }}>{m.team2?.name || (typeof m.team2 === 'string' ? m.team2 : "TBD")}</span>
-                </div>
-              </div>
-
-              <div className="match-actions-side" style={{ width: "100%", display: "flex", flexDirection: "row", gap: 8 }}>
-                {m.video_url && (
-                    <a href={m.video_url} target="_blank" rel="noreferrer" 
-                      onClick={(e) => e.stopPropagation()}
-                      className="fz-btn-secondary"
-                      style={{
-                      padding: "10px 20px", borderRadius: 100, 
-                      fontSize: 10, fontWeight: 800, textDecoration: "none", textTransform: "uppercase", 
-                      letterSpacing: "0.05em", transition: "0.2s", display: "inline-flex", alignItems: "center", gap: 6, flex: 1, justifyContent: "center"
-                    }}>
-                      <FiPlayCircle size={14} /> Résumé
-                    </a>
-                )}
-                <Link to={`/tickets?match_id=${m.id}`} 
-                  onClick={(e) => e.stopPropagation()}
-                  style={{
-                  background: "#0d0d0d", color: "white", padding: "10px 24px", borderRadius: 100, 
-                  fontSize: 11, fontWeight: 800, textDecoration: "none", textTransform: "uppercase", 
-                  letterSpacing: "0.05em", transition: "0.2s", display: "inline-block", textAlign: "center", flex: 1
-                }}>
-                  Billets
-                </Link>
-              </div>
-
-            </div>
+        {/* Filter chips */}
+        <div className="cal-filter-bar" style={{
+          display: "flex", alignItems: "center", gap: 6,
+          overflowX: "auto", paddingBottom: 4,
+        }}>
+          {stages.map(s => (
+            <button key={s} onClick={() => setFilter(s)} style={{
+              background: filter === s ? filterActiveBg : filterIdleBg,
+              color: filter === s ? filterActiveText : filterIdleText,
+              border: `1px solid ${filter === s ? filterActiveBg : filterIdleBorder}`,
+              padding: "5px 14px", borderRadius: 100,
+              fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+              textTransform: "uppercase", cursor: "pointer",
+              whiteSpace: "nowrap", transition: "all 0.18s", fontFamily: B,
+            }}>
+              {s === "all" ? "Tous" : s}
+            </button>
           ))}
-          
-          {filteredMatches.length === 0 && (
-            <div style={{ textAlign: "center", padding: "100px 32px", background: "#fcfcfc", borderRadius: 16, border: "2px dashed #eee" }}>
-              <p style={{ color: "#aaa", fontSize: 16, fontWeight: 600 }}>Aucun match ne correspond à ce filtre.</p>
-            </div>
-          )}
         </div>
-      </section>
+      </div>
 
-      {/* MATCH DETAIL MODAL */}
-      {selectedMatch && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0,0,0,0.7)", backdropFilter: "blur(5px)", zIndex: 9999,
-          display: "flex", alignItems: "center", justifyContent: "center", padding: 16
-        }} onClick={() => setSelectedMatch(null)}>
-          <div style={{
-            background: "white", borderRadius: 20, width: "100%", maxWidth: 720,
-            overflow: "hidden", position: "relative",
-            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)"
-          }} onClick={e => e.stopPropagation()}>
-            
-            {/* Modal Header */}
-            <div style={{ padding: "16px 20px", borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ color: "#c8102e", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  {selectedMatch.group_name || selectedMatch.stage}
-                </span>
-                <span style={{ color: "#999", fontSize: 11, fontWeight: 700 }}>•</span>
-                <span style={{ color: "#888", fontSize: 11, fontWeight: 700 }}>MATCH #{selectedMatch.id}</span>
-              </div>
-              <button 
-                onClick={() => setSelectedMatch(null)}
-                style={{ background: "#f5f5f5", border: "none", width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#666", transition: "0.2s" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#e5e5e5"; e.currentTarget.style.color = "#000"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "#f5f5f5"; e.currentTarget.style.color = "#666"; }}
-              >
-                <FiX size={18} />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div style={{ padding: "24px 16px" }}>
-              
-              {/* Score / VS Display */}
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, marginBottom: 24, flexWrap: "wrap" }}>
-                <div style={{ flex: 1, textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, minWidth: 120 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.team1?.name || (typeof selectedMatch.team1 === 'string' ? selectedMatch.team1 : "TBD")}</span>
-                    <Flag code={selectedMatch.team1?.code || selectedMatch.team1?.flag || getCode(selectedMatch.team1)} size={36} />
-                  </div>
-                  {/* Form */}
-                  <div style={{ display: "flex", gap: 4 }}>
-                    {getRecentForm(selectedMatch.team1?.name || selectedMatch.team1).map((res, idx) => (
-                      <span key={idx} style={{ background: getFormColor(res), color: "white", fontSize: 9, fontWeight: 800, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 3 }}>
-                        {res}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ 
-                  background: "#f8f8f8", padding: "12px 20px", borderRadius: 12, 
-                  fontSize: clampValue(20, 26), fontWeight: 900, color: "#0d0d0d", minWidth: 80, textAlign: "center",
-                  border: "1px solid #eee", fontFamily: FONT.display
-                }}>
-                  {selectedMatch.status === "finished" ? `${selectedMatch.home_score} - ${selectedMatch.away_score}` : "VS"}
-                </div>
-
-                <div style={{ flex: 1, textAlign: "left", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10, minWidth: 120 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <Flag code={selectedMatch.team2?.code || selectedMatch.team2?.flag || getCode(selectedMatch.team2)} size={36} />
-                    <span style={{ fontFamily: FONT.display, fontSize: clampValue(20, 28), fontWeight: 900, textTransform: "uppercase" }}>{selectedMatch.team2?.name || (typeof selectedMatch.team2 === 'string' ? selectedMatch.team2 : "TBD")}</span>
-                  </div>
-                  {/* Form */}
-                  <div style={{ display: "flex", gap: 4 }}>
-                    {getRecentForm(selectedMatch.team2?.name || selectedMatch.team2).map((res, idx) => (
-                      <span key={idx} style={{ background: getFormColor(res), color: "white", fontSize: 9, fontWeight: 800, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 3 }}>
-                        {res}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Stadium Info */}
-              <div style={{ background: "#f8f8f8", borderRadius: 16, padding: 16 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
-                  <div>
-                    <h3 style={{ fontFamily: FONT.display, fontSize: clampValue(16, 22), fontWeight: 900, textTransform: "uppercase", margin: 0, color: "#0d0d0d" }}>
-                      {selectedMatch.venue}
-                    </h3>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#666", fontSize: 12, fontWeight: 600, marginTop: 4 }}>
-                      <FiMapPin size={14} /> {selectedMatch.city}
-                    </div>
-                  </div>
-                  <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMatch.venue + ' stadium')}`} target="_blank" rel="noreferrer" 
-                    style={{
-                      display: "flex", alignItems: "center", gap: 6, background: "#0d0d0d", color: "white", 
-                      padding: "8px 16px", borderRadius: 100, textDecoration: "none", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em"
-                    }}>
-                    <FiVideo size={12} /> Visite Vidéo
-                  </a>
-                </div>
-
-                {/* Images */}
-                <div style={{ display: "flex", gap: 10 }}>
-                  <div style={{ flex: 1, height: clampValue(100, 160), borderRadius: 8, overflow: "hidden" }}>
-                    <img src="/images/stadiums/stadium_1.png" alt="Stadium Interior" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                  <div style={{ flex: 1, height: clampValue(100, 160), borderRadius: 8, overflow: "hidden" }}>
-                    <img src="/images/stadiums/stadium_2.png" alt="Stadium Exterior" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                </div>
-
-              </div>
-            </div>
-            
-          </div>
+      {/* Loading */}
+      {loading && (
+        <div style={{ textAlign: "center", padding: 64, color: tMuted, fontFamily: B, fontSize: 13 }}>
+          Chargement des matchs…
         </div>
       )}
+
+      {/* Calendar */}
+      {!loading && grouped.length === 0 && (
+        <div style={{ textAlign: "center", padding: 64, color: tMuted, fontFamily: B, fontSize: 13 }}>
+          Aucun match ne correspond à ce filtre.
+        </div>
+      )}
+
+      {!loading && grouped.map(([dateKey, matches]) => (
+        <DaySection key={dateKey} dateKey={dateKey} matches={matches} darkMode={darkMode} />
+      ))}
     </div>
   );
 }

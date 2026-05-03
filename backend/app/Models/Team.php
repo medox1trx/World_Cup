@@ -32,6 +32,11 @@ class Team extends Model
         return $this->belongsTo(Confederation::class);
     }
 
+    public function selectionneur()
+    {
+        return $this->hasOne(Selectionneur::class);
+    }
+
     // Accessors for compatibility
     public function getFlagAttribute()
     {

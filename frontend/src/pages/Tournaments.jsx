@@ -23,14 +23,9 @@ export default function Tournaments() {
       paddingBottom: 100
     }}>
       <section style={{ padding: "100px 32px", maxWidth: 1380, margin: "0 auto" }}>
-        
-        <div style={{ textAlign: "center", marginBottom: 80 }}>
-          <span style={{ color: "#c8102e", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 13, marginBottom: 20, display: "block" }}>Héritage Mondial</span>
-          <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(3.5rem,8vw,7rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9 }}>Tournois Historiques</h1>
-          <p style={{ color: "#666", fontSize: 20, marginTop: 24, maxWidth: 700, margin: "24px auto 0" }}>
-            Un siècle d'émotions, de triomphes et de légendes.
-          </p>
-        </div>
+        <h1 style={{ fontFamily: FONT.display, fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, textTransform: "uppercase", marginBottom: 60 }}>
+          Les Tournois
+        </h1>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: 32 }}>
           {HISTORY.map((h, i) => (

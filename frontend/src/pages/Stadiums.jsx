@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { getFanZones, getImageUrl } from "../services/api";
+import { getStadiums, getImageUrl } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 
 const D = "'Bebas Neue', sans-serif";
 const B = "'DM Sans', sans-serif";
 
-export default function Fans() {
+export default function Stadiums() {
   const { darkMode } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [fanZones, setFanZones] = useState([]);
+  const [stadiums, setStadiums] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,10 +17,10 @@ export default function Fans() {
   }, []);
 
   useEffect(() => {
-    getFanZones()
+    getStadiums()
       .then(data => {
         const results = Array.isArray(data) ? data : (data.data || []);
-        setFanZones(results);
+        setStadiums(results);
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -94,27 +94,27 @@ export default function Fans() {
       <section style={{ paddingTop: 40 }}>
         <div className="hw">
           <h1 style={{ fontFamily: D, fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, textTransform: "uppercase", marginBottom: 60 }}>
-            Fan Zones
+            Les Stades
           </h1>
           {loading ? (
             <div style={{ padding: 100, textAlign: "center", color: tSub }}>
-              Chargement des Fan Zones...
+              Chargement des stades...
             </div>
           ) : (
             <div className="fz-grid">
-              {fanZones.map((fz) => (
-                <div key={fz.id} className="fz-card">
+              {stadiums.map((s) => (
+                <div key={s.id} className="fz-card">
                   <div className="fz-img-wrap">
                     <img
-                      src={getImageUrl(fz.image_url)}
-                      alt={fz.zone_label}
+                      src={getImageUrl(s.image_url)}
+                      alt={s.name}
                       className="fz-img"
                       onError={e => {
-                        e.currentTarget.src = `https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800`;
+                        e.currentTarget.src = `https://i.pinimg.com/736x/39/0a/45/390a454c565577a5a7bc57597b722328.jpg`;
                       }}
                     />
                   </div>
-                  <h3 className="fz-name">{fz.zone_label}</h3>
+                  <h3 className="fz-name">{s.name}</h3>
                 </div>
               ))}
             </div>

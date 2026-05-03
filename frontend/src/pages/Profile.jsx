@@ -52,14 +52,14 @@ function ProfileField({ label, value, onChange, disabled, error }) {
           padding: "12px 16px",
           borderRadius: 8,
           background: darkMode ? "#1a1a1a" : "#f5f5f5",
-          border: `1px solid ${error ? "#ef4444" : (darkMode ? "#333" : "#eee")}`,
+          border: `1px solid ${error ? "#000000" : (darkMode ? "#333" : "#eee")}`,
           color: "inherit",
           fontFamily: FB,
           fontSize: 14,
           outline: "none"
         }}
       />
-      {error && <p style={{ color: "#ef4444", fontSize: 11, marginTop: 4 }}>{error}</p>}
+      {error && <p style={{ color: "#ffffff", background: "#000000", padding: "8px 12px", borderRadius: 4, fontSize: 11, marginTop: 4 }}>{error}</p>}
     </div>
   );
 }
@@ -158,12 +158,12 @@ export default function Dashboard() {
           cursor: pointer; transition: all 0.2s; font-family: ${FD}; text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; font-size: 13px;
           margin-bottom: 4px;
         }
-        .nav-link.active { background: #c8102e; color: white; }
+        .nav-link.active { background: #000000; color: white; }
         .nav-link:not(.active):hover { background: ${darkMode ? "#222" : "#f0f0f0"}; }
-        .logout-btn { color: #ef4444; margin-top: 20px; }
+        .logout-btn { color: white; background: #000000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 20px; }
         .content-card { background: ${darkMode ? "#141414" : "#fff"}; border-radius: 24px; padding: 40px; border: 1px solid ${darkMode?"#222" : "#eee"}; min-height: 500px; }
         .booking-card { display: flex; align-items: center; gap: 20px; padding: 20px; border-radius: 16px; border: 1px solid ${darkMode ? "#222" : "#eee"}; margin-bottom: 16px; transition: transform 0.2s; }
-        .booking-card:hover { transform: translateX(8px); border-color: #c8102e; }
+        .booking-card:hover { transform: translateX(8px); border-color: #000000; }
         .booking-img { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; }
         .status-tag { padding: 4px 10px; borderRadius: 100px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; }
         .status-tag.confirmed { background: rgba(34, 197, 94, 0.1); color: #22c55e; }

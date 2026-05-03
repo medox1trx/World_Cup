@@ -18,18 +18,17 @@ class JoueurController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'numero' => 'required|integer',
-            'poste' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'number' => 'required|integer',
+            'position' => 'required|string|max:255',
             'goals' => 'nullable|integer|min:0',
             'photo' => 'nullable|sometimes',
             'team_id' => 'required|exists:teams,id',
         ]);
 
         if ($request->hasFile('photo')) {
-            $request->validate(['photo' => 'image|mimes:jpg,jpeg,png|max:2048']);
+            $request->validate(['photo' => 'image|mimes:jpg,jpeg,png,webp,avif,svg|max:2048']);
         } elseif ($request->filled('photo')) {
-            // Flexible check for URL or string
             $request->validate(['photo' => 'nullable']);
         }
 
@@ -48,16 +47,16 @@ class JoueurController extends Controller
     public function update(Request $request, Joueur $joueur)
     {
         $validated = $request->validate([
-            'nom' => 'sometimes|required|string|max:255',
-            'numero' => 'sometimes|required|integer',
-            'poste' => 'sometimes|required|string|max:255',
+            'name' => 'sometimes|required|string|max:255',
+            'number' => 'sometimes|required|integer',
+            'position' => 'sometimes|required|string|max:255',
             'goals' => 'nullable|integer|min:0',
             'photo' => 'nullable|sometimes',
             'team_id' => 'sometimes|required|exists:teams,id',
         ]);
 
         if ($request->hasFile('photo')) {
-            $request->validate(['photo' => 'image|mimes:jpg,jpeg,png|max:2048']);
+            $request->validate(['photo' => 'image|mimes:jpg,jpeg,png,webp,avif,svg|max:2048']);
         } elseif ($request->filled('photo')) {
             $request->validate(['photo' => 'nullable']);
         }
@@ -80,9 +79,8 @@ class JoueurController extends Controller
     public function topScorers()
     {
         return Joueur::with('team')
-            ->where('goals', '>', 0)
             ->orderBy('goals', 'desc')
-            ->limit(5)
+            ->limit(20)
             ->get();
     }
 }

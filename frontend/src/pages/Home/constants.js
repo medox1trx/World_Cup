@@ -2,7 +2,7 @@
 export const C = {
   black:  "#0d0d0d",
   white:  "#ffffff",
-  red:    "#c8102e",
+  red:    "#0d0d0d", // Monochromatic reset
   gray:   "#f5f5f5",
   border: "#e8e8e8",
   mid:    "#8a8a8a",
@@ -41,8 +41,12 @@ export const CODES = {
 };
 
 export const STAGE_LABEL = {
-  group: "Groupe", round_of_16: "8es",
-  quarter: "Quarts", semi: "Demi", final: "FINALE",
+  group: "Groupe", 
+  round_of_32: "16es",
+  round_of_16: "8es",
+  quarter: "Quarts", 
+  semi: "Demi", 
+  final: "FINALE",
 };
 
 // ─── IMAGE POOL ───
@@ -98,9 +102,9 @@ export const GROUPS = [
 
 // ─── HOST CITIES ──────────────────────────────────────────────
 export const HOST_CITIES = [
-  { city:"USA", country:"11 Villes Hôtes", code:"us", bg:"#002868" },
-  { city:"Mexico", country:"3 Villes Hôtes", code:"mx", bg:"#006847" },
-  { city:"Canada", country:"2 Villes Hôtes", code:"ca", bg:"#FF0000" },
+  { city:"USA", country:"11 Villes Hôtes", code:"us", bg: "#111111" },
+  { city:"Mexico", country:"3 Villes Hôtes", code:"mx", bg: "#1a1a1a" },
+  { city:"Canada", country:"2 Villes Hôtes", code:"ca", bg: "#222222" },
 ];
 
 export const WC_DATE = new Date("2026-06-11T19:00:00Z");

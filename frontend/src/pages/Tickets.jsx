@@ -134,7 +134,7 @@ export default function Tickets() {
   const tCardBg = darkMode ? "#111111" : "#ffffff";
   const tBorder = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const tBorderHov = darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";
-  const tSubText = darkMode ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.5)";
+  const tSubText = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)";
   const tStroke = darkMode ? "1.5px rgba(255,255,255,0.6)" : "1.5px rgba(0,0,0,0.2)";
   const tGradTop = darkMode ? "linear-gradient(to top, #0d0d0d 0%, rgba(13,13,13,0) 100%)" : "linear-gradient(to top, #fdfdfd 0%, rgba(253,253,253,0) 100%)";
   const tInputBg = darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)";
@@ -158,9 +158,9 @@ export default function Tickets() {
         .g-tickets { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 24px; }
         @media(max-width: 768px) { .g-tickets { grid-template-columns: 1fr; } }
         
-        /* ── RESET VISITED LINKS (TEXT WHITE) ── */
+        /* ── RESET VISITED LINKS (NO PURPLE) ── */
         a, a:visited {
-          color: white !important;
+          color: inherit;
           text-decoration: none !important;
         }
         
@@ -177,29 +177,16 @@ export default function Tickets() {
       `}</style>
 
       {/* HERO SECTION */}
-      <section style={{ position: "relative", minHeight: "50vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(${tDot} 1px,transparent 1px)`, backgroundSize: "32px 32px", zIndex: 1 }} />
-        <div style={{ position: "absolute", inset: 0, background: tGradTop, zIndex: 1 }} />
-        
-        <div className="hw" style={{ position: "relative", zIndex: 2, width: "100%", padding: "clamp(120px,15vh,180px) clamp(16px,3vw,48px) 48px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 26 }}>
-            <div style={{ height: 1, width: 36, background: tBorderHov, flexShrink: 0 }} />
-            <span style={{ color: tSubText, fontFamily: FONT_B, fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>Billetterie Officielle</span>
-          </div>
-          
-          <div style={{ marginBottom: 40 }}>
-            <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px,8vw,110px)", fontWeight: 900, lineHeight: 0.85, textTransform: "uppercase", letterSpacing: "-0.02em", margin: 0 }}>
-              RESERVEZ VOS <span style={{ color: "transparent", WebkitTextStroke: tStroke }}>PLACES</span>
-            </h1>
-          </div>
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
-            <div style={{ display: "flex", background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
-              <input type="text" placeholder="Rechercher une équipe, un stade..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                style={{ background: "transparent", border: "none", outline: "none", color: tText, padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
-              <div style={{ background: tBtnBg, color: tBtnText, border: "none", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <FiSearch size={16} />
-              </div>
+      <section className="hw" style={{ position: "relative", paddingTop: 100, paddingBottom: 60 }}>
+        <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, textTransform: "uppercase", marginBottom: 60 }}>
+          Les Billets
+        </h1>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
+          <div style={{ display: "flex", background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
+            <input type="text" placeholder="Rechercher une équipe, un stade..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+              style={{ background: "transparent", border: "none", outline: "none", color: tText, padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
+            <div style={{ background: tBtnBg, color: tBtnText, border: "none", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <FiSearch size={16} />
             </div>
           </div>
         </div>

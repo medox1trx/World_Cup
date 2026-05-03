@@ -208,15 +208,32 @@ export default function AdminMatches() {
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
         .form-input { 
-          width: 100%; padding: 14px 18px; border-radius: 12px; 
-          background: ${surface}; border: 1px solid ${border}; 
+          width: 100%; padding: 12px 18px; border-radius: 12px; 
+          background-color: ${surface}; border: 1px solid ${border}; 
           color: ${textPrimary}; outline: none; transition: all 0.25s ease;
+          box-sizing: border-box; font-family: ${FB}; font-size: 15px;
+          height: auto; min-height: 50px;
+        }
+        select.form-input {
+          appearance: none !important;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(textSecondary)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+          background-repeat: no-repeat !important; 
+          background-position: right 18px center !important; 
+          background-size: 18px !important; 
+          padding-right: 48px !important; 
+          cursor: pointer;
+          line-height: 1.2;
         }
         .form-input:focus { 
-          background: #0a0a0a; color: #ffffff; 
+          background: ${darkMode ? "#0a0a0a" : "#ffffff"}; 
+          color: ${textPrimary}; 
           border-color: ${accent}; box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
         }
-        .form-input:focus::placeholder { color: rgba(255,255,255,0.4); }
+        .form-input option {
+          background: ${darkMode ? "#1c1c1c" : "#ffffff"};
+          color: ${textPrimary};
+        }
+        .form-input:focus::placeholder { color: ${darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"}; }
       `}</style>
 
       <div className="admin-page">
@@ -224,7 +241,6 @@ export default function AdminMatches() {
           <div className="admin-header">
             <div>
               <h1 className="admin-title">Calendrier</h1>
-              <p className="admin-sub">Gestion des matchs et des phases de groupes</p>
             </div>
             <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
               <FiPlus /> Ajouter un match
@@ -251,24 +267,24 @@ export default function AdminMatches() {
                 ) : matches.map((m) => (
                   <tr key={m.id}>
                     <td>
-                      <div style={{ fontWeight: 800, fontSize: 16 }}>{m.team1?.name || "TBD"} vs {m.team2?.name || "TBD"}</div>
+                      <div style={{ fontWeight: 800, fontSize: 16 }}>{m.team1?.name || m.home_team || "TBD"} vs {m.team2?.name || m.away_team || "TBD"}</div>
                     </td>
                     <td>
-                       <div style={{ textTransform: "capitalize", fontWeight: 600 }}>{m.stage.replace('_', ' ')}</div>
+                       <div style={{ textTransform: "capitalize", fontWeight: 600 }}>{(m.stage || "group").replace('_', ' ')}</div>
                        {m.group_name && <div style={{ fontSize: 11, opacity: 0.6 }}>{m.group_name}</div>}
                     </td>
                     <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }}>
-                        <FiMapPin size={14} color="#ef4444" /> {m.city}
+                      <div style={{ fontSize: 13, fontWeight: 600 }}>
+                         {m.city || m.city_name || "N/A"}
                       </div>
-                      <div style={{ fontSize: 11, opacity: 0.6, marginTop: 4 }}>{m.venue}</div>
+                      <div style={{ fontSize: 11, opacity: 0.6, marginTop: 4 }}>{m.venue || "N/A"}</div>
                       {m.referee && (
-                        <div style={{ fontSize: 11, color: "#3b82f6", marginTop: 4 }}>
+                        <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4 }}>
                            Arbitre: {m.referee}
                         </div>
                       )}
                       {m.weather_condition && (
-                        <div style={{ fontSize: 11, color: "#f59e0b", marginTop: 4, fontWeight: 700 }}>
+                        <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4, fontWeight: 700 }}>
                            Météo: {m.weather_condition} ({m.weather_temp}°C)
                         </div>
                       )}
@@ -279,7 +295,7 @@ export default function AdminMatches() {
                     </td>
                     <td>
                        {m.status === 'finished' ? (
-                         <div style={{ fontWeight: 900, fontSize: 18, color: "#c8102e" }}>{m.home_score} - {m.away_score}</div>
+                         <div style={{ fontWeight: 900, fontSize: 18 }}>{m.home_score} - {m.away_score}</div>
                        ) : (
                          <span className={`admin-badge ${m.status}`}>Programmé</span>
                        )}

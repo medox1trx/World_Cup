@@ -36,28 +36,10 @@ export default function Cities() {
       transition: "background 0.3s, color 0.3s"
     }}>
 
-      {/* HERO SECTION */}
-      <section style={{
-        position: "relative",
-        height: "40vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
-        background: darkMode ? "#1a1a1a" : "#f0f0f0"
-      }}>
-        <img src="https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=1600&q=85&fit=crop" alt="Hero"
-          onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1518115243171-4601fc6bed1a?w=800&q=80" }}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: darkMode ? 0.3 : 0.15 }} />
-        <div style={{ position: "relative", zIndex: 1, textAlign: "center", padding: "0 24px" }}>
-          <span style={{ color: "#c8102e", fontWeight: 800, textTransform: "uppercase", letterSpacing: "2px", fontSize: 13, marginBottom: 12, display: "block" }}>
-            FIFA World Cup 2026™
-          </span>
-          <h1 style={{ fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 1, margin: 0 }}>
-            {t('hostCities')}
-          </h1>
-        </div>
+      <section style={{ maxWidth: 1380, margin: "0 auto", padding: "100px 24px 0" }}>
+        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, textTransform: "uppercase", marginBottom: 60 }}>
+          Les Villes Hôtes
+        </h1>
       </section>
 
       {/* CONTENT */}

@@ -30,29 +30,27 @@ export default function TeamDetail() {
     fetchTeam();
   }, [id]);
 
-  const theme = {
-    bg: darkMode ? "#080808" : "#f8f9fa",
-    card: darkMode ? "#111111" : "#ffffff",
-    text: darkMode ? "#ffffff" : "#0d0d0d",
-    subText: darkMode ? "#888" : "#666",
-    border: darkMode ? "rgba(255,255,255,0.08)" : "#eeeeee",
-    accent: C.red,
-  };
+  // THEME TOKENS
+  const tBg     = darkMode ? "#0a0a0a" : "#fdfdfd";
+  const tText   = darkMode ? "white"   : "#0a0a0a";
+  const tCardBg = darkMode ? "#111111" : "#f5f5f5";
+  const tBorder = darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+  const tSub    = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)";
 
   if (loading) {
     return (
-      <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: theme.bg }}>
-        <div style={{ animation: "spin 1s linear infinite", border: `3px solid ${theme.border}`, borderTop: `3px solid ${theme.accent}`, borderRadius: "50%", width: 40, height: 40 }} />
+      <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: tBg }}>
+        <div style={{ animation: "spin 1s linear infinite", border: `3px solid ${tBorder}`, borderTop: `3px solid ${C.red}`, borderRadius: "50%", width: 40, height: 40 }} />
       </div>
     );
   }
 
   if (error || !team) {
     return (
-      <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: theme.bg, color: theme.text }}>
-        <h2 style={{ fontFamily: FONT.display, fontSize: 32, marginBottom: 16 }}>Oups !</h2>
-        <p style={{ color: theme.subText }}>{error || "Données indisponibles."}</p>
-        <button onClick={() => navigate("/teams")} style={{ marginTop: 24, padding: "12px 24px", background: theme.accent, color: "white", border: "none", borderRadius: 12, fontWeight: 800, cursor: "pointer" }}>
+      <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: tBg, color: tText }}>
+        <h2 style={{ fontFamily: 'Bebas Neue', fontSize: 32, marginBottom: 16 }}>Oups !</h2>
+        <p style={{ color: tSub }}>{error || "Données indisponibles."}</p>
+        <button onClick={() => navigate("/teams")} style={{ marginTop: 24, padding: "12px 28px", background: tText, color: tBg, border: "none", borderRadius: 100, fontWeight: 900, cursor: "pointer", fontFamily: 'Bebas Neue', textTransform: 'uppercase' }}>
           Retour aux équipes
         </button>
       </div>
@@ -60,112 +58,148 @@ export default function TeamDetail() {
   }
 
   return (
-    <div style={{ background: theme.bg, color: theme.text, minHeight: "100vh", transition: "0.3s" }}>
+    <div style={{ background: tBg, color: tText, minHeight: "100vh", transition: "background 0.4s, color 0.4s", fontFamily: "'DM Sans', sans-serif" }}>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .detail-card { animation: fadeIn 0.6s ease-out backwards; }
+        .detail-card { animation: fadeIn 0.6s ease-out backwards; }
+        .stat-card { background: ${tCardBg}; border: 1px solid ${tBorder}; padding: 24px; border-radius: 20px; }
+        .player-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 12px;
+          cursor: default;
+        }
+        .player-circle {
+          width: 130px;
+          height: 130px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 2px solid ${tBorder};
+          background: ${tCardBg};
+        }
+        .player-img { width: 100%; height: 100%; object-fit: cover; }
+        .player-name {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 20px;
+          font-weight: 900;
+          text-transform: uppercase;
+          line-height: 1;
+          color: ${tText};
+        }
+        .player-meta {
+          font-size: 11px;
+          font-weight: 900;
+          color: ${tSub};
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+        }
       `}</style>
       
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 24px" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "80px clamp(20px, 5vw, 80px)" }}>
         <button 
           onClick={() => navigate("/teams")}
-          style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", color: theme.subText, fontSize: 14, fontWeight: 700, cursor: "pointer", marginBottom: 32, padding: 0 }}
+          style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", color: tSub, fontSize: 13, fontWeight: 900, cursor: "pointer", marginBottom: 48, padding: 0, fontFamily: 'Bebas Neue', letterSpacing: '0.1em' }}
         >
-          <FiArrowLeft /> RETOUR AUX ÉQUIPES
+          <FiArrowLeft size={16} /> RETOUR AUX ÉQUIPES
         </button>
 
-        <div className="detail-card" style={{ display: "grid", gridTemplateColumns: "clamp(300px, 40%, 500px) 1fr", gap: 60, alignItems: "start" }}>
-          {/* Left Column: Image & Flag */}
+        <div className="detail-card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: 80, alignItems: "start" }}>
+          {/* Left Column: Flag/Hero Image */}
           <div style={{ position: "relative" }}>
-            <div style={{ borderRadius: 32, overflow: "hidden", boxShadow: "0 30px 60px rgba(0,0,0,0.2)", border: `1px solid ${theme.border}` }}>
+            <div style={{ borderRadius: 24, overflow: "hidden", border: `1px solid ${tBorder}`, background: tCardBg }}>
               <img 
-                src={getImageUrl(team.hero_image || team.image_url)} 
+                src={(team.hero_image || team.image_url) ? getImageUrl(team.hero_image || team.image_url) : `https://flagcdn.com/w1280/${team.flag?.toLowerCase()}.png`} 
                 alt={team.name}
                 onError={(e) => {
-                  e.target.src = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80";
+                  e.target.src = `https://flagcdn.com/w1280/${team.flag?.toLowerCase()}.png`;
                 }}
-                style={{ width: "100%", height: 500, objectFit: "cover" }}
+                style={{ width: "100%", height: 600, objectFit: "cover" }}
               />
-            </div>
-            <div style={{ position: "absolute", bottom: -24, right: 32, background: "white", padding: "12px 20px", borderRadius: 16, boxShadow: "0 10px 30px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", gap: 12 }}>
-              <Flag code={team.flag} size={32} />
-              <span style={{ fontWeight: 900, fontSize: 14, color: "#000" }}>{team.code.toUpperCase()}</span>
             </div>
           </div>
 
           {/* Right Column: Info */}
           <div>
-            <span style={{ color: theme.accent, fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 12 }}>Nation Participant</span>
-            <h1 style={{ fontFamily: FONT.display, fontSize: clamp(48, 80), fontWeight: 900, textTransform: "uppercase", margin: "8px 0 24px", lineHeight: 0.9 }}>
+            <h1 style={{ fontFamily: 'Bebas Neue', fontSize: "clamp(60px, 8vw, 120px)", fontWeight: 900, textTransform: "uppercase", margin: "10px 0 32px", lineHeight: 0.9 }}>
               {team.name}
             </h1>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 40 }}>
-              <div style={{ background: theme.card, padding: 24, borderRadius: 24, border: `1px solid ${theme.border}` }}>
-                <span style={{ display: "block", fontSize: 11, fontWeight: 800, color: theme.subText, textTransform: "uppercase", marginBottom: 4 }}>Groupe</span>
-                <span style={{ fontSize: 24, fontWeight: 900 }}>{team.group?.name || "N/A"}</span>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 40 }}>
+              <div className="stat-card">
+                <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 6, letterSpacing: '0.1em' }}>Groupe</span>
+                <span style={{ fontSize: 32, fontWeight: 900, fontFamily: 'Bebas Neue' }}>{team.group?.name || "Group C"}</span>
               </div>
-              <div style={{ background: theme.card, padding: 24, borderRadius: 24, border: `1px solid ${theme.border}` }}>
-                <span style={{ display: "block", fontSize: 11, fontWeight: 800, color: theme.subText, textTransform: "uppercase", marginBottom: 4 }}>Confédération</span>
-                <span style={{ fontSize: 24, fontWeight: 900 }}>{team.confederation || "N/A"}</span>
+              <div className="stat-card">
+                <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 6, letterSpacing: '0.1em' }}>Confédération</span>
+                <span style={{ fontSize: 32, fontWeight: 900, fontFamily: 'Bebas Neue' }}>{team.confederation || "CAF"}</span>
               </div>
             </div>
 
-            <div style={{ background: darkMode ? "rgba(255,255,255,0.03)" : "#f0f0f0", borderRadius: 32, padding: 32, border: `1px solid ${theme.border}` }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, marginBottom: 32 }}>
-                <div>
-                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Joueur Clé</span>
-                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.key_player || "N/A"}</span>
-                </div>
-                <div>
-                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Capitaine</span>
-                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.captain || "N/A"}</span>
-                </div>
-                <div>
-                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Sélectionneur</span>
-                  <span style={{ fontSize: 20, fontWeight: 900 }}>{team.coach || "N/A"}</span>
-                </div>
-                <div>
-                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: theme.subText, textTransform: "uppercase" }}>Rang FIFA</span>
-                  <span style={{ fontSize: 20, fontWeight: 900 }}>#{team.world_ranking || 0}</span>
+            {( (team.key_player && team.key_player !== "N/A") || 
+               (team.captain && team.captain !== "N/A") || 
+               (team.coach && team.coach !== "N/A") || 
+               (team.world_ranking > 0) ) && (
+              <div style={{ background: tCardBg, borderRadius: 24, padding: 40, border: `1px solid ${tBorder}` }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 32 }}>
+                  {team.key_player && team.key_player !== "N/A" && (
+                    <div>
+                      <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 4, letterSpacing: '0.05em' }}>Joueur Clé</span>
+                      <span style={{ fontSize: 18, fontWeight: 900 }}>{team.key_player}</span>
+                    </div>
+                  )}
+                  {team.captain && team.captain !== "N/A" && (
+                    <div>
+                      <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 4, letterSpacing: '0.05em' }}>Capitaine</span>
+                      <span style={{ fontSize: 18, fontWeight: 900 }}>{team.captain}</span>
+                    </div>
+                  )}
+                  {(team.selectionneur || (team.coach && team.coach !== "N/A")) && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                      {team.selectionneur?.photo && (
+                        <div style={{ width: 50, height: 50, borderRadius: "50%", overflow: "hidden", border: `1px solid ${tBorder}`, background: tBg }}>
+                          <img src={getImageUrl(team.selectionneur.photo)} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
+                        </div>
+                      )}
+                      <div>
+                        <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 4, letterSpacing: '0.05em' }}>Sélectionneur</span>
+                        <span style={{ fontSize: 18, fontWeight: 900 }}>{team.selectionneur?.name || team.coach}</span>
+                      </div>
+                    </div>
+                  )}
+                  {team.world_ranking > 0 && (
+                    <div>
+                      <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 4, letterSpacing: '0.05em' }}>Rang FIFA</span>
+                      <span style={{ fontSize: 24, fontWeight: 900, color: C.red, fontFamily: 'Bebas Neue' }}>#{team.world_ranking}</span>
+                    </div>
+                  )}
                 </div>
               </div>
-              
-              <p style={{ fontSize: 16, lineHeight: 1.6, color: theme.subText, margin: 0 }}>
-                {team.description || `${team.name} participe à la Coupe du Monde 2026 avec de grandes ambitions.`}
-              </p>
-            </div>
-
-            <div style={{ display: "flex", gap: 16, marginTop: 32 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, opacity: 0.6 }}>
-                <FiAward /> 03 Titres
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, opacity: 0.6 }}>
-                <FiShield /> Qualifié
-              </div>
-            </div>
+            )}
           </div>
         </div>
-        <div style={{ marginTop: 80 }}>
-          <h2 style={{ fontFamily: FONT.display, fontSize: 32, fontWeight: 900, textTransform: "uppercase", marginBottom: 32 }}>L'Effectif</h2>
+
+        <div style={{ marginTop: 100 }}>
+          <h2 style={{ fontFamily: 'Bebas Neue', fontSize: 48, fontWeight: 900, textTransform: "uppercase", marginBottom: 48 }}>L'Effectif</h2>
           
           {!team.joueurs || team.joueurs.length === 0 ? (
-            <p style={{ color: theme.subText }}>Aucun joueur enregistré pour cette équipe.</p>
+            <div style={{ padding: 60, border: `1px solid ${tBorder}`, borderRadius: 24, textAlign: 'center', background: tCardBg }}>
+              <p style={{ color: tSub, fontWeight: 700 }}>Aucun joueur enregistré pour cette équipe.</p>
+            </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 24 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "48px 32px" }}>
               {team.joueurs.map((player) => (
-                <div key={player.id} style={{ background: theme.card, borderRadius: 24, overflow: "hidden", border: `1px solid ${theme.border}`, display: "flex", alignItems: "center", gap: 20, padding: "16px 20px" }}>
-                  <div style={{ width: 64, height: 64, borderRadius: 16, overflow: "hidden", border: `1px solid ${theme.border}` }}>
-                    <img src={getImageUrl(player.photo)} alt={player.nom} onError={(e) => { e.target.src = "https://www.w3schools.com/howto/img_avatar.png"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <div key={player.id} className="player-item">
+                  <div className="player-circle">
+                    <img className="player-img" src={getImageUrl(player.photo)} alt={player.nom} onError={(e) => { e.target.src = "https://www.w3schools.com/howto/img_avatar.png"; }} />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                      <span style={{ fontSize: 18, fontWeight: 900, textTransform: "uppercase", lineHeight: 1.2 }}>{player.nom}</span>
-                      <span style={{ fontSize: 22, fontWeight: 900, color: theme.accent, opacity: 0.8 }}>#{player.numero}</span>
+                  <div>
+                    <div className="player-name">
+                      {player.nom} {player.numero && <span style={{ color: C.red }}>#{player.numero}</span>}
                     </div>
-                    <span style={{ display: "block", fontSize: 12, fontWeight: 800, color: theme.subText, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>
-                      {player.poste}
-                    </span>
+                    <div className="player-meta">{player.poste}</div>
                   </div>
                 </div>
               ))}
@@ -175,8 +209,4 @@ export default function TeamDetail() {
       </div>
     </div>
   );
-}
-
-function clamp(min, max) {
-  return `clamp(${min}px, ${(max/12.8).toFixed(2)}vw, ${max}px)`;
 }

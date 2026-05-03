@@ -1,123 +1,108 @@
 import { useState, useEffect } from "react";
-import { getFanZones, createFanZone, updateFanZone, deleteFanZone, getPays, getVilles } from "../../services/api";
-import { FiPlus, FiTrash2, FiEdit2 } from "react-icons/fi";
+import { useTheme } from "../../context/ThemeContext";
+import { FiPlus, FiTrash2, FiEdit2, FiMapPin } from "react-icons/fi";
+import { getFanZones, createFanZone, updateFanZone, deleteFanZone, getCities, getImageUrl } from "../../services/api";
+import ImageUpload from "../../components/ImageUpload.jsx";
+import toast from "react-hot-toast";
 
 const FD = "'Bebas Neue', sans-serif";
 const FB = "'DM Sans', sans-serif";
 
 export default function AdminFanZones() {
+  const { darkMode } = useTheme();
   const [fanZones, setFanZones] = useState([]);
-  const [paysList, setPaysList] = useState([]);
-  const [villesFiltered, setVillesFiltered] = useState([]);
+  const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [imageData, setImageData] = useState({ type: 'url', value: '' });
   
   const [formData, setFormData] = useState({
-    pays_id: "",
-    ville_id: "",
-    stade: "",
-    capacite: "",
-    nb_matchs: 0,
-    adresse: "",
-    zone_label: "",
-    description: "",
-    image_url: "",
-    groupe: "Europe · Afrique",
-    statut: "actif"
+    city_id: "",
+    zone_label: ""
   });
+
+  const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
+  const card         = darkMode ? "#1c1c1c"                  : "#ffffff";
+  const border       = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
+  const textPrimary  = darkMode ? "#ffffff"                  : "#0d0d0d";
+  const textSecondary= darkMode ? "rgba(255,255,255,0.55)"   : "rgba(0,0,0,0.5)";
+  const surface      = darkMode ? "#171717"                  : "#f5f5f5";
+  const accent       = darkMode ? "#ffffff"                  : "#0d0d0d";
+  const accentContrast= darkMode ? "#0d0d0d"                 : "#ffffff";
 
   useEffect(() => { 
     fetchData(); 
-    loadPays();
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      const data = await getFanZones();
-      setFanZones(data);
+      const [fzData, cData] = await Promise.all([getFanZones(), getCities()]);
+      const fetchedFZ = fzData?.data || fzData;
+      const fetchedCities = cData?.data || cData;
+      setFanZones(Array.isArray(fetchedFZ) ? fetchedFZ : []);
+      setCities(Array.isArray(fetchedCities) ? fetchedCities : []);
     } catch (err) {
       console.error(err);
+      toast.error("Erreur lors du chargement des Fan Zones");
     } finally {
       setLoading(false);
     }
   };
 
-  const loadPays = async () => {
-    const data = await getPays();
-    setPaysList(data);
-  };
-
-  const handlePaysChange = async (paysId) => {
-    setFormData(prev => ({ ...prev, pays_id: paysId, ville_id: "" }));
-    if (paysId) {
-      const villes = await getVilles({ pays_id: paysId });
-      setVillesFiltered(villes);
-    } else {
-      setVillesFiltered([]);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const payload = { ...formData };
-      delete payload.pays_id; // API doesn't need pays_id, just ville_id
+    const isFile = imageData.type === 'file' && imageData.value;
+    let payload;
 
+    if (isFile) {
+      payload = new FormData();
+      payload.append("city_id", formData.city_id);
+      payload.append("zone_label", formData.zone_label);
+      payload.append("image", imageData.value);
+      if (editId) payload.append('_method', 'PUT');
+    } else {
+      payload = { ...formData, image_url: imageData.value };
+    }
+
+    try {
       if (editId) await updateFanZone(editId, payload);
       else await createFanZone(payload);
       
+      toast.success("Fan Zone enregistrée !");
       setShowModal(false);
       resetForm();
       fetchData();
     } catch (err) {
-      alert("Erreur: " + (err.message || "Impossible d'enregistrer"));
+      toast.error(err.message || "Erreur lors de l'enregistrement");
     }
   };
 
   const resetForm = () => {
-    setFormData({
-      pays_id: "",
-      ville_id: "",
-      stade: "",
-      capacite: "",
-      nb_matchs: 0,
-      adresse: "",
-      zone_label: "",
-      description: "",
-      image_url: "",
-      groupe: "Europe · Afrique",
-      statut: "actif"
-    });
-    setVillesFiltered([]);
+    setFormData({ city_id: "", zone_label: "" });
+    setImageData({ type: 'url', value: '' });
     setEditId(null);
   };
 
-  const handleEdit = async (fz) => {
+  const handleEdit = (fz) => {
     setEditId(fz.id);
     setFormData({
-      pays_id: fz.pays.id,
-      ville_id: fz.ville.id,
-      stade: fz.stade,
-      capacite: fz.capacite,
-      nb_matchs: fz.nb_matchs,
-      adresse: fz.adresse,
-      zone_label: fz.zone_label || "",
-      description: fz.description || "",
-      image_url: fz.image_url || "",
-      groupe: fz.groupe,
-      statut: fz.statut
+      city_id: fz.city_id || "",
+      zone_label: fz.zone_label || ""
     });
-    // Load villes for the country
-    const villes = await getVilles({ pays_id: fz.pays.id });
-    setVillesFiltered(villes);
+    setImageData({ type: 'url', value: fz.image_url || '' });
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Supprimer cette Fan Zone ?")) {
+    if (!window.confirm("Supprimer cette Fan Zone ?")) return;
+    try {
       await deleteFanZone(id);
+      toast.success("Fan Zone supprimée");
       fetchData();
+    } catch (err) {
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -125,176 +110,169 @@ export default function AdminFanZones() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
-        .fz-input {
-          width: 100%; background: #0d0d0d; border: 1px solid rgba(255,255,255,0.1); 
-          padding: 12px; borderRadius: 8px; color: white; outline: none;
-          transition: all 0.25s ease;
+        .admin-page {
+          background: ${bg}; min-height: calc(100vh - 102px);
+          padding: clamp(24px,5vw,48px);
+          transition: background 0.3s;
         }
-        .fz-input:focus {
-          background: #000 !important;
-          border-color: white !important;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+        .admin-inner { max-width: 1200px; margin: 0 auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+        .admin-title {
+          font-family: ${FD}; font-size: clamp(32px,5vw,48px); font-weight: 900;
+          letter-spacing: 0.02em; text-transform: uppercase; color: ${textPrimary};
+          margin: 0;
         }
-        .fz-input:focus::placeholder { color: rgba(255,255,255,0.4); }
+        .admin-table-container { 
+          background: ${card}; border-radius: 24px; overflow: hidden;
+          border: 1px solid ${border}; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th {
+          font-family: ${FB}; font-size: 11px; font-weight: 800;
+          letter-spacing: 0.1em; text-transform: uppercase;
+          color: ${textSecondary}; background: ${surface};
+          padding: 18px 24px; text-align: left;
+          border-bottom: 1px solid ${border};
+        }
+        .admin-table td {
+          font-family: ${FB}; font-size: 14px; color: ${textPrimary};
+          padding: 20px 24px; border-bottom: 1px solid ${border};
+          vertical-align: middle;
+        }
+        .admin-btn-primary {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer;
+          font-family: ${FD}; font-size: 13px; font-weight: 800;
+          letter-spacing: 0.1em; text-transform: uppercase;
+          background: ${accent}; color: ${accentContrast}; transition: 0.2s;
+        }
+        .btn-icon {
+          width: 36px; height: 36px; border-radius: 10px; border: 1px solid ${border};
+          background: ${surface}; color: ${textPrimary}; cursor: pointer;
+          display: inline-flex; align-items: center; justify-content: center;
+          transition: 0.2s; margin-right: 8px;
+        }
+        .btn-icon:hover { background: ${accent}; color: ${accentContrast}; }
+        .modal-overlay {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+          display: flex; align-items: center; justify-content: center; z-index: 5000;
+          padding: 20px;
+        }
+        .modal-content {
+          background: ${bg}; width: 100%; max-width: 600px; border-radius: 24px;
+          padding: 32px; border: 1px solid ${border}; 
+          box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
+        .form-input { 
+          width: 100%; padding: 12px 18px; border-radius: 12px; 
+          background-color: ${surface}; border: 1px solid ${border}; 
+          color: ${textPrimary}; outline: none; transition: all 0.25s ease;
+          font-family: ${FB}; font-size: 15px; box-sizing: border-box;
+          height: auto; min-height: 50px;
+        }
+        select.form-input {
+          appearance: none !important;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(textSecondary)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+          background-repeat: no-repeat !important; 
+          background-position: right 18px center !important; 
+          background-size: 18px !important; 
+          padding-right: 48px !important; 
+          cursor: pointer;
+          line-height: 1.2;
+        }
+        option { background-color: ${bg}; color: ${textPrimary}; }
+        .fz-img-mini { width: 60px; height: 40px; border-radius: 8px; object-fit: cover; background: ${surface}; }
       `}</style>
-      <div style={{ background: "#0d0d0d", minHeight: "100vh", padding: 24, color: "white", fontFamily: FB }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-          <div>
-            <h1 style={{ fontFamily: FD, fontSize: 32, fontWeight: 900, textTransform: "uppercase" }}>Fan Zones</h1>
-            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Gestion dynamique des sites officiels</p>
-          </div>
-          <button onClick={() => { resetForm(); setShowModal(true); }} 
-            style={{ background: "white", color: "#0d0d0d", border: "none", padding: "12px 24px", borderRadius: 8, fontWeight: 800, cursor: "pointer", fontFamily: FD, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            <FiPlus /> Ajouter une Fan Zone
-          </button>
-        </div>
 
-        <div style={{ background: "#111", borderRadius: 16, border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ background: "rgba(255,255,255,0.03)", textAlign: "left" }}>
-                <th style={{ padding: "16px 20px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Ville · Pays</th>
-                <th style={{ padding: "16px 20px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Stade</th>
-                <th style={{ padding: "16px 20px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Groupe</th>
-                <th style={{ padding: "16px 20px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Capacité</th>
-                <th style={{ padding: "16px 20px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Matchs</th>
-                <th style={{ padding: "16px 20px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Statut</th>
-                <th style={{ padding: "16px 20px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {fanZones.map(fz => (
-                <tr key={fz.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <td style={{ padding: "16px 20px" }}>
-                    <div style={{ fontWeight: 700 }}>{fz.ville.nom}</div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{fz.pays.nom}</div>
-                  </td>
-                  <td style={{ padding: "16px 20px", fontSize: 13 }}>{fz.stade}</td>
-                  <td style={{ padding: "16px 20px", fontSize: 13, color: fz.statut === 'centenaire' ? "#eab308" : "white" }}>{fz.groupe}</td>
-                  <td style={{ padding: "16px 20px", fontSize: 13 }}>{fz.capacite}</td>
-                  <td style={{ padding: "16px 20px", fontSize: 13, textAlign: "center" }}>{fz.nb_matchs}</td>
-                  <td style={{ padding: "16px 20px" }}>
-                    <span style={{ 
-                      padding: "4px 10px", borderRadius: 100, fontSize: 10, fontWeight: 800, textTransform: "uppercase",
-                      background: fz.statut === 'actif' ? "rgba(255,255,255,0.1)" : fz.statut === 'centenaire' ? "rgba(234,179,8,0.1)" : "rgba(255,255,255,0.04)",
-                      color: fz.statut === 'centenaire' ? "#eab308" : "white",
-                      border: `1px solid ${fz.statut === 'actif' ? "rgba(255,255,255,0.2)" : fz.statut === 'centenaire' ? "rgba(234,179,8,0.2)" : "rgba(255,255,255,0.1)"}`
-                    }}>
-                      {fz.statut}
-                    </span>
-                  </td>
-                  <td style={{ padding: "16px 20px" }}>
-                    <button onClick={() => handleEdit(fz)} style={{ background: "none", border: "none", color: "white", marginRight: 12, cursor: "pointer" }}><FiEdit2 /></button>
-                    <button onClick={() => handleDelete(fz.id)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", cursor: "pointer" }}><FiTrash2 /></button>
-                  </td>
+      <div className="admin-page">
+        <div className="admin-inner">
+          <div className="admin-header">
+            <div>
+              <h1 className="admin-title">Fan Zones</h1>
+            </div>
+            <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+              <FiPlus /> Ajouter une Fan Zone
+            </button>
+          </div>
+
+          <div className="admin-table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Fan Zone</th>
+                  <th>Ville</th>
+                  <th style={{ textAlign: "right" }}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
+                ) : fanZones.length === 0 ? (
+                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Aucune Fan Zone trouvée</td></tr>
+                ) : fanZones.map((fz) => (
+                  <tr key={fz.id}>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <img className="fz-img-mini" src={getImageUrl(fz.image_url)} alt={fz.zone_label} />
+                        <span style={{ fontWeight: 800, fontSize: 16 }}>{fz.zone_label}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                         <FiMapPin color={textSecondary} size={14} />
+                         <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase" }}>{fz.city_name || "N/A"}</span>
+                      </div>
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      <button className="btn-icon" onClick={() => handleEdit(fz)}><FiEdit2 size={16} /></button>
+                      <button className="btn-icon" onClick={() => handleDelete(fz.id)}><FiTrash2 size={16} /></button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10000, padding: 20 }}>
-          <div style={{ background: "#111", padding: 32, borderRadius: 20, width: "100%", maxWidth: 800, border: "1px solid rgba(255,255,255,0.1)", maxHeight: "90vh", overflowY: "auto" }}>
-            <h2 style={{ fontFamily: FD, marginBottom: 32, fontSize: 24, fontWeight: 900, textTransform: "uppercase" }}>{editId ? "Modifier" : "Ajouter"} une Fan Zone</h2>
-            <form onSubmit={handleSubmit} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>1. Pays</label>
-                <select value={formData.pays_id} onChange={e => handlePaysChange(e.target.value)} 
-                  className="fz-input" required>
-                  <option value="">Sélectionner un pays</option>
-                  {paysList.map(p => <option key={p.id} value={p.id}>{p.nom}</option>)}
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h2 style={{ fontFamily: FD, fontSize: 32, fontWeight: 900, textTransform: "uppercase", marginBottom: 30, color: textPrimary }}>
+              {editId ? "Modifier Fan Zone" : "Nouvelle Fan Zone"}
+            </h2>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label">Nom de la Fan Zone</label>
+                <input className="form-input" value={formData.zone_label} onChange={e => setFormData({...formData, zone_label: e.target.value})} required placeholder="ex: FIFA Fan Festival NY" />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Ville</label>
+                <select className="form-input" value={formData.city_id} onChange={e => setFormData({...formData, city_id: e.target.value})} required>
+                  <option value="">Sélectionner une ville</option>
+                  {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>2. Ville</label>
-                <select value={formData.ville_id} onChange={e => setFormData({ ...formData, ville_id: e.target.value })} 
-                  disabled={!formData.pays_id}
-                  className="fz-input"
-                  style={{ opacity: formData.pays_id ? 1 : 0.5 }} required>
-                  <option value="">{formData.pays_id ? "Sélectionner une ville" : "Choisissez d'abord un pays"}</option>
-                  {villesFiltered.map(v => <option key={v.id} value={v.id}>{v.nom}</option>)}
-                </select>
-              </div>
+              <ImageUpload 
+                label="Image de la Zone" 
+                defaultValue={formData.image_url} 
+                onChange={setImageData} 
+                darkMode={darkMode} 
+                folder="fan_zones" 
+              />
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>3. Stade</label>
-                <input type="text" value={formData.stade} onChange={e => setFormData({ ...formData, stade: e.target.value })} 
-                  className="fz-input" required />
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>4. Capacité</label>
-                <input type="text" value={formData.capacite} onChange={e => setFormData({ ...formData, capacite: e.target.value })} 
-                  placeholder="ex: 115 000"
-                  className="fz-input" required />
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>5. NB Matchs</label>
-                <input type="number" value={formData.nb_matchs} onChange={e => setFormData({ ...formData, nb_matchs: e.target.value })} 
-                  className="fz-input" required min="0" />
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>7. Zone Label</label>
-                <input type="text" value={formData.zone_label} onChange={e => setFormData({ ...formData, zone_label: e.target.value })} 
-                  placeholder="ex: Zone Diplomatique"
-                  className="fz-input" />
-              </div>
-
-              <div style={{ gridColumn: "span 2", display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>6. Adresse</label>
-                <textarea value={formData.adresse} onChange={e => setFormData({ ...formData, adresse: e.target.value })} 
-                  className="fz-input"
-                  style={{ minHeight: 60 }} required />
-              </div>
-
-              <div style={{ gridColumn: "span 2", display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>8. Description</label>
-                <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                  className="fz-input"
-                  style={{ minHeight: 80 }} required />
-              </div>
-
-              <div style={{ gridColumn: "span 2", display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>9. Image URL</label>
-                <input type="url" value={formData.image_url} onChange={e => setFormData({ ...formData, image_url: e.target.value })} 
-                  className="fz-input" required />
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>10. Groupe</label>
-                <select value={formData.groupe} onChange={e => setFormData({ ...formData, groupe: e.target.value })} 
-                  className="fz-input" required>
-                  <option value="Europe · Afrique">Europe · Afrique</option>
-                  <option value="Amérique du Sud · Centenaire">Amérique du Sud · Centenaire</option>
-                </select>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>11. Statut</label>
-                <select value={formData.statut} onChange={e => setFormData({ ...formData, statut: e.target.value })} 
-                  className="fz-input" required>
-                  <option value="actif">actif</option>
-                  <option value="inactif">inactif</option>
-                  <option value="centenaire">centenaire</option>
-                </select>
-              </div>
-
-              <div style={{ gridColumn: "span 2", display: "flex", gap: 12, marginTop: 20 }}>
-                <button type="submit" style={{ flex: 2, background: "white", color: "#0d0d0d", border: "none", padding: 16, borderRadius: 12, fontWeight: 900, fontFamily: FD, textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer" }}>Sauvegarder la Fan Zone</button>
-                <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, background: "rgba(255,255,255,0.05)", color: "white", border: "1px solid rgba(255,255,255,0.1)", padding: 16, borderRadius: 12, fontWeight: 700, cursor: "pointer" }}>Annuler</button>
+              <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+                <button type="submit" className="admin-btn-primary" style={{ flex: 1, justifyContent: "center" }}>Sauvegarder</button>
+                <button type="button" className="admin-btn-primary" style={{ background: surface, color: textPrimary, border: `1px solid ${border}` }} onClick={() => setShowModal(false)}>Annuler</button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </div>
     </>
   );
 }

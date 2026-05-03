@@ -21,7 +21,7 @@ return new class extends Migration
                 $table->integer('age')->nullable();
                 $table->integer('experience_years')->nullable();
                 $table->integer('matches_officiated')->default(0);
-                $table->string('photo_url')->nullable();
+                $table->text('photo_url')->nullable();
                 $table->string('fifa_badge')->default('international'); // international, elite
                 $table->text('notes')->nullable();
                 $table->timestamps();

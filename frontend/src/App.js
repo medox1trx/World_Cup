@@ -24,7 +24,11 @@ import BookingPage from "./pages/BookingPage";
 import Tickets from "./pages/Tickets";
 import Hospitality from "./pages/Hospitality";
 import Fans from "./pages/Fans";
+import Joueurs from "./pages/Joueurs";
+import Selectionneurs from "./pages/Selectionneurs";
+import Referees from "./pages/Referees";
 import Tournaments from "./pages/Tournaments";
+import Stadiums from "./pages/Stadiums";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
@@ -38,8 +42,12 @@ import AdminFanZones from "./pages/admin/AdminFanZones";
 import AdminTicker from "./pages/admin/AdminTicker";
 import AdminHospitality from "./pages/admin/AdminHospitality";
 import AdminJoueurs from "./pages/admin/AdminJoueurs";
+import AdminSelectionneurs from "./pages/admin/AdminSelectionneurs";
 import AdminPays from "./pages/admin/AdminPays";
 import AdminVilles from "./pages/admin/AdminVilles";
+import AdminStadiums from "./pages/admin/AdminStadiums";
+import AdminReservations from "./pages/admin/AdminReservations";
+import AdminTournament from "./pages/admin/AdminTournament";
 
 /*
   HEIGHT BUDGET (sticky bars above page content):
@@ -66,7 +74,7 @@ function App() {
               <CountdownBanner />
               <Header onOpenAdminSidebar={() => setAdminSidebarOpen(true)} />
             </header>
-
+ 
             <AdminSidebar isOpen={adminSidebarOpen} onClose={() => setAdminSidebarOpen(false)} />
 
             {/* Main content: full bleed backgrounds, centered inner content */}
@@ -87,7 +95,11 @@ function App() {
                   <Route path="/tickets" element={<Tickets />} />
                   <Route path="/hospitality" element={<Hospitality />} />
                   <Route path="/fans" element={<Fans />} />
+                  <Route path="/joueurs" element={<Joueurs />} />
+                  <Route path="/selectionneurs" element={<Selectionneurs />} />
+                  <Route path="/referees" element={<Referees />} />
                   <Route path="/tournaments" element={<Tournaments />} />
+                  <Route path="/stadiums" element={<Stadiums />} />
 
                   {/* Auth routes */}
                   <Route path="/login" element={<Login />} />
@@ -105,8 +117,12 @@ function App() {
                   <Route path="/admin/ticker" element={<AdminRoute><AdminTicker /></AdminRoute>} />
                   <Route path="/admin/hospitality" element={<AdminRoute><AdminHospitality /></AdminRoute>} />
                   <Route path="/admin/joueurs" element={<AdminRoute><AdminJoueurs /></AdminRoute>} />
+                  <Route path="/admin/selectionneurs" element={<AdminRoute><AdminSelectionneurs /></AdminRoute>} />
                   <Route path="/admin/pays" element={<AdminRoute><AdminPays /></AdminRoute>} />
                   <Route path="/admin/villes" element={<AdminRoute><AdminVilles /></AdminRoute>} />
+                  <Route path="/admin/stadiums" element={<AdminRoute><AdminStadiums /></AdminRoute>} />
+                  <Route path="/admin/reservations" element={<AdminRoute><AdminReservations /></AdminRoute>} />
+                  <Route path="/admin/tournament" element={<AdminRoute><AdminTournament /></AdminRoute>} />
                 </Routes>
             </main>
 

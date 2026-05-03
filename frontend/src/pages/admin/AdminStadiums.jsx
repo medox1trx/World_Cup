@@ -1,24 +1,27 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { FiPlus, FiTrash2, FiEdit2, FiMapPin } from "react-icons/fi";
-import { getHospitalities, createHospitality, updateHospitality, deleteHospitality, getCities, getImageUrl } from "../../services/api";
+import { FiPlus, FiTrash2, FiEdit2, FiMapPin, FiUsers, FiCalendar } from "react-icons/fi";
+import { getStadiums, createStadium, updateStadium, deleteStadium, getVilles, getImageUrl } from "../../services/api";
 import ImageUpload from "../../components/ImageUpload.jsx";
+import toast from "react-hot-toast";
 
 const FD = "'Bebas Neue', sans-serif";
 const FB = "'DM Sans', sans-serif";
 
-export default function AdminHospitality() {
+export default function AdminStadiums() {
   const { darkMode } = useTheme();
-  const [items, setItems] = useState([]);
-  const [cities, setCities] = useState([]);
+  const [stadiums, setStadiums] = useState([]);
+  const [villes, setVilles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [imageData, setImageData] = useState({ type: 'url', value: '' });
-  
   const [formData, setFormData] = useState({
+    name: "",
     city_id: "",
-    tier: "" // This is the Name/Level of hospitality
+    capacity: "",
+    image_url: "",
+    description: ""
   });
 
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -30,20 +33,19 @@ export default function AdminHospitality() {
   const accent       = darkMode ? "#ffffff"                  : "#0d0d0d";
   const accentContrast= darkMode ? "#0d0d0d"                 : "#ffffff";
 
-  useEffect(() => { 
-    fetchData(); 
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [hData, cData] = await Promise.all([getHospitalities(), getCities()]);
-      const fetchedH = hData?.data || hData;
-      const fetchedC = cData?.data || cData;
-      setItems(Array.isArray(fetchedH) ? fetchedH : []);
-      setCities(Array.isArray(fetchedC) ? fetchedC : []);
+      const [sRes, vRes] = await Promise.all([getStadiums(), getVilles()]);
+      setStadiums(sRes.data || sRes);
+      setVilles(vRes.data || vRes);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching admin stadiums data:", err);
+      toast.error("Erreur lors du chargement des données");
     } finally {
       setLoading(false);
     }
@@ -56,50 +58,55 @@ export default function AdminHospitality() {
 
     if (isFile) {
       payload = new FormData();
-      payload.append("city_id", formData.city_id);
-      payload.append("tier", formData.tier);
-      payload.append("image", imageData.value);
+      Object.keys(formData).forEach(key => { if (key !== 'image_url') payload.append(key, formData[key]); });
+      payload.append('image_url', imageData.value);
       if (editId) payload.append('_method', 'PUT');
     } else {
       payload = { ...formData, image_url: imageData.value };
     }
 
     try {
-      if (editId) await updateHospitality(editId, payload);
-      else await createHospitality(payload);
-      
+      if (editId) await updateStadium(editId, payload);
+      else await createStadium(payload);
+      toast.success("Stade enregistré !");
       setShowModal(false);
       resetForm();
       fetchData();
     } catch (err) {
-      console.error(err);
-      alert("Erreur lors de l'enregistrement");
+      toast.error(err.message || "Erreur lors de l'enregistrement");
     }
   };
 
   const resetForm = () => {
-    setFormData({ city_id: "", tier: "" });
+    setFormData({
+      name: "", city_id: "", capacity: "",
+      image_url: "", description: ""
+    });
     setImageData({ type: 'url', value: '' });
     setEditId(null);
   };
 
-  const handleEdit = (item) => {
-    setEditId(item.id);
+  const handleEdit = (s) => {
+    setEditId(s.id);
     setFormData({
-      city_id: item.city_id || "",
-      tier: item.tier || ""
+      name: s.name,
+      city_id: s.city_id || "",
+      capacity: s.capacity || "",
+      image_url: s.image_url || "",
+      description: s.description || ""
     });
-    setImageData({ type: 'url', value: item.image_url || '' });
+    setImageData({ type: 'url', value: s.image_url || '' });
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Supprimer ce package d'hospitalité ?")) return;
+    if (!window.confirm("Supprimer ce stade ?")) return;
     try {
-      await deleteHospitality(id);
+      await deleteStadium(id);
+      toast.success("Stade supprimé");
       fetchData();
     } catch (err) {
-      alert("Erreur lors de la suppression");
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -156,41 +163,36 @@ export default function AdminHospitality() {
           padding: 20px;
         }
         .modal-content {
-          background: ${bg}; width: 100%; max-width: 600px; border-radius: 24px;
+          background: ${bg}; width: 100%; max-width: 650px; border-radius: 24px;
           padding: 32px; border: 1px solid ${border}; 
           box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          max-height: 95vh; overflow-y: auto;
         }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
         .form-input { 
-          width: 100%; height: 50px; padding: 0 18px; border-radius: 12px; 
+          width: 100%; padding: 12px 18px; border-radius: 12px; 
           background-color: ${surface}; border: 1px solid ${border}; 
           color: ${textPrimary}; outline: none; transition: all 0.25s ease;
           font-family: ${FB}; font-size: 15px;
-          box-sizing: border-box;
-        }
-        select.form-input {
-          appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(textSecondary)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 15px center;
-          background-size: 18px;
-          padding-right: 45px;
-          cursor: pointer;
         }
         .form-input:focus { border-color: ${accent}; background-color: ${card}; }
-        option { background-color: ${bg}; color: ${textPrimary}; }
-        .hosp-img-mini { width: 60px; height: 40px; border-radius: 8px; object-fit: cover; background: ${surface}; }
+        .stadium-img-mini { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: ${surface}; }
+        .admin-badge {
+          padding: 4px 10px; border-radius: 100px; font-size: 10px; font-weight: 800;
+          text-transform: uppercase; border: 1px solid ${border};
+          background: ${surface}; color: ${textPrimary};
+        }
       `}</style>
 
       <div className="admin-page">
         <div className="admin-inner">
           <div className="admin-header">
             <div>
-              <h1 className="admin-title">Hospitalité</h1>
+              <h1 className="admin-title">Stades</h1>
             </div>
             <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
-              <FiPlus /> Nouveau Package
+              <FiPlus /> Ajouter un stade
             </button>
           </div>
 
@@ -198,33 +200,35 @@ export default function AdminHospitality() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Package</th>
+                  <th>Stade</th>
                   <th>Ville</th>
+                  <th>Capacité</th>
                   <th style={{ textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
-                ) : items.length === 0 ? (
-                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Aucun package trouvé</td></tr>
-                ) : items.map((item) => (
-                  <tr key={item.id}>
+                  <tr><td colSpan="5" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
+                ) : stadiums.length === 0 ? (
+                  <tr><td colSpan="5" style={{ textAlign: "center", padding: 40 }}>Aucun stade trouvé</td></tr>
+                ) : stadiums.map((s) => (
+                  <tr key={s.id}>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <img className="hosp-img-mini" src={getImageUrl(item.image_url)} alt={item.tier} />
-                        <span style={{ fontWeight: 800, fontSize: 16 }}>{item.tier}</span>
+                        <img className="stadium-img-mini" src={getImageUrl(s.image_url)} alt={s.name} onError={e => e.target.src = "https://i.pinimg.com/736x/39/0a/45/390a454c565577a5a7bc57597b722328.jpg"} />
+                        <span style={{ fontWeight: 800, fontSize: 16 }}>{s.name}</span>
                       </div>
                     </td>
                     <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                         <FiMapPin color={textSecondary} size={14} />
-                         <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase" }}>{item.city_name || "N/A"}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <FiMapPin size={14} color={textSecondary} />
+                        <span style={{ fontWeight: 600 }}>{s.city?.name || "—"}</span>
                       </div>
                     </td>
+                    <td><span className="admin-badge"><FiUsers size={12} style={{ marginRight: 4 }} /> {s.capacity?.toLocaleString() || "—"}</span></td>
                     <td style={{ textAlign: "right" }}>
-                      <button className="btn-icon" onClick={() => handleEdit(item)}><FiEdit2 size={16} /></button>
-                      <button className="btn-icon" onClick={() => handleDelete(item.id)}><FiTrash2 size={16} /></button>
+                      <button className="btn-icon" onClick={() => handleEdit(s)}><FiEdit2 size={16} /></button>
+                      <button className="btn-icon" onClick={() => handleDelete(s.id)}><FiTrash2 size={16} /></button>
                     </td>
                   </tr>
                 ))}
@@ -238,29 +242,36 @@ export default function AdminHospitality() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2 style={{ fontFamily: FD, fontSize: 32, fontWeight: 900, textTransform: "uppercase", marginBottom: 30, color: textPrimary }}>
-              {editId ? "Modifier Package" : "Nouveau Package"}
+              {editId ? "Modifier le stade" : "Nouveau stade"}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Nom du Package (Niveau)</label>
-                <input className="form-input" value={formData.tier} onChange={e => setFormData({...formData, tier: e.target.value})} required placeholder="ex: Platinum Match Club" />
+                <label className="form-label">Nom du Stade</label>
+                <input className="form-input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required placeholder="Ex: MetLife Stadium" />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15 }}>
+                <div className="form-group">
+                  <label className="form-label">Ville</label>
+                  <select className="form-input" value={formData.city_id} onChange={e => setFormData({...formData, city_id: e.target.value})} required>
+                    <option value="">Sélectionner une ville</option>
+                    {villes.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Capacité</label>
+                  <input type="number" className="form-input" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} placeholder="82500" />
+                </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Ville</label>
-                <select className="form-input" value={formData.city_id} onChange={e => setFormData({...formData, city_id: e.target.value})} required>
-                  <option value="">Sélectionner une ville</option>
-                  {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                <ImageUpload label="Photo du Stade" defaultValue={formData.image_url} onChange={setImageData} darkMode={darkMode} folder="stadiums" />
               </div>
 
-              <ImageUpload 
-                label="Image de l'Hospitalité" 
-                defaultValue={formData.image_url} 
-                onChange={setImageData} 
-                darkMode={darkMode} 
-                folder="hospitalities" 
-              />
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-input" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Description du stade..." style={{ minHeight: 100, resize: "vertical" }} />
+              </div>
 
               <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
                 <button type="submit" className="admin-btn-primary" style={{ flex: 1, justifyContent: "center" }}>Sauvegarder</button>

@@ -4,7 +4,7 @@ import { Flag, SectionHead, Spinner } from "./ui";
 import { useTheme } from "../../context/ThemeContext";
 import { useGroups, usePays } from "../../hooks/useWorldCup";
 
-function GroupTable({ group }) {
+function GroupTable({ group, hideDetails = false }) {
   const { darkMode } = useTheme();
   const card          = darkMode ? "#1c1c1c" : "#ffffff";
   const border        = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)";
@@ -12,8 +12,8 @@ function GroupTable({ group }) {
   const colHeaderBg   = darkMode ? "#171717" : "#f5f5f5";
   const colHeaderBd   = darkMode ? "rgba(255,255,255,0.06)" : "#e8e8e8";
   const textPrimary   = darkMode ? "#ffffff" : "#0d0d0d";
-  const textSecondary = darkMode ? "#ffffff" : "#555555";
-  const textMuted     = darkMode ? "rgba(255,255,255,0.75)" : "#aaaaaa";
+  const textSecondary = darkMode ? "rgba(255,255,255,0.85)" : "#555555";
+  const textMuted     = darkMode ? "rgba(255,255,255,0.6)" : "#aaaaaa";
   const hover         = darkMode ? "rgba(255,255,255,0.04)" : "#f8f8f8";
   const headerBg      = darkMode ? "#1c1c1c" : "#0d0d0d";
 
@@ -33,17 +33,19 @@ function GroupTable({ group }) {
         }}>
           {group.name}
         </span>
-        <a href="/standings" style={{
-          display: "flex", alignItems: "center", gap: 4,
-          color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 800,
-          textTransform: "uppercase", letterSpacing: "0.12em",
-          textDecoration: "none", fontFamily: FONT.body, transition: "color 0.25s",
-        }}
-          onMouseOver={e => e.currentTarget.style.color = "#ffffff"}
-          onMouseOut={e => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
-        >
-          Détails <FiChevronRight size={13}/>
-        </a>
+        {!hideDetails && (
+          <a href="/standings" style={{
+            display: "flex", alignItems: "center", gap: 4,
+            color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 800,
+            textTransform: "uppercase", letterSpacing: "0.12em",
+            textDecoration: "none", fontFamily: FONT.body, transition: "color 0.25s",
+          }}
+            onMouseOver={e => e.currentTarget.style.color = "#ffffff"}
+            onMouseOut={e => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
+          >
+            Détails <FiChevronRight size={13}/>
+          </a>
+        )}
       </div>
 
       <div style={{
@@ -101,7 +103,7 @@ function GroupTable({ group }) {
   );
 }
 
-export default function StandingsSection() {
+export default function StandingsSection({ hideHeader = false, hideDetails = false }) {
   const { darkMode } = useTheme();
   const bg = darkMode ? "#0d0d0d" : "#ffffff";
   const accent = darkMode ? "#ffffff" : "#0d0d0d";
@@ -128,7 +130,7 @@ export default function StandingsSection() {
       transition: "background 0.3s",
     }}>
       <div className="layout-container">
-        <SectionHead title="Phase de Groupes" action="Tout voir" href="/standings"/>
+        {!hideHeader && <SectionHead title="Phase de Groupes" action="Tout voir" href="/standings"/>}
         
         {loading ? (
           <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -142,7 +144,7 @@ export default function StandingsSection() {
               marginBottom: 32
             }}>
               {groups.map((g, i) => (
-                <GroupTable key={i} group={g} />
+                <GroupTable key={i} group={g} hideDetails={hideDetails} />
               ))}
             </div>
 
@@ -196,9 +198,9 @@ export function CitiesSection() {
           .hosts-grid { grid-template-columns: 1fr; }
           .host-card { min-height: 200px; }
         }
-        /* ── RESET VISITED LINKS (TEXT WHITE) ── */
+        /* ── RESET VISITED LINKS ── */
         a, a:visited {
-          color: white !important;
+          color: inherit;
           text-decoration: none !important;
         }
       `}</style>
