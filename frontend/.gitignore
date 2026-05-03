@@ -26,8 +26,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-.claude/skills
-.trae/skills
-.agent/skills
-.windsurf/skills
-
