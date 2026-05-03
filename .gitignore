@@ -14,3 +14,7 @@
 .trae
 .windsurf
 .env
+.env.example
+.gitignore
+.gitignore.example
+.gitignore
