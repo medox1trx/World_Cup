@@ -30,8 +30,9 @@ Route::prefix('v1')->group(function () {
     // Ticker
     Route::get('/ticker', [TickerController::class, 'index']);
 
-    // News Proxy
+    // News & Newsletter
     Route::get('/news',  [ApiController::class, 'news']);
+    Route::post('/newsletter', [App\Http\Controllers\NewsletterController::class, 'subscribe']);
 
     // Auth
     Route::post('/auth/register', [AuthController::class, 'register']);

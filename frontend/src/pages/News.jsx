@@ -3,7 +3,7 @@ import axios from "axios";
 import { FiSearch, FiCalendar, FiArrowRight, FiActivity } from "react-icons/fi";
 import { NEWS_SIDE, NEWS_MORE, NEWS_FEATURED } from "./Home/constants";
 import { useTheme } from "../context/ThemeContext";
-import { getImageUrl } from "../services/api";
+import { getImageUrl, subscribeNewsletter } from "../services/api";
 
 const API_BASE_URL = "http://localhost:8000/api/v1";
 const FONT_D = "'Bebas Neue', sans-serif";
@@ -14,6 +14,28 @@ export default function News() {
   
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      const res = await subscribeNewsletter(email);
+      setMessage({ type: "success", text: res.data.message });
+      setEmail("");
+    } catch (err) {
+      setMessage({ 
+        type: "error", 
+        text: err.response?.data?.errors?.email?.[0] || err.response?.data?.message || "Une erreur est survenue." 
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const [filter, setFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
@@ -198,12 +220,39 @@ export default function News() {
           <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(var(--text-muted) 1px,transparent 1px)`, opacity: 0.05, backgroundSize: "20px 20px" }} />
           <h2 style={{ fontFamily: FONT_D, position: "relative", fontSize: "clamp(2rem,4vw,3.5rem)", fontWeight: 800, textTransform: "uppercase", margin: "0 0 16px", color: "var(--text-main)" }}>Restez Connectés</h2>
           <p style={{ color: "var(--text-muted)", fontFamily: FONT_B, fontSize: 14, maxWidth: 500, margin: "0 auto 32px", position: "relative" }}>Abonnez-vous à notre newsletter pour recevoir les exclusivités sur la préparation de la Coupe du Monde 2026.</p>
-          <div style={{ display: "flex", justifyContent: "center", gap: 10, maxWidth: 400, margin: "0 auto", position: "relative" }}>
-            <input type="email" placeholder="votre@email.com" style={{ flex: 1, background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", border: `1px solid var(--border-main)`, borderRadius: 100, padding: "0 20px", color: "var(--text-main)", fontFamily: FONT_B, fontSize: 14, outline: "none" }} />
-            <button className="btn-shim" style={{ background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", padding: "14px 24px", borderRadius: 100, display: "flex", alignItems: "center", gap: 8, fontFamily: FONT_B, fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer" }}>
-              <span className="sh" style={{ background: `linear-gradient(90deg,transparent,${darkMode?"rgba(255,255,255,.45)":"rgba(0,0,0,.15)"},transparent)` }} /> S'inscrire
+          
+          <form onSubmit={handleSubscribe} style={{ display: "flex", justifyContent: "center", gap: 10, maxWidth: 400, margin: "0 auto", position: "relative" }}>
+            <input 
+              type="email" 
+              placeholder="votre@email.com" 
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ flex: 1, background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", border: `1px solid var(--border-main)`, borderRadius: 100, padding: "0 20px", color: "var(--text-main)", fontFamily: FONT_B, fontSize: 14, outline: "none" }} 
+            />
+            <button 
+              type="submit"
+              disabled={submitting}
+              className="btn-shim" 
+              style={{ background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", padding: "14px 24px", borderRadius: 100, display: "flex", alignItems: "center", gap: 8, fontFamily: FONT_B, fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.7 : 1 }}
+            >
+              <span className="sh" style={{ background: `linear-gradient(90deg,transparent,${darkMode?"rgba(255,255,255,.45)":"rgba(0,0,0,.15)"},transparent)` }} /> 
+              {submitting ? "Envoi..." : "S'inscrire"}
             </button>
-          </div>
+          </form>
+
+          {message && (
+            <div style={{ 
+              marginTop: 20, 
+              color: message.type === "success" ? "#4caf50" : "#f44336", 
+              fontFamily: FONT_B, 
+              fontSize: 13,
+              fontWeight: 600,
+              position: "relative"
+            }}>
+              {message.text}
+            </div>
+          )}
         </div>
       </section>
     </div>
