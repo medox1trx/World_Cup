@@ -37,6 +37,8 @@ Route::prefix('v1')->group(function () {
     // Auth
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/login',    [AuthController::class, 'login']);
+    Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 
     // Fan Zones, Cities & Countries
     Route::get('/pays', [PaysController::class, 'index']);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/api";
@@ -310,7 +310,7 @@ export default function Login() {
               <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
               Se souvenir de moi
             </label>
-            <button className="forgot-link">Mot de passe oublié ?</button>
+            <Link to="/forgot-password" className="forgot-link">Mot de passe oublié ?</Link>
           </div>
 
           <button className="submit-btn" onClick={handleSubmit} disabled={loading}>

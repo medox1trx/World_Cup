@@ -32,6 +32,8 @@ import Stadiums from "./pages/Stadiums";
 import Hotels from "./pages/Hotels";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import AdminHighlights from "./pages/admin/AdminHighlights";
 import AdminTeams from "./pages/admin/AdminTeams";
@@ -108,6 +110,8 @@ function App() {
                   {/* Auth routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/password-reset" element={<ResetPassword />} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
                   {/* Admin routes (protected) */}

@@ -8,8 +8,63 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+
 class AuthController extends Controller
 {
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email'], [
+            'email.required' => 'L\'adresse e-mail est obligatoire.',
+            'email.email' => 'Adresse e-mail invalide.',
+        ]);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json(['message' => 'Lien de réinitialisation envoyé par e-mail.']);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => [__($status)],
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token'    => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|min:6|confirmed',
+        ], [
+            'token.required'    => 'Le jeton est obligatoire.',
+            'email.required'    => 'L\'e-mail est obligatoire.',
+            'email.email'       => 'Adresse e-mail invalide.',
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.min'      => 'Minimum 6 caractères.',
+            'password.confirmed'=> 'Les mots de passe ne correspondent pas.',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json(['message' => 'Mot de passe réinitialisé avec succès.']);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => [__($status)],
+        ]);
+    }
     public function register(Request $request)
     {
         $request->validate([
