@@ -21,6 +21,8 @@ class Ville extends Model
         'image_url',
     ];
 
+    // AI image generation is handled by generate_images.php standalone script
+
     public function pays()
     {
         return $this->belongsTo(Pays::class, 'country_id');

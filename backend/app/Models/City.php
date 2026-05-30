@@ -23,6 +23,8 @@ class City extends Model
         'lng',
     ];
 
+    // AI image generation is handled by generate_images.php standalone script
+
     public function country(): BelongsTo
     {
         return $this->belongsTo(Pays::class, 'country_id');

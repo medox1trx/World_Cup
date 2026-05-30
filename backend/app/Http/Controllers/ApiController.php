@@ -505,13 +505,15 @@ class ApiController extends Controller
             'matches_count' => 'required|integer|min:0',
             'zone_name' => 'required|string|max:150',
             'description' => 'required|string',
-            'image_url' => 'nullable|string',
+            'image_url' => 'nullable',
             'opening_hours' => 'nullable|string',
             'is_centenary' => 'boolean',
             'group_label' => 'required|string|max:100',
             'sort_order' => 'integer|min:0',
             'is_active' => 'boolean',
         ]);
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'fan_zones');
 
         $fanZone = FanZone::create($validated);
         return response()->json($fanZone, 201);
@@ -528,13 +530,15 @@ class ApiController extends Controller
             'matches_count' => 'sometimes|integer|min:0',
             'zone_name' => 'sometimes|string|max:150',
             'description' => 'sometimes|string',
-            'image_url' => 'nullable|string',
+            'image_url' => 'nullable',
             'opening_hours' => 'nullable|string',
             'is_centenary' => 'boolean',
             'group_label' => 'sometimes|string|max:100',
             'sort_order' => 'sometimes|integer|min:0',
             'is_active' => 'sometimes|boolean',
         ]);
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'fan_zones', $fanZone->image_url);
 
         $fanZone->update($validated);
         return response()->json($fanZone);
@@ -671,12 +675,20 @@ class ApiController extends Controller
             'badge'       => 'nullable|string',
             'is_featured' => 'boolean',
             'description' => 'required|string',
-            'perks'       => 'nullable|array',
+            'perks'       => 'nullable',
             'cta_text'    => 'required|string',
-            'image_url'   => 'nullable|string',
+            'image_url'   => 'nullable',
             'sort_order'  => 'integer|min:0',
             'is_active'   => 'boolean',
         ]);
+
+        if (isset($validated['perks']) && is_string($validated['perks'])) {
+            $validated['perks'] = json_decode($validated['perks'], true) ?? [];
+        }
+        if ($request->has('perks') && is_null($validated['perks'] ?? null)) {
+            $validated['perks'] = $request->input('perks', []);
+        }
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'hospitalities');
 
         $hospitality = Hospitality::create($validated);
         return response()->json($hospitality, 201);
@@ -690,12 +702,20 @@ class ApiController extends Controller
             'badge'       => 'nullable|string',
             'is_featured' => 'boolean',
             'description' => 'sometimes|string',
-            'perks'       => 'nullable|array',
+            'perks'       => 'nullable',
             'cta_text'    => 'sometimes|string',
-            'image_url'   => 'nullable|string',
+            'image_url'   => 'nullable',
             'sort_order'  => 'integer|min:0',
             'is_active'   => 'boolean',
         ]);
+
+        if (isset($validated['perks']) && is_string($validated['perks'])) {
+            $validated['perks'] = json_decode($validated['perks'], true) ?? [];
+        }
+        if ($request->has('perks') && is_null($validated['perks'] ?? null)) {
+            $validated['perks'] = $request->input('perks', []);
+        }
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'hospitalities', $hospitality->image_url);
 
         $hospitality->update($validated);
         return response()->json($hospitality);
@@ -719,12 +739,14 @@ class ApiController extends Controller
             'name'        => 'required|string|max:150',
             'city_id'     => 'nullable|exists:cities,id',
             'capacity'    => 'nullable|integer',
-            'image_url'   => 'nullable|string',
+            'image_url'   => 'nullable',
             'description' => 'nullable|string',
             'opened_year' => 'nullable|string',
             'surface'     => 'nullable|string',
             'location_url'=> 'nullable|string',
         ]);
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'stadiums');
 
         $stadium = \App\Models\Stadium::create($validated);
         return response()->json($stadium->load('city'), 201);
@@ -737,12 +759,14 @@ class ApiController extends Controller
             'name'        => 'sometimes|required|string|max:150',
             'city_id'     => 'nullable|exists:cities,id',
             'capacity'    => 'nullable|integer',
-            'image_url'   => 'nullable|string',
+            'image_url'   => 'nullable',
             'description' => 'nullable|string',
             'opened_year' => 'nullable|string',
             'surface'     => 'nullable|string',
             'location_url'=> 'nullable|string',
         ]);
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'stadiums', $stadium->image_url);
 
         $stadium->update($validated);
         return response()->json($stadium->load('city'));

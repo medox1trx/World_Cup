@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\FanZone;
+use App\Traits\HandlesImages;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class FanZoneController extends Controller
 {
+    use HandlesImages;
     /**
      * List all active fan zones (Public).
      */
@@ -91,11 +93,13 @@ class FanZoneController extends Controller
             'address'       => 'required|string',
             'zone_label'    => 'nullable|string|max:150',
             'description'   => 'nullable|string',
-            'image_url'     => 'nullable|string',
+            'image_url'     => 'nullable',
             'location_url'  => 'nullable|string',
             'group_label'   => 'nullable|string|max:50',
             'status'        => 'required|in:active,inactive,centenary',
         ]);
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'fan_zones');
 
         $fanZone = FanZone::create($validated);
         Cache::flush(); // Clear all fan zone related caches
@@ -119,11 +123,13 @@ class FanZoneController extends Controller
             'address'       => 'sometimes|required|string',
             'zone_label'    => 'nullable|string|max:150',
             'description'   => 'nullable|string',
-            'image_url'     => 'nullable|string',
+            'image_url'     => 'nullable',
             'location_url'  => 'nullable|string',
             'group_label'   => 'nullable|string|max:50',
             'status'        => 'sometimes|required|in:active,inactive,centenary',
         ]);
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'fan_zones', $fanZone->image_url);
 
         $fanZone->update($validated);
         Cache::flush();

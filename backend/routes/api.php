@@ -63,6 +63,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/fan-zones/{id}', [FanZoneController::class, 'show']);
     Route::post('/fan-zones', [FanZoneController::class, 'store']);
     Route::put('/fan-zones/{id}', [FanZoneController::class, 'update']);
+    Route::post('/fan-zones/{id}', [FanZoneController::class, 'update']); // _method=PUT spoofing for FormData
     Route::delete('/fan-zones/{id}', [FanZoneController::class, 'destroy']);
 
     // Hospitalities
@@ -70,6 +71,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/hospitalities/{id}', [HospitalityController::class, 'show']);
     Route::post('/hospitalities', [HospitalityController::class, 'store']);
     Route::put('/hospitalities/{hospitality}', [HospitalityController::class, 'update']);
+    Route::post('/hospitalities/{hospitality}', [HospitalityController::class, 'update']); // _method=PUT spoofing
     Route::delete('/hospitalities/{hospitality}', [HospitalityController::class, 'destroy']);
 
     // Highlights (Temps Forts)

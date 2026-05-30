@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hospitality;
+use App\Traits\HandlesImages;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class HospitalityController extends Controller
 {
+    use HandlesImages;
     /**
      * List all hospitality packages (Public).
      */
@@ -70,12 +72,23 @@ class HospitalityController extends Controller
             'badge'       => 'nullable|string',
             'is_featured' => 'boolean',
             'description' => 'required|string',
-            'perks'       => 'nullable|array',
+            'perks'       => 'nullable',
             'cta_text'    => 'required|string',
-            'image_url'   => 'nullable|string',
+            'image_url'   => 'nullable',
             'sort_order'  => 'integer|min:0',
             'is_active'   => 'boolean',
         ]);
+
+        // Normalize perks: accept array or JSON string
+        if (isset($validated['perks']) && is_string($validated['perks'])) {
+            $validated['perks'] = json_decode($validated['perks'], true) ?? [];
+        }
+        // Handle perks[] sent from FormData
+        if ($request->has('perks') && is_null($validated['perks'] ?? null)) {
+            $validated['perks'] = $request->input('perks', []);
+        }
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'hospitalities');
 
         $hospitality = Hospitality::create($validated);
         Cache::flush();
@@ -93,12 +106,22 @@ class HospitalityController extends Controller
             'badge'       => 'nullable|string',
             'is_featured' => 'boolean',
             'description' => 'sometimes|string',
-            'perks'       => 'nullable|array',
+            'perks'       => 'nullable',
             'cta_text'    => 'sometimes|string',
-            'image_url'   => 'nullable|string',
+            'image_url'   => 'nullable',
             'sort_order'  => 'integer|min:0',
             'is_active'   => 'boolean',
         ]);
+
+        // Normalize perks
+        if (isset($validated['perks']) && is_string($validated['perks'])) {
+            $validated['perks'] = json_decode($validated['perks'], true) ?? [];
+        }
+        if ($request->has('perks') && is_null($validated['perks'] ?? null)) {
+            $validated['perks'] = $request->input('perks', []);
+        }
+
+        $validated['image_url'] = $this->handleImage($request, 'image_url', 'hospitalities', $hospitality->image_url);
 
         $hospitality->update($validated);
         Cache::flush();

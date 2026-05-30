@@ -123,21 +123,42 @@ export default function AdminHospitality() {
 
     try {
       const token = localStorage.getItem("token");
-      const headers = { Authorization: `Bearer ${token}` };
+      const isFile = imgData.type === "file" && imgData.value instanceof File;
 
-      const payload = {
-        tier:        form.tier,
-        description: form.description,
-        badge:       form.badge || null,
-        price:       parseFloat(form.price) || 0,
-        perks:       perksArr,
-        cta_text:    "Réserver",
-        is_active:   true,
-        sort_order:  0,
-        image_url:   imgData.value || form.image_url,
-      };
+      let payload;
+      let headers;
 
-      if (editId) {
+      if (isFile) {
+        payload = new FormData();
+        payload.append("tier",        form.tier);
+        payload.append("description", form.description);
+        payload.append("badge",       form.badge || "");
+        payload.append("price",       parseFloat(form.price) || 0);
+        payload.append("cta_text",    "Réserver");
+        payload.append("is_active",   1);
+        payload.append("sort_order",  0);
+        payload.append("image_url",   imgData.value);
+        perksArr.forEach((p) => payload.append("perks[]", p));
+        if (editId) payload.append("_method", "PUT");
+        headers = { Authorization: `Bearer ${token}` };
+      } else {
+        payload = {
+          tier:        form.tier,
+          description: form.description,
+          badge:       form.badge || null,
+          price:       parseFloat(form.price) || 0,
+          perks:       perksArr,
+          cta_text:    "Réserver",
+          is_active:   true,
+          sort_order:  0,
+          image_url:   imgData.value || form.image_url,
+        };
+        headers = { Authorization: `Bearer ${token}` };
+      }
+
+      if (editId && isFile) {
+        await axios.post(`${API}/hospitalities/${editId}`, payload, { headers });
+      } else if (editId) {
         await axios.put(`${API}/hospitalities/${editId}`, payload, { headers });
       } else {
         await axios.post(`${API}/hospitalities`, payload, { headers });
@@ -155,10 +176,14 @@ export default function AdminHospitality() {
   };
 
   /* ── image util ── */
-  const imgSrc = (url) => {
-    if (!url) return null;
-    if (url.startsWith("http")) return url;
-    return `${API.replace("/api", "")}/storage/${url}`;
+  const imgSrc = (path) => {
+    if (!path) return "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    if (cleanPath.startsWith('storage/')) {
+      return `http://localhost:8000/${cleanPath}`;
+    }
+    return `http://localhost:8000/storage/${cleanPath}`;
   };
 
   return (

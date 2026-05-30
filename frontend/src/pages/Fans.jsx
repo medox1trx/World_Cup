@@ -29,10 +29,15 @@ export default function Fans() {
   }, []);
 
   const filteredFanZones = fanZones.filter(fz => {
+    if (!searchQuery) return true;
     const s = searchQuery.toLowerCase();
-    const nameMatch = fz.name?.toLowerCase().includes(s);
-    const cityMatch = fz.city?.name?.toLowerCase().includes(s);
-    return nameMatch || cityMatch;
+    return (
+      fz.zone_label?.toLowerCase().includes(s) ||
+      fz.city?.name?.toLowerCase().includes(s) ||
+      fz.city_name?.toLowerCase().includes(s) ||
+      fz.description?.toLowerCase().includes(s) ||
+      fz.capacity?.toLowerCase()?.includes(s)
+    );
   });
 
   const tBg     = darkMode ? "#0a0a0a" : "#fdfdfd";
@@ -176,6 +181,12 @@ export default function Fans() {
             <div style={{ padding: 100, textAlign: "center", color: tSub }}>
               Chargement des Fan Zones...
             </div>
+          ) : filteredFanZones.length === 0 ? (
+            <div style={{ padding: 100, textAlign: "center", color: tSub, fontFamily: B }}>
+              {searchQuery
+                ? `Aucune fan zone trouvée pour "${searchQuery}"`
+                : "Aucune fan zone disponible pour le moment."}
+            </div>
           ) : (
             <div className="fz-grid">
               {filteredFanZones.map((fz) => (
@@ -190,16 +201,16 @@ export default function Fans() {
                       }}
                     />
                   </div>
-                  <h3 className="fz-name">{fz.zone_label}</h3>
+                  <h3 className="fz-name">{fz.zone_label || fz.city_name}</h3>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "4px" }}>
-                    <span style={{ fontFamily: D, fontSize: "14px", color: tSub, textTransform: "uppercase" }}>Ville: {fz.city?.name || "Official Site"}</span>
+                    <span style={{ fontFamily: D, fontSize: "14px", color: tSub, textTransform: "uppercase" }}>Ville: {fz.city?.name || fz.city_name || "Official Site"}</span>
                     <span style={{ fontFamily: D, fontSize: "14px", color: tSub, textTransform: "uppercase" }}>•</span>
                     <span style={{ fontFamily: D, fontSize: "14px", color: tSub, textTransform: "uppercase" }}>Capacité: {fz.capacity || "N/A"}</span>
                   </div>
                   <p className="fz-desc">{fz.description || "Vivez l'expérience unique de la Coupe du Monde FIFA 2026 dans cette zone dédiée aux supporters."}</p>
                   
                   <a 
-                    href={fz.location_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fz.zone_label + ' ' + (fz.city?.name || ''))}`}
+                    href={fz.location_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((fz.zone_label || '') + ' ' + (fz.city?.name || fz.city_name || ''))}`}
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="fz-btn"

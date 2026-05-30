@@ -22,6 +22,8 @@ class Stadium extends Model
         'location_url',
     ];
 
+    // AI image generation is handled by generate_images.php standalone script
+
     public function city()
     {
         return $this->belongsTo(Ville::class, 'city_id');

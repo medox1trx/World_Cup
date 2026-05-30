@@ -108,22 +108,45 @@ export default function AdminFanZones() {
 
     try {
       const token = localStorage.getItem("token");
-      const headers = { Authorization: `Bearer ${token}` };
+      const isFile = imgData.type === "file" && imgData.value instanceof File;
 
-      const payload = {
-        city_id:      parseInt(form.city_id),
-        zone_label:   form.zone_label,
-        image_url:    imgData.value || form.image_url,
-        description:  form.description,
-        location_url: form.location_url,
-        stadium_name: "Official Site",
-        capacity:     form.capacity,
-        matches_count: 64,
-        address:      "Official Celebration Site",
-        status:       "active",
-      };
+      let payload;
+      let headers;
 
-      if (editId) {
+      if (isFile) {
+        payload = new FormData();
+        payload.append("city_id",      parseInt(form.city_id));
+        payload.append("zone_label",   form.zone_label);
+        payload.append("description",  form.description);
+        payload.append("location_url", form.location_url);
+        payload.append("stadium_name", "Official Site");
+        payload.append("capacity",     form.capacity);
+        payload.append("matches_count",64);
+        payload.append("address",      "Official Celebration Site");
+        payload.append("status",       "active");
+        payload.append("image_url",    imgData.value);
+        if (editId) payload.append("_method", "PUT");
+        headers = { Authorization: `Bearer ${token}` };
+      } else {
+        payload = {
+          city_id:      parseInt(form.city_id),
+          zone_label:   form.zone_label,
+          image_url:    imgData.value || form.image_url,
+          description:  form.description,
+          location_url: form.location_url,
+          stadium_name: "Official Site",
+          capacity:     form.capacity,
+          matches_count: 64,
+          address:      "Official Celebration Site",
+          status:       "active",
+        };
+        headers = { Authorization: `Bearer ${token}` };
+      }
+
+      if (editId && isFile) {
+        // Use POST with _method=PUT for multipart
+        await axios.post(`${API}/fan-zones/${editId}`, payload, { headers });
+      } else if (editId) {
         await axios.put(`${API}/fan-zones/${editId}`, payload, { headers });
       } else {
         await axios.post(`${API}/fan-zones`, payload, { headers });
@@ -141,10 +164,14 @@ export default function AdminFanZones() {
   };
 
   /* ── image util ── */
-  const imgSrc = (url) => {
-    if (!url) return null;
-    if (url.startsWith("http")) return url;
-    return `${API.replace("/api", "")}/storage/${url}`;
+  const imgSrc = (path) => {
+    if (!path) return "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    if (cleanPath.startsWith('storage/')) {
+      return `http://localhost:8000/${cleanPath}`;
+    }
+    return `http://localhost:8000/storage/${cleanPath}`;
   };
 
   /* ── city helper ── */
