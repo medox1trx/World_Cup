@@ -312,11 +312,11 @@ export default function AdminJoueurs() {
                     {formData.team_id ? (
                       <>
                         <img 
-                          src={getImageUrl(teams.find(t => t.id == formData.team_id)?.flag)} 
+                          src={getImageUrl(teams.find(t => String(t.id) === String(formData.team_id))?.flag)} 
                           style={{ width: 24, height: 16, borderRadius: 2, objectFit: "cover" }} 
                           alt="" 
                         />
-                        <span style={{ fontWeight: 700 }}>{teams.find(t => t.id == formData.team_id)?.name}</span>
+                        <span style={{ fontWeight: 700 }}>{teams.find(t => String(t.id) === String(formData.team_id))?.name}</span>
                       </>
                     ) : (
                       <span style={{ color: textSecondary }}>Sélectionner une équipe</span>

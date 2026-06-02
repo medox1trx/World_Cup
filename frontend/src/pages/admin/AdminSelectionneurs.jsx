@@ -226,7 +226,7 @@ export default function AdminSelectionneurs() {
                          {(c.team?.flag && c.team?.flag.length <= 10) ? (
                            <img src={`https://flagcdn.com/w40/${c.team.flag.toLowerCase()}.png`} width="24" style={{ borderRadius: 3 }} alt="" />
                          ) : (
-                           <img src={getImageUrl(c.team?.flag || c.team?.image_url)} width="24" style={{ borderRadius: 3 }} />
+                           <img src={getImageUrl(c.team?.flag || c.team?.image_url)} alt="" width="24" style={{ borderRadius: 3 }} />
                          )}
                          <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase" }}>{c.team?.name || "N/A"}</span>
                       </div>
