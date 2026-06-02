@@ -48,7 +48,61 @@ export default function Tickets() {
   };
 
   const handleBookTicket = (m) => {
-    navigate(`/tickets/${m.id}/book${hospitalityId ? `?hospitality_id=${hospitalityId}` : ''}`);
+    const availableTickets = m.tickets?.filter(t => t.status === 'available') || [];
+    if (availableTickets.length === 0) {
+       toast.error("Aucun billet disponible.");
+       return;
+    }
+    const cheapestTicket = availableTickets.sort((a, b) => a.price - b.price)[0];
+    
+    if (!user) {
+      toast.error("Veuillez vous connecter pour réserver des billets.");
+      navigate("/login");
+      return;
+    }
+    setActiveTicket(cheapestTicket);
+    setQuantity(1);
+    setShowConfirm(true);
+  };
+
+  const executeBooking = async () => {
+    if (!activeTicket) return;
+    
+    setBookingId(activeTicket.id);
+    setShowConfirm(false);
+    
+    const tid = toast.loading("Finalisation de votre réservation...");
+    
+    try {
+      const res = await bookTicket({
+        ticket_id: activeTicket.id,
+        quantity: quantity
+      });
+      
+      if (res.status === 'success') {
+        toast.success(res.message || "Réservation confirmée !", { id: tid });
+        setMatches(prev => prev.map(match => ({
+          ...match,
+          tickets: match.tickets.map(t => {
+            if (t.id === activeTicket.id) {
+              const newAvailable = t.available - quantity;
+              return { 
+                ...t, 
+                available: newAvailable,
+                status: newAvailable <= 0 ? 'sold_out' : t.status
+              };
+            }
+            return t;
+          })
+        })));
+      }
+    } catch (err) {
+      toast.error(err.message || "Erreur lors de la réservation.", { id: tid });
+    } finally {
+      setBookingId(null);
+      setActiveTicket(null);
+      setQuantity(1);
+    }
   };
 
 
