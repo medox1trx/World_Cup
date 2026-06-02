@@ -1,4 +1,4 @@
-﻿# AI/Editor config folders
+# AI/Editor config folders
 .agent
 .claude
 .codebuddy
@@ -22,3 +22,4 @@
 .agent
 .vscode
 .kilo
+tests_report.md
