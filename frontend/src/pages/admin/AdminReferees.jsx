@@ -197,8 +197,8 @@ export default function AdminReferees() {
         }
         .form-input:focus { border-color: ${accent}; background-color: ${card}; }
         .admin-badge {
-          padding: 4px 10px; border-radius: 100px; font-size: 10px; font-weight: 800;
-          text-transform: uppercase; border: 1px solid ${border}; background: ${surface}; color: ${textPrimary};
+          font-family: ${FB}; font-size: 11px; font-weight: 800;
+          text-transform: uppercase; color: ${textPrimary};
         }
         .ref-img-mini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: ${surface}; }
       `}</style>

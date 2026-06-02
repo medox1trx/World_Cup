@@ -19,3 +19,6 @@
 .gitignore.example
 .gitignore
 .gitattributes
+.agent
+.vscode
+.kilo

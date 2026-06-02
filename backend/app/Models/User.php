@@ -16,7 +16,6 @@ protected $fillable = [
     'password',
     'role',
     'google_id',
-    'facebook_id',
 ];
 
     protected $hidden = [
@@ -34,6 +33,11 @@ protected $fillable = [
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'super_admin']);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
     }
 }

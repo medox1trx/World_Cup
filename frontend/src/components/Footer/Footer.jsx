@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
+import { subscribeNewsletter } from "../../services/api";
 
 // ─── Inlined constants ────────────────────────────────────────
 const FONT = { display: "'Bebas Neue', sans-serif", body: "'DM Sans', sans-serif" };
@@ -166,6 +168,29 @@ export default function Footer() {
   const copy        = darkMode ? "rgba(255,255,255,0.22)"   : "rgba(0,0,0,0.3)";
   const vline       = darkMode ? "rgba(255,255,255,0.12)"   : "rgba(0,0,0,0.12)";
 
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      const res = await subscribeNewsletter(email);
+      setMessage({ type: "success", text: res.data.message });
+      setEmail("");
+    } catch (err) {
+      setMessage({ 
+        type: "error", 
+        text: err.response?.data?.errors?.email?.[0] || err.response?.data?.message || "Erreur." 
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <footer style={{
       background: bg,
@@ -265,6 +290,39 @@ export default function Footer() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ── NEWSLETTER ── */}
+      <div style={{ borderTop: `1px solid ${border}`, background: darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.01)", padding: "40px 20px" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
+          <h4 style={{ fontFamily: FONT.display, fontSize: 18, color: wordmark, letterSpacing: "0.1em", marginBottom: 8 }}>RESTEZ INFORMÉ</h4>
+          <p style={{ fontSize: 12, color: legalLink, marginBottom: 24 }}>Abonnez-vous à notre liste de diffusion pour les dernières mises à jour.</p>
+          
+          <form onSubmit={handleSubscribe} style={{ display: "flex", gap: 10, maxWidth: 400, margin: "0 auto" }}>
+            <input 
+              type="email" 
+              placeholder="votre@email.com" 
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ flex: 1, background: "transparent", border: `1px solid ${border}`, borderRadius: 100, padding: "0 20px", height: 40, color: wordmark, fontSize: 13, outline: "none" }}
+            />
+            <button 
+              type="submit" 
+              disabled={submitting}
+              style={{ background: wordmark, color: bg, border: "none", borderRadius: 100, padding: "0 24px", fontSize: 11, fontWeight: 800, fontFamily: FONT.display, letterSpacing: "0.1em", cursor: "pointer", transition: "opacity 0.2s" }}
+              onMouseOver={e => e.currentTarget.style.opacity = 0.8}
+              onMouseOut={e => e.currentTarget.style.opacity = 1}
+            >
+              {submitting ? "..." : "S'INSCRIRE"}
+            </button>
+          </form>
+          {message && (
+            <div style={{ marginTop: 12, fontSize: 11, color: message.type === "success" ? "#4caf50" : "#f44336", fontWeight: 700 }}>
+              {message.text}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── BOTTOM BAR ── */}

@@ -19,7 +19,10 @@ class Stadium extends Model
         'description',
         'opened_year',
         'surface',
+        'location_url',
     ];
+
+    // AI image generation is handled by generate_images.php standalone script
 
     public function city()
     {

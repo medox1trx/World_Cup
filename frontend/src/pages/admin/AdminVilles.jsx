@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { FiPlus, FiTrash2, FiEdit2, FiMapPin, FiGlobe } from "react-icons/fi";
-import { getVilles, createVille, updateVille, deleteVille, getPays } from "../../services/api";
+import { FiPlus, FiTrash2, FiEdit2, FiMapPin, FiImage } from "react-icons/fi";
+import { getCities, adminCreateCity, adminUpdateCity, adminDeleteCity, getPays, getImageUrl } from "../../services/api";
 
 const FD = "'Bebas Neue', sans-serif";
 const FB = "'DM Sans', sans-serif";
 
 export default function AdminVilles() {
   const { darkMode } = useTheme();
-  const [villes, setVilles] = useState([]);
+  const [cities, setCities] = useState([]);
   const [pays, setPays] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  
   const [formData, setFormData] = useState({ name: "", country_id: "" });
+  const [imageFile, setImageFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
   const card         = darkMode ? "#1c1c1c"                  : "#ffffff";
@@ -32,26 +35,40 @@ export default function AdminVilles() {
     setLoading(true);
     try {
       const [vRes, pRes] = await Promise.all([
-        getVilles(),
+        getCities(),
         getPays()
       ]);
-      setVilles(vRes.data || vRes);
+      setCities(vRes.data || vRes);
       setPays(pRes.data || pRes);
     } catch (err) {
-      console.error("Error fetching admin villes data:", err);
+      console.error("Error fetching admin cities data:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewImage(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...formData };
+      const payload = new FormData();
+      payload.append("name", formData.name);
+      payload.append("country_id", formData.country_id);
+      if (imageFile) {
+        payload.append("image", imageFile);
+      }
+
       if (editId) {
-        await updateVille(editId, payload);
+        await adminUpdateCity(editId, payload);
       } else {
-        await createVille(payload);
+        await adminCreateCity(payload);
       }
       setShowModal(false);
       resetForm();
@@ -65,18 +82,22 @@ export default function AdminVilles() {
   const resetForm = () => {
     setFormData({ name: "", country_id: "" });
     setEditId(null);
+    setImageFile(null);
+    setPreviewImage(null);
   };
 
   const handleEdit = (v) => {
     setEditId(v.id);
     setFormData({ name: v.name, country_id: v.country_id || "" });
+    setPreviewImage(v.image_url ? getImageUrl(v.image_url) : null);
+    setImageFile(null);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Supprimer cette ville ?")) return;
     try {
-      await deleteVille(id);
+      await adminDeleteCity(id);
       fetchData();
     } catch (err) {
       alert("Erreur lors de la suppression");
@@ -99,7 +120,6 @@ export default function AdminVilles() {
           letter-spacing: 0.02em; text-transform: uppercase; color: ${textPrimary};
           margin: 0;
         }
-        .admin-sub { font-family: ${FB}; font-size: 14px; color: ${textSecondary}; margin: 4px 0 0; }
         .admin-table-container { 
           background: ${card}; border-radius: 24px; overflow: hidden;
           border: 1px solid ${border}; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -140,6 +160,7 @@ export default function AdminVilles() {
           background: ${bg}; width: 100%; max-width: 500px; border-radius: 24px;
           padding: 32px; border: 1px solid ${border}; 
           box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          max-height: 90vh; overflow-y: auto;
         }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
@@ -152,9 +173,9 @@ export default function AdminVilles() {
           background: ${darkMode ? "#0a0a0a" : "#ffffff"}; color: ${textPrimary}; 
           border-color: ${accent}; box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
         }
-        .form-input option {
-          background: ${darkMode ? "#1c1c1c" : "#ffffff"};
-          color: ${textPrimary};
+        .img-preview {
+          width: 100%; height: 160px; object-fit: cover; border-radius: 12px;
+          border: 1px solid ${border}; margin-top: 10px;
         }
       `}</style>
 
@@ -162,7 +183,7 @@ export default function AdminVilles() {
         <div className="admin-inner">
           <div className="admin-header">
             <div>
-              <h1 className="admin-title">Villes</h1>
+              <h1 className="admin-title">Villes Hôtes</h1>
             </div>
             <button className="admin-btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
               <FiPlus /> Ajouter une ville
@@ -173,6 +194,7 @@ export default function AdminVilles() {
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th>Image</th>
                   <th>Nom de la Ville</th>
                   <th>Pays</th>
                   <th style={{ textAlign: "right" }}>Actions</th>
@@ -180,17 +202,20 @@ export default function AdminVilles() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
-                ) : villes.length === 0 ? (
-                  <tr><td colSpan="3" style={{ textAlign: "center", padding: 40 }}>Aucune ville trouvée</td></tr>
-                ) : villes.map((v) => (
+                  <tr><td colSpan="4" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
+                ) : cities.length === 0 ? (
+                  <tr><td colSpan="4" style={{ textAlign: "center", padding: 40 }}>Aucune ville trouvée</td></tr>
+                ) : cities.map((v) => (
                   <tr key={v.id}>
+                    <td>
+                      <img src={getImageUrl(v.image_url)} alt={v.name} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 6 }} />
+                    </td>
                     <td>
                       <div style={{ fontWeight: 800, fontSize: 16 }}>{v.name}</div>
                     </td>
                     <td>
                       <div style={{ fontSize: 13, fontWeight: 700 }}>
-                         {v.pays?.name || "N/A"}
+                         {v.country?.name || "N/A"}
                       </div>
                     </td>
                     <td style={{ textAlign: "right" }}>
@@ -224,8 +249,14 @@ export default function AdminVilles() {
                 <label className="form-label">Nom de la Ville</label>
                 <input className="form-input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required placeholder="Ex: Casablanca" />
               </div>
+              
+              <div className="form-group">
+                <label className="form-label">Image (Optionnel)</label>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="form-input" style={{ padding: "10px 14px" }} />
+                {previewImage && <img src={previewImage} alt="Preview" className="img-preview" />}
+              </div>
 
-              <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+              <div style={{ display: "flex", gap: 12, marginTop: 30 }}>
                 <button type="submit" className="admin-btn-primary" style={{ flex: 1, justifyContent: "center" }}>Sauvegarder</button>
                 <button type="button" className="admin-btn-primary" style={{ background: surface, color: textPrimary, border: `1px solid ${border}` }} onClick={() => setShowModal(false)}>Annuler</button>
               </div>

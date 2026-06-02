@@ -89,6 +89,7 @@ export default function Register() {
   const [confirmPass, setConfirmPass] = useState("");
   const [showPass, setShowPass]       = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [remember, setRemember]       = useState(false);
   const [loading, setLoading]         = useState(false);
   const [errors, setErrors]           = useState({});
   const [touched, setTouched]         = useState({});
@@ -134,8 +135,9 @@ export default function Register() {
         name, email,
         password: pass,
         password_confirmation: confirmPass,
+        remember
       });
-      register(res.user);
+      register(res.user, remember);
       showToast("success", "Compte créé avec succès !");
       setTimeout(() => navigate("/"), 1200);
     } catch (err) {
@@ -212,6 +214,25 @@ export default function Register() {
           transition: opacity 0.3s, transform 0.1s, background 0.3s, color 0.3s;
           position: relative; overflow: hidden; margin-top: 8px;
         }
+        .bottom-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; margin-top: 4px; }
+        .remember-label {
+          display: flex; align-items: center; gap: 7px; cursor: pointer;
+          font-family: ${FB}; font-size: 11px; color: ${textSecondary}; user-select: none; transition: color 0.3s;
+        }
+        .remember-label input[type=checkbox] {
+          appearance: none; -webkit-appearance: none; 
+          width: 14px !important; height: 14px !important; 
+          min-width: 14px !important; max-width: 14px !important;
+          padding: 0 !important; margin: 0; box-sizing: border-box;
+          border: 1.5px solid ${darkMode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)"}; 
+          border-radius: 4px; background: ${darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.02)"};
+          cursor: pointer; position: relative; transition: border-color 0.3s, background 0.3s; flex-shrink: 0;
+        }
+        .remember-label input[type=checkbox]:checked { background: ${textPrimary}; border-color: ${textPrimary}; }
+        .remember-label input[type=checkbox]:checked::after {
+          content: ''; position: absolute; left: 3px; top: 1px; width: 5px; height: 8px;
+          border: 1.5px solid ${bg}; border-top: none; border-left: none; transform: rotate(45deg);
+        }
         .submit-btn:hover:not(:disabled) { opacity: .92; }
         .submit-btn:active:not(:disabled) { transform: scale(.99); }
         .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
@@ -260,8 +281,8 @@ export default function Register() {
           </div>
 
           <div className="soc-grid">
-            <button className="soc-btn"><GoogleIcon /> Google</button>
-            <button className="soc-btn"><FacebookIcon /> Facebook</button>
+            <button className="soc-btn" onClick={() => showToast("error", "Inscription avec Google non implémentée pour le moment.")}><GoogleIcon /> Google</button>
+            <button className="soc-btn" onClick={() => showToast("error", "Inscription avec Facebook non implémentée pour le moment.")}><FacebookIcon /> Facebook</button>
           </div>
 
           <Divider border={border} textMuted={textMuted} />
@@ -313,6 +334,13 @@ export default function Register() {
               </button>
             </div>
           </Field>
+
+          <div className="bottom-row">
+            <label className="remember-label">
+              <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
+              Se souvenir de moi
+            </label>
+          </div>
 
           <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
             {loading

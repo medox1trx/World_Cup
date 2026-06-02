@@ -16,10 +16,12 @@ export default function AdminJoueurs() {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [teamSelectOpen, setTeamSelectOpen] = useState(false);
   const [editId, setEditId] = useState(null);
   const [imageData, setImageData] = useState({ type: 'url', value: '' });
   const [formData, setFormData] = useState({
-    name: "", number: "", position: "ST", photo: "", team_id: "", goals: 0
+    name: "", number: "", position: "ST", photo: "", team_id: "", goals: 0,
+    age: "", club: "", bio: ""
   });
 
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -77,7 +79,7 @@ export default function AdminJoueurs() {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", number: "", position: "ST", photo: "", team_id: "", goals: 0 });
+    setFormData({ name: "", number: "", position: "ST", photo: "", team_id: "", goals: 0, age: "", club: "", bio: "" });
     setImageData({ type: 'url', value: '' });
     setEditId(null);
   };
@@ -90,7 +92,10 @@ export default function AdminJoueurs() {
       position: j.position || "ST",
       photo: j.photo || "",
       team_id: j.team_id || "",
-      goals: j.goals || 0
+      goals: j.goals || 0,
+      age: j.age || "",
+      club: j.club || "",
+      bio: j.bio || ""
     });
     setImageData({ type: 'url', value: j.photo || '' });
     setShowModal(true);
@@ -186,14 +191,8 @@ export default function AdminJoueurs() {
         .form-input:focus { border-color: ${accent}; background-color: ${card}; }
         option { background-color: ${bg}; color: ${textPrimary}; }
         .admin-badge {
-          padding: 4px 10px; 
-          border-radius: 100px; 
-          font-size: 10px; 
-          font-weight: 800;
-          text-transform: uppercase; 
-          border: 1px solid ${border};
-          background: ${surface}; 
-          color: ${textPrimary};
+          font-family: ${FB}; font-size: 11px; font-weight: 800;
+          text-transform: uppercase; color: ${textPrimary};
         }
         .player-img-mini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: ${surface}; }
       `}</style>
@@ -281,12 +280,81 @@ export default function AdminJoueurs() {
                 </div>
               </div>
 
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15 }}>
+                <div className="form-group">
+                  <label className="form-label">Âge</label>
+                  <input type="number" className="form-input" value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Club</label>
+                  <input className="form-input" value={formData.club} onChange={e => setFormData({...formData, club: e.target.value})} />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Biographie</label>
+                <textarea 
+                  className="form-input" 
+                  style={{ height: "100px", resize: "none", padding: "12px" }}
+                  value={formData.bio} 
+                  onChange={e => setFormData({...formData, bio: e.target.value})} 
+                />
+              </div>
+
               <div className="form-group">
                 <label className="form-label">Équipe</label>
-                <select className="form-input" value={formData.team_id} onChange={e => setFormData({...formData, team_id: e.target.value})} required>
-                  <option value="">Sélectionner une équipe</option>
-                  {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                <div 
+                  className="form-input" 
+                  style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} 
+                  onClick={() => setTeamSelectOpen(!teamSelectOpen)}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {formData.team_id ? (
+                      <>
+                        <img 
+                          src={getImageUrl(teams.find(t => String(t.id) === String(formData.team_id))?.flag)} 
+                          style={{ width: 24, height: 16, borderRadius: 2, objectFit: "cover" }} 
+                          alt="" 
+                        />
+                        <span style={{ fontWeight: 700 }}>{teams.find(t => String(t.id) === String(formData.team_id))?.name}</span>
+                      </>
+                    ) : (
+                      <span style={{ color: textSecondary }}>Sélectionner une équipe</span>
+                    )}
+                  </div>
+                  <div style={{ transition: 'transform 0.3s', transform: teamSelectOpen ? 'rotate(180deg)' : 'rotate(0)' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+
+                  {teamSelectOpen && (
+                    <div style={{ 
+                      position: 'absolute', top: 'calc(100% + 5px)', left: 0, right: 0, 
+                      background: card, border: `1px solid ${border}`, borderRadius: 12, 
+                      zIndex: 100, maxHeight: 250, overflowY: 'auto', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' 
+                    }}>
+                      {teams.map(t => (
+                        <div 
+                          key={t.id} 
+                          style={{ 
+                            padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, 
+                            borderBottom: `1px solid ${border}`, cursor: 'pointer',
+                            transition: 'background 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = surface}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFormData({...formData, team_id: t.id});
+                            setTeamSelectOpen(false);
+                          }}
+                        >
+                          <img src={getImageUrl(t.flag)} style={{ width: 24, height: 16, borderRadius: 2, objectFit: "cover" }} alt="" />
+                          <span style={{ fontWeight: 700, fontSize: 14 }}>{t.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <ImageUpload label="Photo" defaultValue={formData.photo} onChange={setImageData} darkMode={darkMode} folder="players" />

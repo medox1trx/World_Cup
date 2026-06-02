@@ -21,7 +21,8 @@ export default function AdminStadiums() {
     city_id: "",
     capacity: "",
     image_url: "",
-    description: ""
+    description: "",
+    location_url: ""
   });
 
   const bg           = darkMode ? "#0d0d0d"                  : "#ffffff";
@@ -80,7 +81,7 @@ export default function AdminStadiums() {
   const resetForm = () => {
     setFormData({
       name: "", city_id: "", capacity: "",
-      image_url: "", description: ""
+      image_url: "", description: "", location_url: ""
     });
     setImageData({ type: 'url', value: '' });
     setEditId(null);
@@ -93,7 +94,8 @@ export default function AdminStadiums() {
       city_id: s.city_id || "",
       capacity: s.capacity || "",
       image_url: s.image_url || "",
-      description: s.description || ""
+      description: s.description || "",
+      location_url: s.location_url || ""
     });
     setImageData({ type: 'url', value: s.image_url || '' });
     setShowModal(true);
@@ -221,7 +223,6 @@ export default function AdminStadiums() {
                     </td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <FiMapPin size={14} color={textSecondary} />
                         <span style={{ fontWeight: 600 }}>{s.city?.name || "—"}</span>
                       </div>
                     </td>
@@ -270,7 +271,12 @@ export default function AdminStadiums() {
 
               <div className="form-group">
                 <label className="form-label">Description</label>
-                <textarea className="form-input" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Description du stade..." style={{ minHeight: 100, resize: "vertical" }} />
+                <textarea className="form-input" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Description du stade..." style={{ minHeight: 80, resize: "vertical" }} />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">URL de Localisation (Google Maps)</label>
+                <input className="form-input" value={formData.location_url} onChange={e => setFormData({...formData, location_url: e.target.value})} placeholder="https://www.google.com/maps/..." />
               </div>
 
               <div style={{ display: "flex", gap: 12, marginTop: 20 }}>

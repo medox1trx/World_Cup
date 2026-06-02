@@ -15,18 +15,9 @@ export default function AccommodationCard({ acc, citySlug }) {
       overflow: "hidden", 
       background: darkMode ? "#1a1a1a" : "white",
       border: `1px solid ${darkMode ? "#222" : "#eee"}`,
-      transition: "transform 0.3s, box-shadow 0.3s",
       height: "100%",
-      cursor: "pointer",
+      cursor: "default",
       position: "relative"
-    }}
-    onMouseEnter={e => {
-        e.currentTarget.style.transform = "translateY(-10px)";
-        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.1)";
-    }}
-    onMouseLeave={e => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "none";
     }}>
       
       {/* Badge / Category */}

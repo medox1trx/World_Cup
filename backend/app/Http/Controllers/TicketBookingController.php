@@ -24,6 +24,7 @@ class TicketBookingController extends Controller
         $validated = $request->validate([
             'ticket_id' => 'required|exists:tickets,id',
             'quantity'  => 'required|integer|min:1|max:3',
+            'hospitality_id' => 'nullable|exists:hospitalities,id',
         ]);
 
         // 2. Enforce global limit of 3 tickets per person for this category
@@ -59,6 +60,7 @@ class TicketBookingController extends Controller
             $booking = TicketBooking::create([
                 'user_id' => auth('web')->id(),
                 'ticket_id' => $ticket->id,
+                'hospitality_id' => $validated['hospitality_id'] ?? null,
                 'quantity' => $validated['quantity'],
                 'total_price' => $totalPrice,
                 'booking_reference' => 'TIX-' . Str::upper(Str::random(10)),

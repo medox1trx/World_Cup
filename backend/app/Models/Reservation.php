@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Reservation extends Model
 {
     protected $fillable = [
+        'type',
         'accommodation_id',
         'user_id',
         'total_price',

@@ -24,6 +24,9 @@ class JoueurController extends Controller
             'goals' => 'nullable|integer|min:0',
             'photo' => 'nullable|sometimes',
             'team_id' => 'required|exists:teams,id',
+            'age' => 'nullable|integer',
+            'club' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -53,6 +56,9 @@ class JoueurController extends Controller
             'goals' => 'nullable|integer|min:0',
             'photo' => 'nullable|sometimes',
             'team_id' => 'sometimes|required|exists:teams,id',
+            'age' => 'nullable|integer',
+            'club' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
         ]);
 
         if ($request->hasFile('photo')) {

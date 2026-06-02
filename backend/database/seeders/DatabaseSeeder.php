@@ -21,6 +21,10 @@ class DatabaseSeeder extends Seeder
             JoueursSeeder::class,
             MatchesSeeder::class,
             RefereeSeeder::class,
+            HotelSeeder::class,
+            StadiumSeeder::class,
+            TickerItemSeeder::class,
+            WorldCupSeeder::class,
         ]);
     }
 }

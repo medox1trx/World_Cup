@@ -40,8 +40,9 @@ export default function Teams() {
 
   const filteredTeams = teams.filter(t => {
     const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
-                          (t.group?.name || "").toLowerCase().includes(search.toLowerCase());
-    const matchesConfed = selectedConfed === "All" || t.confederation === selectedConfed;
+                          (t.group?.name || "").toLowerCase().includes(search.toLowerCase()) ||
+                          (t.confederation?.name || "").toLowerCase().includes(search.toLowerCase());
+    const matchesConfed = selectedConfed === "All" || t.confederation?.name === selectedConfed;
     return matchesSearch && matchesConfed;
   });
 
@@ -83,9 +84,7 @@ export default function Teams() {
           background: ${tCardBg};
           border: 1px solid ${tBorder};
           margin-bottom: 16px;
-          transition: border-color 0.3s ease;
         }
-        .fz-card:hover .fz-img-wrap { border-color: ${tText}; }
         .fz-img {
           width: 100%;
           height: 100%;
@@ -160,35 +159,24 @@ export default function Teams() {
             />
           </div>
 
-          {/* FILTERS */}
-          <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto", paddingBottom: 6, scrollbarWidth: "none" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 12px", background: darkMode ? "#1a1a1a" : "#f8f8f8", borderRadius: 100, border: `1px solid ${tBorder}`, fontSize: 9, fontWeight: 800, color: tSub, textTransform: "uppercase", whiteSpace: "nowrap" }}>
-              <FiFilter size={14} /> FILTRER
-            </div>
-            <div style={{ display: "flex", gap: 4 }}>
-              {confederations.map(c => (
-                <button 
-                  key={c}
-                  onClick={() => setSelectedConfed(c)}
-                  style={{
-                    background: selectedConfed === c ? (darkMode ? "white" : "#0d0d0d") : "transparent",
-                    color: selectedConfed === c ? (darkMode ? "black" : "white") : tSub,
-                    border: `1px solid ${selectedConfed === c ? (darkMode ? "white" : "#0d0d0d") : tBorder}`,
-                    padding: "6px 14px",
-                    borderRadius: 100,
-                    fontSize: 10,
-                    fontWeight: 800,
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                    transition: "all 0.2s",
-                    fontFamily: "'Bebas Neue', sans-serif"
-                  }}
-                >
-                  {c === "All" ? "TOUS" : c}
-                </button>
-              ))}
-            </div>
+          {/* Filter chips */}
+          <div className="cal-filter-bar" style={{
+            display: "flex", alignItems: "center", gap: 6,
+            overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none"
+          }}>
+            {confederations.map(c => (
+              <button key={c} onClick={() => setSelectedConfed(c)} style={{
+                background: selectedConfed === c ? tText : "transparent",
+                color: selectedConfed === c ? tBg : tSub,
+                border: `1px solid ${selectedConfed === c ? tText : tBorder}`,
+                padding: "5px 14px", borderRadius: 100,
+                fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+                textTransform: "uppercase", cursor: "pointer",
+                whiteSpace: "nowrap", transition: "all 0.18s", fontFamily: "'DM Sans', sans-serif",
+              }}>
+                {c === "All" ? "Toutes les Confédérations" : c}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -227,6 +215,9 @@ export default function Teams() {
                   />
                 </div>
                 <h3 className="fz-name">{t.name}</h3>
+                <div style={{ fontSize: 11, fontWeight: 800, color: tSub, textTransform: "uppercase", marginTop: 4, letterSpacing: "0.05em" }}>
+                  {t.selectionneur?.name || t.coach || "Sélectionneur N/A"}
+                </div>
               </div>
             ))}
           </div>

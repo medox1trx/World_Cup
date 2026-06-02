@@ -25,6 +25,7 @@ export default function AdminReservations() {
 
   useEffect(() => {
     fetchReservations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, typeFilter]);
 
   const fetchReservations = async () => {

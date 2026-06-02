@@ -56,6 +56,7 @@ class ReservationController extends Controller
         $reservation = Reservation::create([
             'accommodation_id' => $acc->id,
             'user_id' => auth('web')->id(),
+            'type' => 'accommodation',
             'check_in' => $checkIn,
             'check_out' => $checkOut,
             'guests' => $validated['guests'],
@@ -88,6 +89,65 @@ class ReservationController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $reservations
+        ]);
+    }
+
+    /**
+     * Admin: List all reservations
+     */
+    public function index(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $query = Reservation::with(['accommodation.city', 'user']);
+        
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('type') && $request->type) {
+            $query->where('type', $request->type);
+        }
+        
+        $reservations = $query->orderBy('created_at', 'desc')->get();
+        
+        // Map data to match what the frontend expects (full_name, email, etc)
+        $mapped = $reservations->map(function ($res) {
+            return [
+                'id' => $res->id,
+                'full_name' => $res->user ? $res->user->name : 'N/A',
+                'email' => $res->user ? $res->user->email : 'N/A',
+                'phone' => 'N/A', // Update if phone exists in user table
+                'type' => $res->type,
+                'hospitality' => null, // Adjust if you have hospitality relation
+                'fan_zone' => null, // Adjust if you have fan zone relation
+                'accommodation' => $res->accommodation,
+                'quantity' => $res->guests,
+                'total_price' => $res->total_price,
+                'status' => $res->status,
+                'special_request' => $res->notes,
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $mapped
+        ]);
+    }
+
+    /**
+     * Admin: Update reservation status
+     */
+    public function updateStatus(\Illuminate\Http\Request $request, $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,confirmed,cancelled'
+        ]);
+
+        $reservation = Reservation::findOrFail($id);
+        $reservation->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $reservation
         ]);
     }
 

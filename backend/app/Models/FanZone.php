@@ -20,6 +20,7 @@ class FanZone extends Model
         'zone_label',
         'description',
         'image_url',
+        'location_url',
         'group_label',
         'status',
     ];

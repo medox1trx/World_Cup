@@ -20,6 +20,15 @@ class AdminSeeder extends Seeder
         );
 
         User::firstOrCreate(
+            ['email' => 'superadmin@fifa2026.com'],
+            [
+                'name'     => 'Super Admin FIFA',
+                'password' => Hash::make('superadmin123'),
+                'role'     => 'super_admin',
+            ]
+        );
+
+        User::firstOrCreate(
             ['email' => 'user@fifa2026.com'],
             [
                 'name'     => 'Utilisateur Test',

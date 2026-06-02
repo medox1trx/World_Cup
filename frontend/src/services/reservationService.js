@@ -7,7 +7,7 @@ const reservationService = {
    */
   create: async (data) => {
     const response = await api.post('/reservations', data);
-    return response.data;
+    return response;
   },
 
   /**
@@ -15,7 +15,7 @@ const reservationService = {
    */
   getAll: async (params = {}) => {
     const response = await api.get('/admin/reservations', { params });
-    return response.data;
+    return response;
   },
 
   /**
@@ -23,7 +23,7 @@ const reservationService = {
    */
   getById: async (id) => {
     const response = await api.get(`/admin/reservations/${id}`);
-    return response.data;
+    return response;
   },
 
   /**
@@ -31,7 +31,7 @@ const reservationService = {
    */
   updateStatus: async (id, status) => {
     const response = await api.patch(`/admin/reservations/${id}/status`, { status });
-    return response.data;
+    return response;
   }
 };
 

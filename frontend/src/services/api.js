@@ -37,6 +37,17 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res.data,
   (err) => {
+    // 1. Silent check for authentication (initial load)
+    const isAuthCheck = err.config?.url?.includes("/auth/user");
+    if (err.response?.status === 401 && isAuthCheck) {
+      return Promise.reject(err.response?.data || { message: "Unauthenticated" });
+    }
+
+    // 2. Suppress noise for validation errors (422) or throttle errors
+    if (err.response?.status === 422) {
+      return Promise.reject(err.response?.data || { message: "Validation error" });
+    }
+
     const msg = err.response?.data?.message || "Something went wrong";
     console.error("[API Error]", msg);
     return Promise.reject(err.response?.data || { message: msg });
@@ -48,6 +59,7 @@ export const getStats = () => api.get("/stats");
 
 // ── News ─────────────────────────────────────────────────────
 export const getNews = (params = {}) => api.get("/news", { params });
+export const subscribeNewsletter = (email) => api.post("/newsletter", { email });
 export const createNews = (data) => api.post("/admin/news", data);
 export const updateNews = (id, data) => api.put(`/admin/news/${id}`, data);
 export const deleteNews = (id) => api.delete(`/admin/news/${id}`);
@@ -103,6 +115,9 @@ export const registerUser = (data) => api.post("/auth/register", data);
 export const loginUser = (data) => api.post("/auth/login", data);
 export const logout = () => api.post("/auth/logout");
 export const getAuthUser = () => api.get("/auth/user");
+export const forgotPassword = (email) => api.post("/auth/forgot-password", { email });
+export const resetPassword = (data) => api.post("/auth/reset-password", data);
+export const getSocialRedirect = (provider) => api.get(`/auth/${provider}/redirect`);
 export const updateProfile = (data) => api.put("/auth/profile", data);
 
 // ── Cities & Accommodations ──────────────────────────────────
@@ -110,6 +125,16 @@ export const getCities = () => api.get("/cities");
 export const getCity = (slug) => api.get(`/cities/${slug}`);
 export const getAccommodation = (id) => api.get(`/accommodations/${id}`);
 export const getAccommodations = (slug, params = {}) => api.get(`/cities/${slug}/accommodations`, { params });
+
+export const adminCreateCity = (data) => api.post("/admin/cities", data);
+export const adminUpdateCity = (id, data) => {
+  if (data instanceof FormData) {
+    data.append("_method", "PUT");
+    return api.post(`/admin/cities/${id}`, data);
+  }
+  return api.put(`/admin/cities/${id}`, data);
+};
+export const adminDeleteCity = (id) => api.delete(`/admin/cities/${id}`);
 
 // ── Fan Zones, Cities & Countries (New Dynamic System) ────────────────
 export const getFanZones = () => api.get("/fan-zones");
@@ -148,7 +173,7 @@ export const updateTickerItem = (id, data) => api.put(`/admin/ticker/${id}`, dat
 export const deleteTickerItem = (id) => api.delete(`/admin/ticker/${id}`);
 
 // ── Hospitalities ───────────────────────────────────────────
-export const getHospitalities = () => api.get("/hospitalities");
+export const getHospitalities = () => api.get("/hospitalities?per_page=-1");
 export const createHospitality = (data) => api.post("/hospitalities", data);
 export const updateHospitality = (id, data) => {
   if (data instanceof FormData) {
@@ -208,5 +233,17 @@ export const getStadiums = () => api.get("/stadiums");
 export const createStadium = (data) => api.post("/admin/stadiums", data);
 export const updateStadium = (id, data) => api.put(`/admin/stadiums/${id}`, data);
 export const deleteStadium = (id) => api.delete(`/admin/stadiums/${id}`);
+
+// ── Hotels ───────────────────────────────────────────────────
+export const getHotels = () => api.get("/hotels");
+export const adminGetHotels = () => api.get("/admin/hotels");
+export const createHotel = (data) => api.post("/admin/hotels", data);
+export const updateHotel = (id, data) => api.put(`/admin/hotels/${id}`, data);
+export const deleteHotel = (id) => api.delete(`/admin/hotels/${id}`);
+
+// ── Users (Super Admin) ──────────────────────────────────────
+export const adminGetUsers = () => api.get("/admin/users");
+export const adminUpdateUser = (id, data) => api.put(`/admin/users/${id}`, data);
+export const adminDeleteUser = (id) => api.delete(`/admin/users/${id}`);
 
 export default api;

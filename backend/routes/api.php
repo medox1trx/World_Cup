@@ -14,6 +14,9 @@ use App\Http\Controllers\Api\V1\VilleController;
 use App\Http\Controllers\Api\V1\FanZoneController;
 use App\Http\Controllers\Api\V1\HospitalityController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\TicketBookingController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -27,12 +30,23 @@ Route::prefix('v1')->group(function () {
     // Ticker
     Route::get('/ticker', [TickerController::class, 'index']);
 
-    // News Proxy
+    // News & Newsletter
     Route::get('/news',  [ApiController::class, 'news']);
+    Route::post('/newsletter', [App\Http\Controllers\NewsletterController::class, 'subscribe']);
 
     // Auth
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/login',    [AuthController::class, 'login']);
+    Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+    
+    // This route is required by Laravel to generate the reset link in the email
+    Route::get('/reset-password/{token}', function ($token) {
+        return redirect('http://localhost:3000/reset-password/' . $token . '?email=' . request('email'));
+    })->name('password.reset');
+
+    Route::get('/auth/{provider}/redirect', [App\Http\Controllers\SocialAuthController::class, 'redirectToProvider']);
+    Route::get('/auth/{provider}/callback', [App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback']);
 
     // Fan Zones, Cities & Countries
     Route::get('/pays', [PaysController::class, 'index']);
@@ -49,6 +63,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/fan-zones/{id}', [FanZoneController::class, 'show']);
     Route::post('/fan-zones', [FanZoneController::class, 'store']);
     Route::put('/fan-zones/{id}', [FanZoneController::class, 'update']);
+    Route::post('/fan-zones/{id}', [FanZoneController::class, 'update']); // _method=PUT spoofing for FormData
     Route::delete('/fan-zones/{id}', [FanZoneController::class, 'destroy']);
 
     // Hospitalities
@@ -56,7 +71,15 @@ Route::prefix('v1')->group(function () {
     Route::get('/hospitalities/{id}', [HospitalityController::class, 'show']);
     Route::post('/hospitalities', [HospitalityController::class, 'store']);
     Route::put('/hospitalities/{hospitality}', [HospitalityController::class, 'update']);
+    Route::post('/hospitalities/{hospitality}', [HospitalityController::class, 'update']); // _method=PUT spoofing
     Route::delete('/hospitalities/{hospitality}', [HospitalityController::class, 'destroy']);
+
+    // Highlights (Temps Forts)
+    Route::get('/highlights', [ApiController::class, 'indexHighlights']);
+    Route::post('/highlights/{highlight}/view', [ApiController::class, 'incrementHighlightView']);
+    Route::post('/highlights/{highlight}/like', [ApiController::class, 'toggleHighlightLike']);
+    Route::get('/highlights/{highlight}/comments', [ApiController::class, 'indexHighlightComments']);
+    Route::post('/highlights/{highlight}/comments', [ApiController::class, 'storeHighlightComment']);
 
     // Teams & Groups
     Route::get('/teams', [TeamController::class, 'index']);
@@ -77,9 +100,11 @@ Route::prefix('v1')->group(function () {
     Route::get('/tickets', [ApiController::class, 'indexTickets']);
     Route::get('/referees', [ApiController::class, 'indexReferees']);
     Route::get('/stadiums', [ApiController::class, 'indexStadiums']);
+    Route::get('/hotels', [HotelController::class, 'index']);
 
     // Joueurs
     Route::get('/joueurs',                  [JoueurController::class, 'index']);
+    Route::get('/joueurs/top-scorers',      [JoueurController::class, 'topScorers']);
     Route::get('/joueurs/{joueur}',         [JoueurController::class, 'show']);
     // Selectionneurs
     Route::get('/selectionneurs',           [SelectionneurController::class, 'index']);
@@ -93,6 +118,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/reservations', [ReservationController::class, 'store']);
         Route::get('/reservations/user', [ReservationController::class, 'userReservations']);
         Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']);
+        
+        // Ticket Bookings
+        Route::post('/ticket-bookings', [TicketBookingController::class, 'store']);
+        Route::get('/ticket-bookings',  [TicketBookingController::class, 'index']);
     });
 
     // Admin routes (protected)
@@ -132,5 +161,30 @@ Route::prefix('v1')->group(function () {
         Route::post('/selectionneurs', [SelectionneurController::class, 'store']);
         Route::put('/selectionneurs/{selectionneur}', [SelectionneurController::class, 'update']);
         Route::delete('/selectionneurs/{selectionneur}', [SelectionneurController::class, 'destroy']);
+
+        // Cities
+        Route::post('/cities', [CityController::class, 'store']);
+        Route::post('/cities/{id}', [CityController::class, 'update']); // Use POST for FormData with _method=PUT
+        Route::delete('/cities/{id}', [CityController::class, 'destroy']);
+
+        // Users management (Super Admin only)
+        Route::get('/users', [UserController::class, 'index']);
+        Route::put('/users/{user}', [UserController::class, 'update']);
+        Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+        // Stadiums
+        Route::post('/stadiums', [ApiController::class, 'storeStadium']);
+        Route::put('/stadiums/{id}', [ApiController::class, 'updateStadium']);
+        Route::delete('/stadiums/{id}', [ApiController::class, 'destroyStadium']);
+
+        // Hotels
+        Route::get('/hotels', [HotelController::class, 'index']);
+        Route::post('/hotels', [HotelController::class, 'store']);
+        Route::put('/hotels/{hotel}', [HotelController::class, 'update']);
+        Route::delete('/hotels/{hotel}', [HotelController::class, 'destroy']);
+
+        // Reservations
+        Route::get('/reservations', [ReservationController::class, 'index']);
+        Route::patch('/reservations/{id}/status', [ReservationController::class, 'updateStatus']);
     });
 });

@@ -79,7 +79,7 @@ function ArticleImg({ src, style, onLoad, transition = false, isEntering = false
   return (
     <div style={{
       position: "absolute", inset: 0,
-      background: `repeating-linear-gradient(45deg,${patternA} 0,${patternA} 1px,${patternB} 0,${patternB} 50%)`,
+      backgroundImage: `repeating-linear-gradient(45deg,${patternA} 0,${patternA} 1px,${patternB} 0,${patternB} 50%)`,
       backgroundSize: "10px 10px",
       transition: "background 0.3s",
       overflow: "hidden"

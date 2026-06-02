@@ -189,8 +189,7 @@ export function CitiesSection() {
           overflow: hidden;
           text-decoration: none;
         }
-        .host-card img.host-bg { transition: transform 0.6s, opacity 0.4s; opacity: 0.6; }
-        .host-card:hover img.host-bg { transform: scale(1.05); opacity: 0.8; }
+        .host-card img.host-bg { opacity: 0.6; }
         @media (max-width: 960px) {
           .hosts-grid { grid-template-columns: repeat(2, 1fr); }
         }

@@ -13,6 +13,7 @@ export default function TeamDetail() {
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -96,6 +97,32 @@ export default function TeamDetail() {
           text-transform: uppercase;
           letter-spacing: 0.1em;
         }
+        .m-overlay {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+          display: flex; align-items: center; justify-content: center; z-index: 9999;
+          padding: 20px; animation: fadeIn 0.3s ease;
+        }
+        .m-content {
+          background: ${darkMode ? "#141414" : "white"};
+          width: 100%; max-width: 800px; border-radius: 24px; overflow: hidden;
+          display: flex; border: 1px solid ${tBorder};
+          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .m-left { width: 40%; background: ${tCardBg}; position: relative; }
+        .m-right { width: 60%; padding: 40px; position: relative; }
+        .close-btn {
+          position: absolute; top: 20px; right: 20px; background: none; border: none;
+          color: ${tText}; font-size: 24px; cursor: pointer; z-index: 10; opacity: 0.6;
+        }
+        .close-btn:hover { opacity: 1; }
+        .m-label { font-family: 'Bebas Neue', sans-serif; color: ${tSub}; font-size: 14px; text-transform: uppercase; margin-bottom: 4px; }
+        .m-value { font-family: 'DM Sans', sans-serif; color: ${tText}; font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @media (max-width: 768px) {
+          .m-content { flex-direction: column; max-height: 90vh; overflow-y: auto; }
+          .m-left { width: 100%; height: 300px; }
+          .m-right { width: 100%; padding: 24px; }
+        }
       `}</style>
       
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "80px clamp(20px, 5vw, 80px)" }}>
@@ -156,19 +183,6 @@ export default function TeamDetail() {
                       <span style={{ fontSize: 18, fontWeight: 900 }}>{team.captain}</span>
                     </div>
                   )}
-                  {(team.selectionneur || (team.coach && team.coach !== "N/A")) && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                      {team.selectionneur?.photo && (
-                        <div style={{ width: 50, height: 50, borderRadius: "50%", overflow: "hidden", border: `1px solid ${tBorder}`, background: tBg }}>
-                          <img src={getImageUrl(team.selectionneur.photo)} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
-                        </div>
-                      )}
-                      <div>
-                        <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 4, letterSpacing: '0.05em' }}>Sélectionneur</span>
-                        <span style={{ fontSize: 18, fontWeight: 900 }}>{team.selectionneur?.name || team.coach}</span>
-                      </div>
-                    </div>
-                  )}
                   {team.world_ranking > 0 && (
                     <div>
                       <span style={{ display: "block", fontSize: 11, fontWeight: 900, color: tSub, textTransform: "uppercase", marginBottom: 4, letterSpacing: '0.05em' }}>Rang FIFA</span>
@@ -190,14 +204,34 @@ export default function TeamDetail() {
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "48px 32px" }}>
-              {team.joueurs.map((player) => (
-                <div key={player.id} className="player-item">
+              {/* Coach / Selectionneur */}
+              {(team.selectionneur || team.coach) && (
+                <div className="player-item">
                   <div className="player-circle">
-                    <img className="player-img" src={getImageUrl(player.photo)} alt={player.nom} onError={(e) => { e.target.src = "https://www.w3schools.com/howto/img_avatar.png"; }} />
+                    <img 
+                      className="player-img" 
+                      src={getImageUrl(team.selectionneur?.photo || team.coach_photo)} 
+                      alt={team.selectionneur?.name || team.coach} 
+                      onError={(e) => { e.target.src = "https://www.w3schools.com/howto/img_avatar.png"; }} 
+                    />
                   </div>
                   <div>
                     <div className="player-name">
-                      {player.nom} {player.numero && <span style={{ color: C.red }}>#{player.numero}</span>}
+                      {team.selectionneur?.name || team.coach}
+                    </div>
+                    <div className="player-meta">SÉLECTIONNEUR</div>
+                  </div>
+                </div>
+              )}
+
+              {team.joueurs.map((player) => (
+                <div key={player.id} className="player-item" onClick={() => setSelectedPlayer(player)} style={{ cursor: "pointer" }}>
+                  <div className="player-circle">
+                    <img className="player-img" src={getImageUrl(player.photo)} alt={player.name || player.nom} onError={(e) => { e.target.src = "https://www.w3schools.com/howto/img_avatar.png"; }} />
+                  </div>
+                  <div>
+                    <div className="player-name">
+                      {player.name || player.nom} {player.number && <span style={{ color: C.red }}>#{player.number}</span>}
                     </div>
                     <div className="player-meta">{player.poste}</div>
                   </div>
@@ -207,6 +241,58 @@ export default function TeamDetail() {
           )}
         </div>
       </div>
+
+      {selectedPlayer && (
+        <div className="m-overlay" onClick={() => setSelectedPlayer(null)}>
+          <div className="m-content" onClick={e => e.stopPropagation()}>
+            <div className="m-left">
+              <img 
+                src={selectedPlayer.photo ? getImageUrl(selectedPlayer.photo) : `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedPlayer.name || selectedPlayer.nom)}&size=512`}
+                alt={selectedPlayer.name || selectedPlayer.nom}
+                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+              />
+            </div>
+            <div className="m-right">
+              <button className="close-btn" onClick={() => setSelectedPlayer(null)}>&times;</button>
+              
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                {team.flag && (
+                  <img src={`https://flagcdn.com/w80/${team.flag.toLowerCase()}.png`} width="40" style={{ borderRadius: 4 }} alt="" />
+                )}
+                <span style={{ fontFamily: 'Bebas Neue', fontSize: 20, color: tSub }}>{team.name}</span>
+              </div>
+              
+              <h2 style={{ fontFamily: 'Bebas Neue', fontSize: 48, fontWeight: 900, textTransform: "uppercase", marginBottom: 32, lineHeight: 1 }}>
+                {selectedPlayer.name || selectedPlayer.nom}
+              </h2>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
+                <div>
+                  <div className="m-label">Position</div>
+                  <div className="m-value">{selectedPlayer.position || selectedPlayer.poste || "Joueur"}</div>
+                </div>
+                <div>
+                  <div className="m-label">Numéro</div>
+                  <div className="m-value">#{selectedPlayer.number || selectedPlayer.numero || "--"}</div>
+                </div>
+                <div>
+                  <div className="m-label">Âge</div>
+                  <div className="m-value">{selectedPlayer.age ? `${selectedPlayer.age} ans` : "--"}</div>
+                </div>
+                <div>
+                  <div className="m-label">Club</div>
+                  <div className="m-value">{selectedPlayer.club || "N/A"}</div>
+                </div>
+              </div>
+
+              <div className="m-label" style={{ marginTop: 20 }}>Biographie</div>
+              <p style={{ fontFamily: 'DM Sans', fontSize: 16, color: tSub, lineHeight: 1.6, margin: 0 }}>
+                {selectedPlayer.bio || "Membre officiel de la sélection nationale pour la Coupe du Monde de la FIFA 2026."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

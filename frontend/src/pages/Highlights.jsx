@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiPlayCircle, FiEye, FiHeart, FiMessageSquare, FiSend, FiX } from "react-icons/fi";
+import { FiPlayCircle, FiEye, FiHeart, FiMessageSquare, FiSend, FiX, FiSearch } from "react-icons/fi";
 import { getHighlights, viewHighlight, likeHighlight, getComments, postComment } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,7 @@ export default function Highlights() {
   const { darkMode } = useTheme();
   
   const [mounted, setMounted] = useState(false);
-  const [activeCat, setActiveCat] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -39,7 +39,14 @@ export default function Highlights() {
   const fetchVideos = async () => {
     try {
       const data = await getHighlights();
-      setVideos(data);
+      // Ensure data is an array before setting it
+      if (Array.isArray(data)) {
+        setVideos(data);
+      } else if (data && Array.isArray(data.data)) {
+        setVideos(data.data);
+      } else {
+        setVideos([]);
+      }
     } catch (err) {
       console.error("Error fetching videos:", err);
     } finally {
@@ -96,8 +103,12 @@ export default function Highlights() {
     } catch (err) { console.error(err); }
   };
 
-  const cats = ["all", "Match de Légende", "Compilations", "Fan Experience"];
-  const filteredVideos = activeCat === "all" ? videos : videos.filter(v => v.category === activeCat);
+  const filteredVideos = videos.filter(v => {
+    const s = searchQuery.toLowerCase();
+    const titleMatch = v.title?.toLowerCase().includes(s);
+    const catMatch = v.category?.toLowerCase().includes(s);
+    return titleMatch || catMatch;
+  });
 
   const tBg = darkMode ? "#0d0d0d" : "#fdfdfd";
   const tText = darkMode ? "white" : "#0d0d0d";
@@ -118,57 +129,56 @@ export default function Highlights() {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .hw { max-width: 1380px; margin: 0 auto; padding: 0 clamp(16px,3vw,48px); }
-        .pkg { border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.22s ease, box-shadow 0.22s ease; background: ${tCardBg}; border: 1px solid ${tBorder}; }
-        .pkg:hover { transform:translateY(-5px); border-color: ${tBorderHov}; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .pkg { border-radius:10px; overflow:hidden; display:flex; flex-direction:column; background: ${tCardBg}; border: 1px solid ${tBorder}; }
         .btn-shim { position:relative; overflow:hidden; }
         .btn-shim .sh { position:absolute; top:0; left:-80%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent); pointer-events:none; }
         .btn-shim:hover .sh { animation:shim 0.5s ease forwards; }
         @keyframes shim { from{left:-80%;} to{left:130%;} }
         .g-vids { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 30px; }
         @media(max-width: 768px) { .g-vids { grid-template-columns: 1fr; } }
+        
+        .cal-filter-bar::-webkit-scrollbar { display: none; }
+        .cal-filter-bar { scrollbar-width: none; }
       `}</style>
 
       {/* HERO SECTION */}
-      <section style={{ position: "relative", minHeight: "50vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(${tDot} 1px,transparent 1px)`, backgroundSize: "32px 32px", zIndex: 1 }} />
-        <div style={{ position: "absolute", inset: 0, background: tGradTop, zIndex: 1 }} />
-        
-        <div className="hw" style={{ position: "relative", zIndex: 2, width: "100%", padding: "clamp(120px,15vh,180px) clamp(16px,3vw,48px) 48px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 26 }}>
-            <div style={{ height: 1, width: 36, background: tBorderHov, flexShrink: 0 }} />
-            <span style={{ color: tSubText, fontFamily: FONT_B, fontSize: 10, fontWeight: 800, letterSpacing: "0.42em", textTransform: "uppercase" }}>FIFA+ Archives</span>
-          </div>
-          
-          <div style={{ marginBottom: 20 }}>
-            <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px,8vw,110px)", fontWeight: 900, lineHeight: 0.85, textTransform: "uppercase", letterSpacing: "-0.02em", margin: 0 }}>
-              TEMPS <span style={{ color: "transparent", WebkitTextStroke: tStroke }}>FORTS</span>
-            </h1>
-          </div>
-          <p style={{ color: tSubText, fontFamily: FONT_B, fontSize: 15, fontWeight: 500, maxWidth: 500, margin: 0 }}>
-            Revivez les moments les plus intenses du football mondial. Actions, buts, et émotions en haute définition.
-          </p>
+      <section style={{ paddingTop: 40 }}>
+        <div className="hw">
+          <h1 style={{ 
+            fontFamily: FONT_D, 
+            fontSize: "clamp(48px, 8vw, 110px)", 
+            fontWeight: 900, 
+            textTransform: "uppercase", 
+            marginBottom: 32,
+            lineHeight: 0.9,
+            letterSpacing: "-0.02em"
+          }}>
+            Temps Forts
+          </h1>
         </div>
       </section>
 
-      {/* TABS */}
+      {/* Search Input */}
       <div className="hw" style={{ marginBottom: 40 }}>
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 10, scrollbarWidth: "none" }}>
-          {cats.map(cat => {
-            const isSel = activeCat === cat;
-            return (
-              <button key={cat} onClick={() => setActiveCat(cat)} style={{
-                background: isSel ? tBtnBg : "transparent",
-                color: isSel ? tBtnText : tSubText,
-                border: isSel ? `1px solid ${tBtnBg}` : `1px solid ${tBorder}`,
-                padding: "10px 22px", borderRadius: 100, fontSize: 12, fontWeight: 800,
-                cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s",
-                textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: FONT_B
-              }} onMouseOver={e => !isSel && (e.currentTarget.style.borderColor = tSubText)}
-                 onMouseOut={e => !isSel && (e.currentTarget.style.borderColor = tBorder)}>
-                {cat === "all" ? "Toutes les vidéos" : cat}
-              </button>
-            )
-          })}
+        <div style={{ position: "relative", maxWidth: 600 }}>
+          <FiSearch style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", color: tSubText, fontSize: 20 }} />
+          <input 
+            type="text" 
+            placeholder="Rechercher un temps fort ou une catégorie..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "16px 20px 16px 50px",
+              borderRadius: 100,
+              border: `1px solid ${tBorder}`,
+              background: "transparent",
+              color: tText,
+              fontFamily: FONT_B,
+              fontSize: 16,
+              outline: "none"
+            }}
+          />
         </div>
       </div>
 
@@ -183,9 +193,7 @@ export default function Highlights() {
             {filteredVideos.map((v, i) => (
               <div key={v.id || i} onClick={() => handleView(v)} className="pkg" style={{ cursor: "pointer" }}>
                 <div style={{ height: 240, overflow: "hidden", position: "relative" }}>
-                   <img src={v.image_url} alt={v.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
-                     onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
-                     onMouseOut={e => e.currentTarget.style.transform = "scale(1)"} />
+                   <img src={v.image_url} alt={v.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)" }} />
                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", color: "white" }}>
                       <FiPlayCircle size={60} style={{ opacity: 0.9, dropShadow: "0 4px 20px rgba(0,0,0,0.5)" }} />

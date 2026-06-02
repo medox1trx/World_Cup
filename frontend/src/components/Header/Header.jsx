@@ -40,6 +40,7 @@ const NAV = [
       { label: "Villes Hôtes", href: "/cities" },
       { label: "Fan Zone", href: "/fans" },
       { label: "Les Stades", href: "/stadiums" },
+      { label: "Hôtels", href: "/hotels" },
     ],
   },
   {

@@ -16,6 +16,7 @@ export default function Tickets() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const matchId = searchParams.get("match_id");
+  const hospitalityId = searchParams.get("hospitality_id");
 
   const [mounted, setMounted] = useState(false);
   const [filter, setFilter] = useState("all");
@@ -28,6 +29,7 @@ export default function Tickets() {
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => { 
+    
     const t = setTimeout(() => setMounted(true), 40); 
     fetchData();
     return () => clearTimeout(t);
@@ -45,57 +47,10 @@ export default function Tickets() {
     }
   };
 
-  const handleBookTicket = (ticket) => {
-    if (!user) {
-      toast.error("Veuillez vous connecter pour réserver des billets.");
-      navigate("/login");
-      return;
-    }
-    setActiveTicket(ticket);
-    setQuantity(1);
-    setShowConfirm(true);
+  const handleBookTicket = (m) => {
+    navigate(`/tickets/${m.id}/book${hospitalityId ? `?hospitality_id=${hospitalityId}` : ''}`);
   };
 
-  const executeBooking = async () => {
-    if (!activeTicket) return;
-    
-    setBookingId(activeTicket.id);
-    setShowConfirm(false);
-    
-    const tid = toast.loading("Finalisation de votre réservation...");
-    
-    try {
-      const res = await bookTicket({
-        ticket_id: activeTicket.id,
-        quantity: quantity
-      });
-      
-      if (res.status === 'success') {
-        toast.success(res.message || "Réservation confirmée !", { id: tid });
-        // Update local state to reflect new availability
-        setMatches(prev => prev.map(m => ({
-          ...m,
-          tickets: m.tickets.map(t => {
-            if (t.id === activeTicket.id) {
-              const newAvailable = t.available - quantity;
-              return { 
-                ...t, 
-                available: newAvailable,
-                status: newAvailable <= 0 ? 'sold_out' : t.status
-              };
-            }
-            return t;
-          })
-        })));
-      }
-    } catch (err) {
-      toast.error(err.message || "Erreur lors de la réservation.", { id: tid });
-    } finally {
-      setBookingId(null);
-      setActiveTicket(null);
-      setQuantity(1);
-    }
-  };
 
   const stages = [
     { label: "Tous les Matchs", query: "all" },
@@ -148,8 +103,7 @@ export default function Tickets() {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .hw { max-width: 1380px; margin: 0 auto; padding: 0 clamp(16px,3vw,48px); }
-        .pkg { border-radius:12px; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.22s ease, box-shadow 0.22s ease; background: ${tCardBg}; border: 1px solid ${tBorder}; }
-        .pkg:hover { transform:translateY(-5px); border-color: ${tBorderHov}; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .pkg { border-radius:12px; overflow:hidden; display:flex; flex-direction:column; background: ${tCardBg}; border: 1px solid ${tBorder}; }
         .btn-shim { position:relative; overflow:hidden; }
         .btn-shim .sh { position:absolute; top:0; left:-80%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent); pointer-events:none; }
         .btn-shim:hover .sh { animation:shim 0.5s ease forwards; }
@@ -158,6 +112,9 @@ export default function Tickets() {
         .g-tickets { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 24px; }
         @media(max-width: 768px) { .g-tickets { grid-template-columns: 1fr; } }
         
+        .cal-filter-bar::-webkit-scrollbar { display: none; }
+        .cal-filter-bar { scrollbar-width: none; }
+
         /* ── RESET VISITED LINKS (NO PURPLE) ── */
         a, a:visited {
           color: inherit;
@@ -167,7 +124,8 @@ export default function Tickets() {
         /* Custom Ticket Styles */
         .ticket-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: ${tInputBg}; border-radius: 8px; margin-bottom: 8px; transition: all 0.2s; border: 1px solid transparent; }
         .ticket-row:hover { border-color: ${tBorderHov}; background: ${darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'}; }
-        .buy-btn { background: ${tBtnBg}; color: ${tBtnText}; border: none; padding: 6px 14px; borderRadius: 4px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; }
+        .buy-btn { background: ${tBtnBg}; color: ${tBtnText}; border: none; padding: 10px 24px; border-radius: 100px; font-size: 13px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .buy-btn:hover { transform: scale(1.05); opacity: 0.9; }
         .buy-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: flex; alignItems: center; justifyContent: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -177,11 +135,12 @@ export default function Tickets() {
       `}</style>
 
       {/* HERO SECTION */}
-      <section className="hw" style={{ position: "relative", paddingTop: 100, paddingBottom: 60 }}>
-        <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, textTransform: "uppercase", marginBottom: 60 }}>
+      <section className="hw" style={{ position: "relative", paddingTop: 100, paddingBottom: 32 }}>
+        <h1 style={{ fontFamily: FONT_D, fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, textTransform: "uppercase", marginBottom: 32 }}>
           Les Billets
         </h1>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
+        
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center", marginBottom: 32 }}>
           <div style={{ display: "flex", background: tInputBg, border: `1px solid ${tBorder}`, borderRadius: 100, overflow: "hidden", maxWidth: 400, flex: 1 }}>
             <input type="text" placeholder="Rechercher une équipe, un stade..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
               style={{ background: "transparent", border: "none", outline: "none", color: tText, padding: "12px 20px", flex: 1, fontFamily: FONT_B, fontSize: 14 }} />
@@ -190,29 +149,30 @@ export default function Tickets() {
             </div>
           </div>
         </div>
-      </section>
 
-      {/* TABS */}
-      <div className="hw" style={{ marginBottom: 40 }}>
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 10, scrollbarWidth: "none" }}>
+        {/* Filter chips */}
+        <div className="cal-filter-bar" style={{
+          display: "flex", alignItems: "center", gap: 6,
+          overflowX: "auto", paddingBottom: 4, marginBottom: 40
+        }}>
           {stages.map(s => {
             const isSel = filter === s.query;
             return (
               <button key={s.query} onClick={() => setFilter(s.query)} style={{
-                background: isSel ? tBtnBg : "transparent",
-                color: isSel ? tBtnText : tSubText,
-                border: isSel ? `1px solid ${tBtnBg}` : `1px solid ${tBorder}`,
-                padding: "10px 22px", borderRadius: 100, fontSize: 12, fontWeight: 800,
-                cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s",
-                textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: FONT_B
-              }} onMouseOver={e => !isSel && (e.currentTarget.style.borderColor = tSubText)}
-                 onMouseOut={e => !isSel && (e.currentTarget.style.borderColor = tBorder)}>
+                background: isSel ? tText : "transparent",
+                color: isSel ? tBg : tSubText,
+                border: `1px solid ${isSel ? tText : tBorder}`,
+                padding: "5px 14px", borderRadius: 100,
+                fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+                textTransform: "uppercase", cursor: "pointer",
+                whiteSpace: "nowrap", transition: "all 0.18s", fontFamily: FONT_B,
+              }}>
                 {s.label}
               </button>
-            )
+            );
           })}
         </div>
-      </div>
+      </section>
 
       {/* CONTENT */}
       <section className="hw" style={{ paddingBottom: 100 }}>
@@ -222,67 +182,51 @@ export default function Tickets() {
           </div>
         ) : (
           <div className="g-tickets">
-            {filteredMatches.map((m) => (
-              <div key={m.id} className="pkg">
-                <div style={{ padding: "32px", borderBottom: `1px solid ${tBorder}` }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, alignItems: "center" }}>
-                    <span style={{ color: tSubText, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", background: tInputBg, padding: "4px 10px", borderRadius: 4 }}>
-                      {m.group_name || m.stage.replace("_", " ").toUpperCase()}
-                    </span>
-                    <span style={{ display: "flex", alignItems: "center", gap: 6, color: tSubText, fontSize: 11, fontWeight: 700 }}>
-                      <FiCalendar size={14} /> {m.match_date}
-                    </span>
-                  </div>
-                  
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", gap: 20, marginBottom: 24 }}>
-                    <div style={{ textAlign: "center", flex: 1 }}>
-                      <img src={getFlag(m.team1)} alt={m.team1?.name || m.team1} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.team1?.name || m.team1}</div>
-                    </div>
-                    <div style={{ fontFamily: FONT_D, fontSize: 24, fontWeight: 900, opacity: 0.2 }}>VS</div>
-                    <div style={{ textAlign: "center", flex: 1 }}>
-                      <img src={getFlag(m.team2)} alt={m.team2?.name || m.team2} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4, marginBottom: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-                      <div style={{ fontFamily: FONT_D, fontSize: 18, fontWeight: 800, textTransform: "uppercase" }}>{m.team2?.name || m.team2}</div>
+            {filteredMatches.map((m) => {
+              const cheapestTicket = m.tickets && m.tickets.length > 0 
+                ? [...m.tickets].sort((a,b) => a.price - b.price)[0] 
+                : null;
+
+              return (
+                <div key={m.id} className="pkg" style={{ padding: "24px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <img src={getFlag(m.team1)} alt="" style={{ width: 36, height: 24, borderRadius: 3, objectFit: "cover" }} />
+                      <span style={{ fontFamily: FONT_D, fontSize: 20, textTransform: "uppercase" }}>{m.team1?.name || m.team1}</span>
+                      <span style={{ opacity: 0.2, fontWeight: 900 }}>VS</span>
+                      <span style={{ fontFamily: FONT_D, fontSize: 20, textTransform: "uppercase" }}>{m.team2?.name || m.team2}</span>
+                      <img src={getFlag(m.team2)} alt="" style={{ width: 36, height: 24, borderRadius: 3, objectFit: "cover" }} />
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", gap: 16, justifyContent: "center", color: tSubText, fontSize: 11, fontWeight: 600 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}><FiMapPin size={14} /> {m.city}</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}><FiClock size={14} /> {m.match_time}</div>
-                  </div>
-                </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, color: tSubText, fontSize: 13, fontWeight: 600 }}>
+                      <FiClock size={16} />
+                      {m.match_time}
+                      <span style={{ margin: "0 8px", opacity: 0.3 }}>|</span>
+                      <FiMapPin size={14} /> {m.city}
+                    </div>
 
-                <div style={{ padding: "24px", background: darkMode ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)" }}>
-                  <h5 style={{ margin: "0 0 16px", fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.5 }}>
-                    Catégories disponibles
-                  </h5>
-                  {m.tickets && m.tickets.length > 0 ? m.tickets.map((t) => (
-                    <div key={t.id} className="ticket-row">
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 800 }}>{t.category}</div>
-                        <div style={{ fontSize: 10, opacity: 0.6, fontWeight: 600 }}>
-                           {t.status === 'available' ? `${t.available} places` : 'Complet'}
+                    {cheapestTicket ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", opacity: 0.5, letterSpacing: "0.05em" }}>À partir de</div>
+                          <div style={{ fontSize: 18, fontWeight: 900 }}>{cheapestTicket.price}€</div>
                         </div>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <span style={{ fontSize: 14, fontWeight: 900 }}>{t.price}€</span>
                         <button 
-                          className="buy-btn" 
-                          disabled={t.status !== 'available' || bookingId === t.id}
-                          onClick={() => handleBookTicket(t)}
+                          className="buy-btn"
+                          onClick={() => handleBookTicket(m)}
                         >
-                          {bookingId === t.id ? '...' : (t.status === 'available' ? 'Réserver' : 'Épuisé')}
+                          Acheter
                         </button>
                       </div>
-                    </div>
-                  )) : (
-                    <div style={{ padding: 20, textAlign: "center", color: tSubText, fontSize: 11 }}>
-                      Bientôt disponible
-                    </div>
-                  )}
+                    ) : (
+                      <span style={{ fontSize: 12, fontWeight: 700, opacity: 0.5, textTransform: "uppercase" }}>Bientôt disponible</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
@@ -328,7 +272,6 @@ export default function Tickets() {
           </div>
         </div>
       </section>
-
       {/* CONFIRMATION MODAL */}
       <div className={`modal-overlay ${showConfirm ? 'open' : ''}`} onClick={() => setShowConfirm(false)}>
         <div className="modal-content" onClick={e => e.stopPropagation()}>
