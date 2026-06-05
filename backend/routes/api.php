@@ -131,9 +131,15 @@ Route::prefix('v1')->group(function () {
         Route::put('/highlights/{highlight}', [ApiController::class, 'updateHighlight']);
         Route::delete('/highlights/{highlight}', [ApiController::class, 'destroyHighlight']);
 
+        Route::get('/tickets', [ApiController::class, 'indexTickets']);
         Route::post('/tickets', [ApiController::class, 'storeTicket']);
         Route::put('/tickets/{ticket}', [ApiController::class, 'updateTicket']);
         Route::delete('/tickets/{ticket}', [ApiController::class, 'destroyTicket']);
+
+        Route::get('/ticker', [TickerController::class, 'indexAll']);
+        Route::post('/ticker', [TickerController::class, 'store']);
+        Route::put('/ticker/{ticker}', [TickerController::class, 'update']);
+        Route::delete('/ticker/{ticker}', [TickerController::class, 'destroy']);
 
         Route::post('/matches', [ApiController::class, 'storeMatch']);
         Route::put('/matches/{id}', [ApiController::class, 'updateMatch']);

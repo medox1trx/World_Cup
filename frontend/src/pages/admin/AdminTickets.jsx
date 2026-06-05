@@ -41,10 +41,16 @@ export default function AdminTickets() {
         adminGetTickets(),
         getMatches()
       ]);
-      setTickets(ticketsData.data || ticketsData);
-      setMatches(matchesData.data || matchesData);
+      
+      const t = ticketsData.data || ticketsData;
+      setTickets(Array.isArray(t) ? t : (t.tickets || []));
+      
+      const m = matchesData.data || matchesData;
+      setMatches(Array.isArray(m) ? m : (m.matches || []));
     } catch (err) {
       console.error("Error fetching admin tickets data:", err);
+      setTickets([]);
+      setMatches([]);
     } finally {
       setLoading(false);
     }
@@ -152,14 +158,19 @@ export default function AdminTickets() {
         .form-label { display: block; font-family: ${FB}; font-size: 12px; font-weight: 700; color: ${textSecondary}; margin-bottom: 8px; }
         .form-input { 
           width: 100%; padding: 14px 18px; border-radius: 12px; 
-          background: ${surface}; border: 1px solid ${border}; 
+          background-color: ${surface}; border: 1px solid ${border}; 
           color: ${textPrimary}; outline: none; transition: all 0.25s ease;
         }
         .form-input:focus { border-color: ${accent}; }
         .admin-badge {
-          padding: 4px 10px; borderRadius: 100px; fontSize: 10px; fontWeight: 800;
-          textTransform: uppercase; border: 1px solid ${border};
-          background: ${surface}; color: ${textPrimary};
+          padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 800;
+          text-transform: uppercase; display: inline-block;
+        }
+        .badge-available {
+          background: #000; color: #fff; border: 1px solid #000;
+        }
+        .badge-sold_out {
+          background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3);
         }
       `}</style>
 
@@ -189,7 +200,7 @@ export default function AdminTickets() {
               <tbody>
                 {loading ? (
                   <tr><td colSpan="6" style={{ textAlign: "center", padding: 40 }}>Chargement...</td></tr>
-                ) : tickets.length === 0 ? (
+                ) : !Array.isArray(tickets) || tickets.length === 0 ? (
                   <tr><td colSpan="6" style={{ textAlign: "center", padding: 40 }}>Aucun billet trouvé</td></tr>
                 ) : tickets.map((t) => (
                   <tr key={t.id}>
@@ -205,7 +216,9 @@ export default function AdminTickets() {
                       </div>
                     </td>
                     <td>
-                      <span className="admin-badge">{t.status === 'available' ? 'Disponible' : 'Épuisé'}</span>
+                      <span className={`admin-badge badge-${t.status}`}>
+                        {t.status === 'available' ? 'Disponible' : 'Épuisé'}
+                      </span>
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <button className="btn-icon" onClick={() => handleEdit(t)}><FiEdit2 size={16} /></button>
