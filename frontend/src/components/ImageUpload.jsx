@@ -75,7 +75,7 @@ const ImageUpload = ({ defaultValue, onChange, label, folder = 'teams', darkMode
     surface: darkMode ? "#171717" : "#f5f5f5",
     border: darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
     text: darkMode ? "#ffffff" : "#0d0d0d",
-    textMuted: darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+    textMuted: darkMode ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.7)",
     accent: "#c8102e"
   };
 

@@ -30,7 +30,7 @@ export default function AdminNews() {
   const card         = darkMode ? "#1c1c1c"                  : "#ffffff";
   const border       = darkMode ? "rgba(255,255,255,0.08)"   : "rgba(0,0,0,0.08)";
   const textPrimary  = darkMode ? "#ffffff"                  : "#0d0d0d";
-  const textSecondary= darkMode ? "rgba(255,255,255,0.55)"   : "rgba(0,0,0,0.5)";
+  const textSecondary= darkMode ? "rgba(255,255,255,0.65)"   : "rgba(0,0,0,0.7)";
   const surface      = darkMode ? "#171717"                  : "#f5f5f5";
   const accent       = darkMode ? "#ffffff"                  : "#0d0d0d";
   const accentContrast= darkMode ? "#0d0d0d"                 : "#ffffff";

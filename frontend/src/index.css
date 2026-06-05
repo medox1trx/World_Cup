@@ -161,9 +161,9 @@ textarea {
 }
 
 input:focus, select:focus, textarea:focus {
-  background-color: #121212;
-  color: #ffffff;
-  border-color: #374151;
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  border-color: var(--accent-color);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
@@ -174,7 +174,7 @@ input::placeholder, textarea::placeholder {
 }
 
 input:focus::placeholder, textarea:focus::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-muted);
 }
 
 /* Select arrow styling */
@@ -187,13 +187,13 @@ select {
 }
 
 select:focus {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ffffff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666666'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
 }
 
 /* Style the dropdown options */
 select option {
-  background-color: #121212;
-  color: #ffffff;
+  background-color: var(--card-bg);
+  color: var(--text-main);
 }
 
 button {
